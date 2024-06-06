@@ -3,10 +3,12 @@ import { getCoursById } from "@/lib/actions/courses.action";
 import { auth } from "@clerk/nextjs/server";
 import { LayoutDashboard } from "lucide-react";
 import { redirect } from "next/navigation";
+import { TitleForm } from "./_components/title-form";
+
 const coursesId = async ({ params }: { params: { courseId: string } }) => {
   const { userId } = auth();
   const course = await getCoursById(params.courseId);
-  if (!userId) return redirect("/");
+  //if (!userId) return redirect("/");
   if (!course) return redirect("/");
   console.log("couse", course);
   const requiredFlieds = [
@@ -30,16 +32,14 @@ const coursesId = async ({ params }: { params: { courseId: string } }) => {
       </div>
 
       <div className=" grid  grid-cols-1 md:grid-cols-2 gap-6 mt-16">
-        <div className="flex items-center gap-x-2">
-          
-          <IconBadge icon={LayoutDashboard}></IconBadge>
-          <h2 className="text-xl">
-            Custom your course
+        <div>
+          <div className="flex items-center gap-x-2">
+            <IconBadge icon={LayoutDashboard}></IconBadge>
+            <h2 className="text-xl">Custom your course</h2>
+          </div>
 
-          </h2>
-
+          <TitleForm initialData={course} courseId={course.id}></TitleForm>
         </div>
-
       </div>
     </div>
   );
