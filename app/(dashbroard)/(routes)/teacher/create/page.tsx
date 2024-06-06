@@ -19,8 +19,8 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 
 const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+  title: z.string().min(2, {
+    message: "Title must be at least 2 characters.",
   }),
 });
 
@@ -29,7 +29,7 @@ const CreatePage = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      title: "",
     },
   });
   const { isSubmitting, isValid } = form.formState;
@@ -37,9 +37,10 @@ const CreatePage = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const response = await axios.post("/api/courses", values);
-      router.push(`/teacher/courses/${response.data.id}`);
+      router.push(`/teacher/courses/${response?.data?._id}`);
+      toast.success("Courses created");
     } catch (error) {
-        toast.error("Some thin went wrong!")
+      toast.error("Some thin went wrong!");
     }
   };
 
@@ -56,10 +57,10 @@ const CreatePage = () => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
-              name="username"
+              name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>Title</FormLabel>
                   <FormControl>
                     <Input placeholder="shadcn" {...field} />
                   </FormControl>
