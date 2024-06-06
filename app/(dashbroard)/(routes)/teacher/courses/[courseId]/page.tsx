@@ -1,5 +1,7 @@
+import { IconBadge } from "@/components/icon-badge";
 import { getCoursById } from "@/lib/actions/courses.action";
 import { auth } from "@clerk/nextjs/server";
+import { LayoutDashboard } from "lucide-react";
 import { redirect } from "next/navigation";
 const coursesId = async ({ params }: { params: { courseId: string } }) => {
   const { userId } = auth();
@@ -25,6 +27,19 @@ const coursesId = async ({ params }: { params: { courseId: string } }) => {
           <h1 className="text-2xl font-medium">Courses setup</h1>
           <span>Completed all fields {completionText}</span>
         </div>
+      </div>
+
+      <div className=" grid  grid-cols-1 md:grid-cols-2 gap-6 mt-16">
+        <div className="flex items-center gap-x-2">
+          
+          <IconBadge icon={LayoutDashboard}></IconBadge>
+          <h2 className="text-xl">
+            Custom your course
+
+          </h2>
+
+        </div>
+
       </div>
     </div>
   );
