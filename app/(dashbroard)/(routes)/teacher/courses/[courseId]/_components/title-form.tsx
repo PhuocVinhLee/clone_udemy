@@ -47,7 +47,8 @@ export const TitleForm = ({ initialData, courseId }: TitleFromProps) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     
     try {
-        await axios.patch(`/api/coures/${courseId}`, values)
+      console.log(courseId)
+        await axios.patch(`/api/courses/${courseId}`, values)
         toast.success(" Couruse updated.")
         toggleEdit();
         router.refresh();// refresh state
@@ -62,8 +63,10 @@ export const TitleForm = ({ initialData, courseId }: TitleFromProps) => {
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
             <>Scanel</>
-          ) : (
-            <Pencil className="h-4 w-4 mr-2"> Edit title</Pencil>
+          ) : ( <>
+          <Pencil className="h-4 w-4 mr-2"></Pencil> 
+           Edit title</>
+            
           )}
         
         </Button>
