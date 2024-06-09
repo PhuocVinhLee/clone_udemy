@@ -13,7 +13,7 @@ export async function PATCH( req: Request, {params}: {params: {courseId: string}
             courseId: courseId,
             title: payload?.title,
             description: payload?.description,
-            imageUrl: payload?.description
+            imageUrl: payload?.imageUrl
         
         }
       
