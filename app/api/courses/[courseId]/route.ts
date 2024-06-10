@@ -1,4 +1,5 @@
 import { updateCourse } from "@/lib/actions/courses.action";
+import Categorys from "@/lib/database/models/categorys.model";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
@@ -13,7 +14,8 @@ export async function PATCH( req: Request, {params}: {params: {courseId: string}
             courseId: courseId,
             title: payload?.title,
             description: payload?.description,
-            imageUrl: payload?.imageUrl
+            imageUrl: payload?.imageUrl,
+            categoryId: payload?.categoryId
         
         }
       

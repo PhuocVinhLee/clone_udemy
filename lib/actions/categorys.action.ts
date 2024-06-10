@@ -2,31 +2,39 @@
 
 import { revalidatePath } from "next/cache";
 
-import Courses from "../database/models/courses.model";
+import Categorys from "../database/models/categorys.model";
 import { connectToDatabase } from "../database/mongoose";
 //import { handleError } from "../utils";
 
-// CREATE
-// const course = await createCourses({
-//   userId,
-//   title,
-// });
+export async function getAllCategory() {
+  try {
+    await connectToDatabase();
 
-export async function createCourses(courses: {
+    const allCategory = await Categorys.find({}); // { userId: 1233; title: test;}
+    console.log(allCategory);
+
+    return JSON.parse(JSON.stringify(allCategory));
+  } catch (error) {
+    //handleError(error);
+
+    console.log(" An error in action get all Category", error);
+  }
+}
+export async function createCategory(category: {
   userId: string;
   title: string;
 }) {
   try {
     await connectToDatabase();
 
-    const newCourses = await Courses.create(courses); // { userId: 1233; title: test;}
+    const newCategory = await Categorys.create(category); // { userId: 1233; title: test;}
 
-    console.log("newCourses", newCourses);
-    return JSON.parse(JSON.stringify(newCourses));
+    console.log("newCategory", newCategory);
+    return JSON.parse(JSON.stringify(newCategory));
   } catch (error) {
     //handleError(error);
 
-    console.log(" An error in action create Courses", error);
+    console.log(" An error in action create Category", error);
   }
 }
 // GET ONE
@@ -34,7 +42,7 @@ export async function getCoursById(courseId: string) {
   try {
     await connectToDatabase();
 
-    const course = await Courses.findById(courseId);
+    const course = await Categorys.findById(courseId);
 
     if (!course) throw new Error("Course not found");
 
@@ -47,7 +55,7 @@ export async function getCoursById(courseId: string) {
 //Update
 
 type UpdateCourseParams = {
-  course : {
+  course: {
     courseId: string;
     title?: string;
     description?: string;
@@ -62,13 +70,13 @@ export async function updateCourse({ course, userId }: UpdateCourseParams) {
   try {
     await connectToDatabase();
 
-    const coursToUpdate = await Courses.findById(course.courseId);
+    const coursToUpdate = await Categorys.findById(course.courseId);
 
     if (!coursToUpdate || coursToUpdate?.userId !== userId) {
       throw new Error("Unauthorized or image not found");
     }
-console.log(course)
-    const updatedCourse = await Courses.findByIdAndUpdate(
+
+    const updatedCourse = await Categorys.findByIdAndUpdate(
       course.courseId,
       course,
       {

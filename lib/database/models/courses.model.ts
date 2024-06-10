@@ -22,7 +22,7 @@ const CoursesSchema = new Schema({
     type: Boolean,
     default: true,
   },
-  category: {
+  categoryId: {
     type: String,
   },
 });
