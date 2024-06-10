@@ -15,7 +15,8 @@ export async function PATCH( req: Request, {params}: {params: {courseId: string}
             title: payload?.title,
             description: payload?.description,
             imageUrl: payload?.imageUrl,
-            categoryId: payload?.categoryId
+            categoryId: payload?.categoryId,
+            price: payload?.price
         
         }
       

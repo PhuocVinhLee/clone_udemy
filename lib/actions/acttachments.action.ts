@@ -2,43 +2,52 @@
 
 import { revalidatePath } from "next/cache";
 
-import Courses from "../database/models/courses.model";
+import Attachments from "../database/models/attachments.model";
 import { connectToDatabase } from "../database/mongoose";
 //import { handleError } from "../utils";
 
-// CREATE
-// const course = await createCourses({
-//   userId,
-//   title,
-// });
+export async function deleteAttachments(attachmentId: string) {
+  try {
+    await connectToDatabase();
 
-export async function createCourses(courses: {
-  userId: string;
-  title: string;
+    const respon = await Attachments.findByIdAndDelete(attachmentId);
+    console.log("respon",respon)
+    return JSON.parse(JSON.stringify(respon));
+  } catch (error) {
+    //handleError(error)
+    console.log(" An error in action delete Attachments", error);
+  }
+}
+
+
+export async function createAttachments(attachments: {
+  name: string;
+  url: string;
+  courseId: string
 }) {
   try {
     await connectToDatabase();
 
-    const newCourses = await Courses.create(courses); // { userId: 1233; title: test;}
+    const newAttachments = await Attachments.create(attachments); 
 
-    console.log("newCourses", newCourses);
-    return JSON.parse(JSON.stringify(newCourses));
+    console.log("newAttachments", newAttachments);
+    return JSON.parse(JSON.stringify(newAttachments));
   } catch (error) {
     //handleError(error);
 
-    console.log(" An error in action create Courses", error);
+    console.log(" An error in action create Attachments", error);
   }
 }
 // GET ONE
-export async function getCoursById(courseId: string) {
+export async function getAllAttachmentsByCourseId(courseId: string) {
   try {
     await connectToDatabase();
 
-    const course = await Courses.findById(courseId);
+    const attachments = await Attachments.find({courseId});
 
-    if (!course) throw new Error("Course not found");
+    if (!attachments) throw new Error("Course not found");
 
-    return JSON.parse(JSON.stringify(course));
+    return JSON.parse(JSON.stringify(attachments));
   } catch (error) {
     //handleError(error)
     console.log(" An error in action find a Course", error);
@@ -63,13 +72,13 @@ export async function updateCourse({ course, userId }: UpdateCourseParams) {
   try {
     await connectToDatabase();
 
-    const coursToUpdate = await Courses.findById(course.courseId);
+    const coursToUpdate = await Attachments.findById(course.courseId);
 
     if (!coursToUpdate || coursToUpdate?.userId !== userId) {
       throw new Error("Unauthorized or image not found");
     }
 console.log(course)
-    const updatedCourse = await Courses.findByIdAndUpdate(
+    const updatedCourse = await Attachments.findByIdAndUpdate(
       course.courseId,
       course,
       {
