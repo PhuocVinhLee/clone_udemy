@@ -25,6 +25,9 @@ const CoursesSchema = new Schema({
   categoryId: {
     type: String,
   },
+  // categoryId: { type: Schema.Types.ObjectId, ref: 'Categorys' },
+  // createdAt: { type: Date, default: Date.now },
+  // updatedAt: { type: Date, default: Date.now }
 });
 
 const Courses = models?.Courses || model("Courses", CoursesSchema);
