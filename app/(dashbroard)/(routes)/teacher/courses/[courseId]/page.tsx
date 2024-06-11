@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { TitleForm } from "./_components/title-form";
 import { ImageForm } from "./_components/image-form";
 import { DescriptionForm } from "./_components/description-form";
+import { ChapterForm } from "./_components/chapter-form";
 import { CategoryForm } from "./_components/category-form";
 import { PriceForm } from "./_components/price-form";
 import { AttachmentForm } from "./_components/attachment-form";
@@ -27,7 +28,8 @@ const coursesId = async ({ params }: { params: { courseId: string } }) => {
     course.description,
     course.imageUrl,
     course.price,
-    course.caterogyId,
+    course.categoryId,
+    course?.chapters?.some((chapter : any) => chapter.isPublished)
   ];
   const totalFields = requiredFlieds.length;
   const completedFields = requiredFlieds.filter(Boolean).length;
@@ -72,7 +74,10 @@ const coursesId = async ({ params }: { params: { courseId: string } }) => {
               <IconBadge icon={ListChecks}></IconBadge>
               <h2 className="text-xl">Courses chapter</h2>
             </div>
-            <div>Todo Chapter</div>
+            <ChapterForm
+            initialData={course}
+            courseId={course._id}
+          ></ChapterForm>
           </div>
 
           <div>
