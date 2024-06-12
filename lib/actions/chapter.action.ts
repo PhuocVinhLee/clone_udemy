@@ -3,23 +3,59 @@
 import { revalidatePath } from "next/cache";
 
 import Chapters from "../database/models/chapters.model";
+import Courses from "../database/models/courses.model";
 import { connectToDatabase } from "../database/mongoose";
 //import { handleError } from "../utils";
 
 export async function getAllChapterByCourseId(courseId: string) {
-    try {
-      await connectToDatabase();
-  
-      const chapters = await Chapters.find({courseId});
-  
-      if (!chapters) throw new Error("Course not found");
-  
-      return JSON.parse(JSON.stringify(chapters));
-    } catch (error) {
-      //handleError(error)
-      console.log(" An error in action getAllChapterByCourseId Chapters", error);
-    }
+  try {
+    await connectToDatabase();
+
+    const chapters = await Chapters.find({ courseId }).sort({ position: 1 });
+
+    if (!chapters) throw new Error("Course not found");
+
+    return JSON.parse(JSON.stringify(chapters));
+  } catch (error) {
+    //handleError(error)
+    console.log(" An error in action getAllChapterByCourseId Chapters", error);
   }
+}
+export async function updateArrayChapter({
+  userId,
+  courseId,
+  arrayChapter,
+}: {
+  courseId: string;
+  userId: string;
+  arrayChapter: { position: number; _id: string }[];
+}) {
+  try {
+    await connectToDatabase();
+
+    const coursToUpdate = await Courses.findById(courseId);
+
+    if (!coursToUpdate || coursToUpdate?.userId !== userId) {
+      throw new Error("Unauthorized or Course not found");
+    }
+    for (const chapter of arrayChapter) {
+      const updatedChapter = await Chapters.findByIdAndUpdate(
+        chapter._id,
+        { position: chapter.position },
+        {
+          new: false,
+        }
+      );
+    }
+
+    // revalidatePath(path);
+
+    return JSON.parse(JSON.stringify(true));
+  } catch (error) {
+    // handleError(error)
+    console.log(error);
+  }
+}
 export async function createChapter(chapter: {
   title: string;
   description?: string;
@@ -60,7 +96,7 @@ export async function getChapterById(courseId: string) {
 //Update
 
 type UpdateCourseParams = {
-  course : {
+  course: {
     courseId: string;
     title?: string;
     description?: string;
@@ -68,7 +104,7 @@ type UpdateCourseParams = {
     price?: number;
     isPublished?: boolean;
     category?: string;
-    acttachments?: {name: string; url: string}[];
+    acttachments?: { name: string; url: string }[];
   };
   userId: string;
 };
@@ -81,7 +117,7 @@ export async function updateCourse({ course, userId }: UpdateCourseParams) {
     if (!coursToUpdate || coursToUpdate?.userId !== userId) {
       throw new Error("Unauthorized or image not found");
     }
-console.log(course)
+    console.log(course);
     const updatedCourse = await Chapters.findByIdAndUpdate(
       course.courseId,
       course,

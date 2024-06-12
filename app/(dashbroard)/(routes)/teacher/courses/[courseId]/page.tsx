@@ -2,6 +2,7 @@ import { IconBadge } from "@/components/icon-badge";
 import { getCoursById } from "@/lib/actions/courses.action";
 import { getAllCategory } from "@/lib/actions/categorys.action";
 import { getAllAttachmentsByCourseId } from "@/lib/actions/acttachments.action";
+import { getAllChapterByCourseId } from "@/lib/actions/chapter.action";
 import { auth } from "@clerk/nextjs/server";
 import { CircleDollarSign, LayoutDashboard, ListChecks, File } from "lucide-react";
 import { redirect } from "next/navigation";
@@ -18,9 +19,10 @@ const coursesId = async ({ params }: { params: { courseId: string } }) => {
   const course = await getCoursById(params.courseId);
   const categorys = await getAllCategory();
   const attachments = await getAllAttachmentsByCourseId(params.courseId)
-  console.log("attachments", attachments);
+  const chapters = await getAllChapterByCourseId(params.courseId)
+  console.log("chapters", chapters); console.log("userId",userId)
  
-  if (!userId) return redirect("/");
+  //if (!userId) return redirect("/");
   if (!course) return redirect("/");
   console.log("couse", course);
   const requiredFlieds = [
@@ -75,7 +77,7 @@ const coursesId = async ({ params }: { params: { courseId: string } }) => {
               <h2 className="text-xl">Courses chapter</h2>
             </div>
             <ChapterForm
-            initialData={course}
+            initialData={{chapters: chapters}}
             courseId={course._id}
           ></ChapterForm>
           </div>

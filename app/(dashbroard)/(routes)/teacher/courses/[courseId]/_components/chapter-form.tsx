@@ -16,12 +16,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import { Pencil, PlusCircle } from "lucide-react";
+import { Loader2, Pencil, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { ChapterList } from "./chapter-list";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -30,16 +31,14 @@ const formSchema = z.object({
 });
 
 interface ChapterFormProps {
-  initialData: {
-    title: string;
-    chapters: { title: string }[] 
-  };
+  initialData: { chapters: any[] }; // initialData has type is {chapters: any[]}
   courseId: string;
 }
 
 export const ChapterForm = ({ initialData, courseId }: ChapterFormProps) => {
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  console.log("chapters ne", initialData.chapters);
 
   const toggleCrating = () => setIsCreating((current) => !current);
   const router = useRouter();
@@ -54,16 +53,39 @@ export const ChapterForm = ({ initialData, courseId }: ChapterFormProps) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       console.log(values);
-      await axios.post(`/api/chapters`, {...values, courseId});
+      await axios.post(`/api/chapters`, { ...values, courseId });
       toast.success(" Chapter created.");
       toggleCrating();
-      router.refresh(); // refresh state
+      router.refresh(); // refresh API
     } catch (error) {
       toast.error("Something went wrong!");
     }
   };
+
+  const onReOrder = async (updateData: { _id: string; position: number }[]) => {
+    try {
+      setIsUpdating(true);
+      console.log("updatedata", updateData);
+      //update Chapters
+      await axios.put(`/api/chapters`, { arrayChapter: updateData, courseId });
+      toast.success(" Chapter created.");
+      router.refresh(); 
+    } catch (error) {
+      toast.error("Some thing went wrong");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+  const onEdit = (id: string)=>{
+    router.push(`/teacher/courese/q/${id}`);
+  }
   return (
-    <div className="mt-6 broder bg-slate-100 rounded-md p-4">
+    <div className="mt-6 relative broder bg-slate-100 rounded-md p-4">
+      {isUpdating && (
+        <div className=" absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-md flex items-center justify-center">
+          <Loader2 className=" animate-spin h-6 w-6 text-sky-700"></Loader2>
+        </div>
+      )}
       <div className=" font-medium flex items-center justify-between">
         Course chhapter
         <Button onClick={toggleCrating} variant="ghost">
@@ -117,12 +139,13 @@ export const ChapterForm = ({ initialData, courseId }: ChapterFormProps) => {
               "text-sm mt-2",
               !initialData?.chapters?.length && " text-slate-500 italic"
             )}
-           
           >
-             {
-              !initialData?.chapters?.length && "No chapters"
-            }
-            No chapters
+            {!initialData?.chapters?.length && "No chapters"}
+            <ChapterList
+              onEdit={onEdit}
+              onReOrder={onReOrder}
+              items={initialData.chapters || []}
+            ></ChapterList>
           </div>
         )}
         {!isCreating && (
