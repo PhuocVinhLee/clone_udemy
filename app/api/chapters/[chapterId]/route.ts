@@ -22,6 +22,7 @@ export async function PATCH(
     const DataChapter = {
       courseId: payload.courseId,
       title: payload?.title,
+      description: payload?.description,
       position: payload?.position,
       isPublished: payload?.isPublished,
       isFree: payload?.isFree,

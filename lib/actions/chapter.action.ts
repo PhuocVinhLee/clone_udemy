@@ -100,6 +100,7 @@ type UpdateChapterParams = {
     courseId: string;
     title?: string;
     position?: number;
+    description: string;
     isPublished?: boolean;
     isFree?: boolean;
   };
