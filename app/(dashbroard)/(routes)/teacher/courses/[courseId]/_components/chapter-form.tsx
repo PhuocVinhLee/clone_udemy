@@ -3,8 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 
+ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { ChapterList } from "./chapter-list";
+// import { useRouter } from "next/router";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -76,8 +77,9 @@ export const ChapterForm = ({ initialData, courseId }: ChapterFormProps) => {
       setIsUpdating(false);
     }
   };
+  
   const onEdit = (id: string)=>{
-    router.push(`/teacher/courese/q/${id}`);
+    router.push(`/teacher/courses/${courseId}/chapters/${id}`);
   }
   return (
     <div className="mt-6 relative broder bg-slate-100 rounded-md p-4">

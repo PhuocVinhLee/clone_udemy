@@ -79,48 +79,46 @@ export async function createChapter(chapter: {
   }
 }
 // GET ONE
-export async function getChapterById(courseId: string) {
+export async function getChapterById(_id: string) {
   try {
     await connectToDatabase();
 
-    const course = await Chapters.findById(courseId);
+    const chapter = await Chapters.findById(_id);
 
-    if (!course) throw new Error("Course not found");
+    if (!chapter) throw new Error("Chapter not found");
 
-    return JSON.parse(JSON.stringify(course));
+    return JSON.parse(JSON.stringify(chapter));
   } catch (error) {
     //handleError(error)
-    console.log(" An error in action find a Course", error);
+    console.log(" An error in action find a Chapter", error);
   }
 }
 //Update
 
-type UpdateCourseParams = {
-  course: {
+type UpdateChapterParams = {
+  chapter: {
     courseId: string;
     title?: string;
-    description?: string;
-    imageUrl?: string;
-    price?: number;
+    position?: number;
     isPublished?: boolean;
-    category?: string;
-    acttachments?: { name: string; url: string }[];
+    isFree?: boolean;
   };
+  chapterId: string;
   userId: string;
 };
-export async function updateCourse({ course, userId }: UpdateCourseParams) {
+export async function updateChapter({ chapter, userId, chapterId }: UpdateChapterParams) {
   try {
     await connectToDatabase();
 
-    const coursToUpdate = await Chapters.findById(course.courseId);
+    const coursToUpdate = await Courses.findById(chapter.courseId);
 
     if (!coursToUpdate || coursToUpdate?.userId !== userId) {
-      throw new Error("Unauthorized or image not found");
+      throw new Error("Unauthorized or Couese not found");
     }
-    console.log(course);
-    const updatedCourse = await Chapters.findByIdAndUpdate(
-      course.courseId,
-      course,
+
+    const updatedChapter= await Chapters.findByIdAndUpdate(
+      chapterId,
+      chapter,
       {
         new: false,
       }
@@ -128,7 +126,7 @@ export async function updateCourse({ course, userId }: UpdateCourseParams) {
 
     // revalidatePath(path);
 
-    return JSON.parse(JSON.stringify(updatedCourse));
+    return JSON.parse(JSON.stringify(updatedChapter));
   } catch (error) {
     // handleError(error)
     console.log(error);

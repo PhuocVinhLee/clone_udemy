@@ -1,10 +1,16 @@
+"use server";
 import { IconBadge } from "@/components/icon-badge";
 import { getCoursById } from "@/lib/actions/courses.action";
 import { getAllCategory } from "@/lib/actions/categorys.action";
 import { getAllAttachmentsByCourseId } from "@/lib/actions/acttachments.action";
 import { getAllChapterByCourseId } from "@/lib/actions/chapter.action";
 import { auth } from "@clerk/nextjs/server";
-import { CircleDollarSign, LayoutDashboard, ListChecks, File } from "lucide-react";
+import {
+  CircleDollarSign,
+  LayoutDashboard,
+  ListChecks,
+  File,
+} from "lucide-react";
 import { redirect } from "next/navigation";
 import { TitleForm } from "./_components/title-form";
 import { ImageForm } from "./_components/image-form";
@@ -16,14 +22,19 @@ import { AttachmentForm } from "./_components/attachment-form";
 
 const coursesId = async ({ params }: { params: { courseId: string } }) => {
   const { userId } = auth();
+  // if (!userId) redirect("/");
   const course = await getCoursById(params.courseId);
   const categorys = await getAllCategory();
-  const attachments = await getAllAttachmentsByCourseId(params.courseId)
-  const chapters = await getAllChapterByCourseId(params.courseId)
-  console.log("chapters", chapters); console.log("userId",userId)
- 
-  //if (!userId) return redirect("/");
-  if (!course) return redirect("/");
+  const attachments = await getAllAttachmentsByCourseId(params.courseId);
+  const chapters = await getAllChapterByCourseId(params.courseId);
+  console.log("course", course);
+  console.log("userId in chapters", userId);
+
+  if (!course) {
+    redirect("/");
+    return null;
+  }
+
   console.log("couse", course);
   const requiredFlieds = [
     course.title,
@@ -31,7 +42,7 @@ const coursesId = async ({ params }: { params: { courseId: string } }) => {
     course.imageUrl,
     course.price,
     course.categoryId,
-    course?.chapters?.some((chapter : any) => chapter.isPublished)
+    course?.chapters?.some((chapter: any) => chapter.isPublished),
   ];
   const totalFields = requiredFlieds.length;
   const completedFields = requiredFlieds.filter(Boolean).length;
@@ -39,6 +50,7 @@ const coursesId = async ({ params }: { params: { courseId: string } }) => {
 
   return (
     <div className="p-6">
+      <div>userId{userId}</div>
       <div className=" flex items-center justify-between">
         <div className="flex flex-col gap-y-2">
           <h1 className="text-2xl font-medium">Courses setup</h1>
@@ -77,9 +89,9 @@ const coursesId = async ({ params }: { params: { courseId: string } }) => {
               <h2 className="text-xl">Courses chapter</h2>
             </div>
             <ChapterForm
-            initialData={{chapters: chapters}}
-            courseId={course._id}
-          ></ChapterForm>
+              initialData={{ chapters: chapters }}
+              courseId={course._id}
+            ></ChapterForm>
           </div>
 
           <div>
@@ -87,9 +99,7 @@ const coursesId = async ({ params }: { params: { courseId: string } }) => {
               <IconBadge icon={CircleDollarSign}></IconBadge>
               <h2 className="text-xl">Sell your course</h2>
             </div>
-            <PriceForm initialData={course} courseId={course._id}>
-
-            </PriceForm>
+            <PriceForm initialData={course} courseId={course._id}></PriceForm>
           </div>
 
           <div>
@@ -97,7 +107,10 @@ const coursesId = async ({ params }: { params: { courseId: string } }) => {
               <IconBadge icon={File}></IconBadge>
               <h2 className="text-xl">Resources Attachments</h2>
             </div>
-            <AttachmentForm initialData={{...course, attachments}} courseId={course._id}></AttachmentForm>
+            <AttachmentForm
+              initialData={{ ...course, attachments }}
+              courseId={course._id}
+            ></AttachmentForm>
           </div>
         </div>
       </div>
