@@ -3,12 +3,14 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getChapterById } from "@/lib/actions/chapter.action";
+import { getMuxdataByChapterId } from "@/lib/actions/muxdata.action";
 import Link from "next/link";
-import { ArrowLeft, Eye, LayoutDashboard } from "lucide-react";
+import { ArrowLeft, Eye, LayoutDashboard, Video } from "lucide-react";
 import { IconBadge } from "@/components/icon-badge";
 import { ChapterTitleForm } from "./_components/chapter-title-form";
 import { ChapterDescriptionForm } from "./_components/chapter-description-form";
 import { ChapterAccessForm } from "./_components/chapter-access-form";
+import { ChapterVideoForm } from "./_components/chapter-video-form";
 const ChapterIdPage = async ({
   params,
 }: {
@@ -18,6 +20,7 @@ const ChapterIdPage = async ({
   console.log("chapterId UserId", userId);
   //  if (!userId) redirect("/");
   const chapter = await getChapterById(params.chapterId);
+  const muxdata = await getMuxdataByChapterId(params.chapterId);
   if (!chapter) return redirect("/");
 
   const requiredFlieds = [chapter.title, chapter.description, chapter.videoUrl];
@@ -78,6 +81,19 @@ const ChapterIdPage = async ({
               courseId={params.courseId}
             ></ChapterAccessForm>
           </div>
+        </div>
+
+        <div>
+          <div className="flex items-center gap-x-2">
+            <IconBadge icon={Video}></IconBadge>
+            <h2 className=" text-xl">Add video ne</h2>
+          </div>
+          <ChapterVideoForm
+            initialData={chapter}
+            chapterId={params.chapterId}
+            courseId={params.courseId}
+            playbackId={muxdata.playbackId}
+          ></ChapterVideoForm>
         </div>
       </div>
     </div>

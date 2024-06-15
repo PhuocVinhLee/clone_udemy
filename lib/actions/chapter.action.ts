@@ -101,6 +101,7 @@ type UpdateChapterParams = {
     title?: string;
     position?: number;
     description: string;
+    videoUrl: string;
     isPublished?: boolean;
     isFree?: boolean;
   };

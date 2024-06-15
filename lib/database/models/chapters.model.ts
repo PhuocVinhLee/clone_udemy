@@ -9,7 +9,7 @@ const ChaptersSchema = new Schema({
   description: {
     type: String,
   },
-  video: {
+  videoUrl: {
     type: String,
   },
   position: {

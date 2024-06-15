@@ -12,14 +12,14 @@ export const Review = ({ value}: ReviewProps) => {
 
     const ReactQuill = useMemo(()=> dynamic(() => import("react-quill"), {ssr: false}),[])
   return (
-    <div>
+   
       <ReactQuill theme="bubble"
       value={value}
       readOnly
      >
 
       </ReactQuill>
-    </div>
+ 
   )
 }
 
