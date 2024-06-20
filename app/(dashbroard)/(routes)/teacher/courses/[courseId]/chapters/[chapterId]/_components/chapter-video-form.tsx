@@ -35,7 +35,7 @@ interface ChapterVideoFromProps {
   initialData: { title: string; description: string; videoUrl: string };
   chapterId: string;
   courseId: string;
-  playbackId: string;
+  playbackId?: string;
 }
 
 export const ChapterVideoForm = ({ initialData, courseId, chapterId, playbackId }: ChapterVideoFromProps) => {
@@ -54,7 +54,7 @@ export const ChapterVideoForm = ({ initialData, courseId, chapterId, playbackId 
     
     try {
       console.log(values)
-        await axios.patch(`/api/chapters/${chapterId}`, {...values, courseId})
+      await axios.patch(`/api/chapters/${courseId}/${chapterId}`, {...values})
         toast.success(" Chapter updated.")
         toggleEdit();
         router.refresh();// refresh state

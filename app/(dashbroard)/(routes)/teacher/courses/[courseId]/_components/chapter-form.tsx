@@ -54,7 +54,7 @@ export const ChapterForm = ({ initialData, courseId }: ChapterFormProps) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       console.log(values);
-      await axios.post(`/api/chapters`, { ...values, courseId });
+      await axios.post(`/api/chapters/${courseId}`, { ...values });
       toast.success(" Chapter created.");
       toggleCrating();
       router.refresh(); // refresh API
@@ -68,7 +68,7 @@ export const ChapterForm = ({ initialData, courseId }: ChapterFormProps) => {
       setIsUpdating(true);
       console.log("updatedata", updateData);
       //update Chapters
-      await axios.put(`/api/chapters`, { arrayChapter: updateData, courseId });
+      await axios.put(`/api/chapters/${courseId}`, { arrayChapter: updateData });
       toast.success(" Chapter created.");
       router.refresh(); 
     } catch (error) {

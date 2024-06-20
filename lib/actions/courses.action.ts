@@ -5,12 +5,56 @@ import { revalidatePath } from "next/cache";
 import Courses from "../database/models/courses.model";
 import { connectToDatabase } from "../database/mongoose";
 //import { handleError } from "../utils";
+import Mux from "@mux/mux-node";
+import { deleteChapter, getAllChapterByCourseId } from "./chapter.action";
+import { deleteMuxdataByChapterId } from "./muxdata.action";
 
-// CREATE
-// const course = await createCourses({
-//   userId,
-//   title,
-// });
+const mux = new Mux({
+  tokenId: process.env.MUX_TOKEN_ID!,
+  tokenSecret: process.env.MUX_TOKEN_SECRET!,
+});
+
+export async function deleteCourse(userId: string, courseId: string) {
+  try {
+    console.log("Start delete course\n");
+
+    if (!userId) return null;
+    const course = await Courses.findById(courseId);
+
+    if (course) {
+      const allChapters = await getAllChapterByCourseId(courseId);
+      for (const chapter of allChapters) {
+        if (chapter?.videoUrl) {
+          const muxdataDeleted = await deleteMuxdataByChapterId(chapter._id);
+          if (muxdataDeleted && muxdataDeleted.assertId) {
+            await mux.video.assets.delete(muxdataDeleted.assertId);
+          }
+        }
+        const chapterDeleted = await deleteChapter(chapter._id, courseId);
+      }
+      
+    }
+    const courseDeleted = await Courses.findByIdAndDelete(courseId);
+
+
+    try {
+      revalidatePath("/", "layout");
+      
+      console.log("Path revalidated in Course");
+    } catch (err) {
+      console.error("Error revalidating path:", err);
+
+      // return res.status(500).json({ message: 'Error revalidating path' });
+    }
+
+    console.log("End delete chapter\n");
+
+    return JSON.parse(JSON.stringify(courseDeleted));
+  } catch (error) {
+    console.log("An error in Delete Chapter out", error);
+    return null;
+  }
+}
 
 export async function createCourses(courses: {
   userId: string;
@@ -33,7 +77,7 @@ export async function createCourses(courses: {
 export async function getCoursById(courseId: string) {
   try {
     await connectToDatabase();
-
+    console.log("courseId in Get one Course", courseId);
     const course = await Courses.findById(courseId);
 
     if (!course) throw new Error("Course not found");
@@ -42,12 +86,13 @@ export async function getCoursById(courseId: string) {
   } catch (error) {
     //handleError(error)
     console.log(" An error in action find a Course", error);
+    return null;
   }
 }
 //Update
 
 type UpdateCourseParams = {
-  course : {
+  course: {
     courseId: string;
     title?: string;
     description?: string;
@@ -55,7 +100,7 @@ type UpdateCourseParams = {
     price?: number;
     isPublished?: boolean;
     category?: string;
-    acttachments?: {name: string; url: string}[];
+    acttachments?: { name: string; url: string }[];
   };
   userId: string;
 };
@@ -68,7 +113,7 @@ export async function updateCourse({ course, userId }: UpdateCourseParams) {
     if (!coursToUpdate || coursToUpdate?.userId !== userId) {
       throw new Error("Unauthorized or image not found");
     }
-console.log(course)
+    console.log(course);
     const updatedCourse = await Courses.findByIdAndUpdate(
       course.courseId,
       course,

@@ -51,7 +51,7 @@ export const ChapterDescriptionForm = ({ initialData, courseId, chapterId }: Cha
     
     try {
       console.log(values)
-        await axios.patch(`/api/chapters/${chapterId}`, {...values, courseId})
+      await axios.patch(`/api/chapters/${courseId}/${chapterId}`, {...values})
         toast.success(" Chapter updated.")
         toggleEdit();
         router.refresh();// refresh state

@@ -49,9 +49,9 @@ export const ChapterTitleForm = ({ initialData, courseId, chapterId }: ChapterTi
     
     try {
       console.log(values)
-        await axios.patch(`/api/chapters/${chapterId}`, {...values, courseId})
+        await axios.patch(`/api/chapters/${courseId}/${chapterId}`, {...values})
         toast.success(" Chapter updated.")
-        toggleEdit();
+        toggleEdit(); 
         router.refresh();// refresh state
     } catch (error) {
         toast.error("Something went wrong!")

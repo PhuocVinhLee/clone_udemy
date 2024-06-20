@@ -57,7 +57,7 @@ export const ChapterAccessForm = ({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       console.log(values);
-      await axios.patch(`/api/chapters/${chapterId}`, { ...values, courseId });
+      await axios.patch(`/api/chapters/${courseId}/${chapterId}`, {...values})
       toast.success(" Chapter updated.");
       toggleEdit();
       router.refresh(); // refresh state

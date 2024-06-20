@@ -12,9 +12,23 @@ import { connectToDatabase } from "../database/mongoose";
 //   title,
 // });
 
+export async function deleteMuxdta(chapterId: string) {
+  try {
+    await connectToDatabase();
+
+    const musxdataDeleted = await Muxdata.findOneAndDelete({ chapterId });
+    return musxdataDeleted;
+  } catch (error) {
+    //handleError(error)
+    console.log(" An error in action Delete Muxdata", error);
+    return null;
+  } finally {
+  }
+}
+
 export async function createMuxdata(muxdata: {
   assertId: string;
-  playbackId ?: string;
+  playbackId?: string;
   chapterId: string;
 }) {
   try {
@@ -56,14 +70,13 @@ export async function getMuxdataByChapterId(chapterId: string) {
   try {
     await connectToDatabase();
 
-    const muxdata = await Muxdata.findOne({chapterId});
-
-    if (!muxdata) throw new Error("Mux not found");
+    const muxdata = await Muxdata.findOne({ chapterId });
 
     return JSON.parse(JSON.stringify(muxdata));
   } catch (error) {
     //handleError(error)
     console.log(" An error in action find a Mux", error);
+    return null;
   }
 }
 //Update
