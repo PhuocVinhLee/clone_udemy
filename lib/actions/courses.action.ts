@@ -14,6 +14,20 @@ const mux = new Mux({
   tokenSecret: process.env.MUX_TOKEN_SECRET!,
 });
 
+export async function ActionGetAllChapterByUserId(userId: string) {
+  try {
+    await connectToDatabase();
+
+    const courses = await Courses.find({ userId }).sort({ createdAt: -1 });
+
+    return JSON.parse(JSON.stringify(courses));
+  } catch (error) {
+    //handleError(error)
+    console.log(" An error in action ActionGetAllChapterByUserId Chapters", error);
+    return [];
+  }
+}
+
 export async function deleteCourse(userId: string, courseId: string) {
   try {
     console.log("Start delete course\n");

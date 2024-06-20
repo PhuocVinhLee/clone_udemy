@@ -111,6 +111,7 @@ export async function deleteChapter(chapterId: string, courseId: string) {
   }
 }
 
+
 export async function getAllChapterByCourseId(courseId: string) {
   try {
     await connectToDatabase();

@@ -76,7 +76,7 @@ export const CourseActions = ({
         toast.success(" Course delete.");
         router.refresh(); //chỉ hoạt động cho tuyến đường hiện tại và nó sẽ khiến tuyến đường hiện tại không sử dụng bộ đệm trong lần truy cập tiếp theo.
 
-        router.push(`/`); // and server revalidatePath in deleteChapter action
+        router.push(`/teacher/courses`);
       }
     } catch (error) {
       toast.error("Some thing went wrong!");

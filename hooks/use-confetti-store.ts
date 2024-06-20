@@ -1,4 +1,4 @@
-import { tree } from "next/dist/build/templates/app-page";
+
 import { create } from "zustand";
 type ConfettiStore = {
   isOpen: boolean;
@@ -7,7 +7,7 @@ type ConfettiStore = {
 };
 
 export const useConfettiStore = create<ConfettiStore>((set) => ({
-  isOpen: true,
+  isOpen: false,
   onOpen: () => set({ isOpen: true }),
   onClose: () => set({ isOpen: false }),
 }));
