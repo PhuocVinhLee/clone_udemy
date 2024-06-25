@@ -29,8 +29,7 @@ const coursesId = async ({ params }: { params: { courseId: string } }) => {
   const categorys = await getAllCategory();
   const attachments = await getAllAttachmentsByCourseId(params.courseId);
   const chapters = await getAllChapterByCourseId(params.courseId);
-  console.log("course", course);
-  console.log("  chapters", chapters);
+
 
   if (!course) {
     redirect("/");
@@ -62,7 +61,7 @@ const coursesId = async ({ params }: { params: { courseId: string } }) => {
         <Banner label="This course is unpublish. It will not be visible to the students."></Banner>
       )}
       <div className="p-6">
-        <div>userId{userId}</div>
+       
         <div className=" flex items-center justify-between">
           <div className="flex flex-col gap-y-2">
             <h1 className="text-2xl font-medium">Courses setup</h1>

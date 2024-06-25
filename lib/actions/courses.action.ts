@@ -8,13 +8,140 @@ import { connectToDatabase } from "../database/mongoose";
 import Mux from "@mux/mux-node";
 import { deleteChapter, getAllChapterByCourseId } from "./chapter.action";
 import { deleteMuxdataByChapterId } from "./muxdata.action";
+import mongoose, { Schema } from "mongoose";
+import { getProgress } from "./userprogress.action";
 
 const mux = new Mux({
   tokenId: process.env.MUX_TOKEN_ID!,
   tokenSecret: process.env.MUX_TOKEN_SECRET!,
 });
 
-export async function ActionGetAllChapterByUserId(userId: string) {
+type ActionGetAllCoursesRefProgressRefCategoryParams = {
+  _id: string;
+  courseId: string;
+  title: string | null;
+  description: string | null;
+  imageUrl: string | null;
+  price: number | null;
+  isPublished: boolean | null;
+  category: { name: string; _id: string } | null;
+  progress: number | null;
+  chapters: { _id: string }[] | null;
+};
+type CoursesParams = {
+  userId: string;
+  title?: string; // serach title
+  categoryId?: string;
+};
+
+export const ActionGetAllCoursesRefProgressRefCategory = async ({
+  categoryId,
+  title,
+  userId,
+}: CoursesParams): Promise<
+  ActionGetAllCoursesRefProgressRefCategoryParams[]
+> => {
+  try {
+    await connectToDatabase();
+    console.log(categoryId, title, userId);
+
+    const query = {
+      ...(title && { title: { $regex: title, $options: "i" } }),
+      isPublished: true,
+      ...(categoryId && { categoryId: new  mongoose.Types.ObjectId(categoryId) }),
+    };
+
+    const coursesWithDetails = await Courses.aggregate([
+      { $match: query },
+      {
+        $lookup: {
+          from: "chapters",
+          let: { courseId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$courseId", "$$courseId"] },
+                    { $eq: ["$isPrivate", true] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "chapters",
+        },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      { $unwind: "$category" },
+      {
+        $lookup: {
+          from: "purchases",
+          let: { courseId: "$_id", userId: new  mongoose.Types.ObjectId(userId) },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$courseId", "$$courseId"] },
+                    { $eq: ["$userId", "$$userId"] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "purchase",
+        },
+      },
+      {
+        $unwind: {
+          path: "$purchase",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+    ]);
+    console.log("coursesWithDetails",coursesWithDetails)
+
+    const courseWithProgress: ActionGetAllCoursesRefProgressRefCategoryParams[] =
+      await Promise.all(
+        coursesWithDetails.map(async (course) => {
+          if (course.purchase.length === 0) {
+            return {
+              ...course,
+              process: 0,
+            };
+          }
+
+          const progressPercentage = await getProgress(userId, course._id);
+          return {
+            ...course,
+            process: progressPercentage,
+          };
+        })
+      );
+
+      console.log("courseWithProgress",courseWithProgress)
+
+    return courseWithProgress;
+  } catch (error) {
+    //handleError(error);
+
+    console.log(" An error in ActionGetAllCoursesRefProgressRefCategory", error);
+  }
+  return [];
+};
+
+export async function ActionGetAllCoursesByUserId(userId: string) {
   try {
     await connectToDatabase();
 
@@ -23,7 +150,10 @@ export async function ActionGetAllChapterByUserId(userId: string) {
     return JSON.parse(JSON.stringify(courses));
   } catch (error) {
     //handleError(error)
-    console.log(" An error in action ActionGetAllChapterByUserId Chapters", error);
+    console.log(
+      " An error in action ActionGetAllCoursesByUserId Chapters",
+      error
+    );
     return [];
   }
 }
@@ -46,14 +176,12 @@ export async function deleteCourse(userId: string, courseId: string) {
         }
         const chapterDeleted = await deleteChapter(chapter._id, courseId);
       }
-      
     }
     const courseDeleted = await Courses.findByIdAndDelete(courseId);
 
-
     try {
       revalidatePath("/", "layout");
-      
+
       console.log("Path revalidated in Course");
     } catch (err) {
       console.error("Error revalidating path:", err);
@@ -70,6 +198,7 @@ export async function deleteCourse(userId: string, courseId: string) {
   }
 }
 
+//transition
 export async function createCourses(courses: {
   userId: string;
   title: string;
@@ -104,6 +233,7 @@ export async function getCoursById(courseId: string) {
   }
 }
 //Update
+// transition
 
 type UpdateCourseParams = {
   course: {

@@ -1,13 +1,11 @@
 import { Schema, model, models } from "mongoose";
-import { describe } from "node:test";
+
 
 const PurchaseSchema = new Schema({
   userId: {
     type: String,
   },
-  courseId: {
-    type: String,
-  },
+  courseId:{ type: Schema.Types.ObjectId, ref: 'Courses' },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

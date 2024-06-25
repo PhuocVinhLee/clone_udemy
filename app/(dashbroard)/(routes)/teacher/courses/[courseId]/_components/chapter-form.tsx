@@ -55,6 +55,7 @@ export const ChapterForm = ({ initialData, courseId }: ChapterFormProps) => {
     try {
       console.log(values);
       await axios.post(`/api/chapters/${courseId}`, { ...values });
+      form.reset();
       toast.success(" Chapter created.");
       toggleCrating();
       router.refresh(); // refresh API
@@ -66,7 +67,7 @@ export const ChapterForm = ({ initialData, courseId }: ChapterFormProps) => {
   const onReOrder = async (updateData: { _id: string; position: number }[]) => {
     try {
       setIsUpdating(true);
-      console.log("updatedata", updateData);
+     
       //update Chapters
       await axios.put(`/api/chapters/${courseId}`, { arrayChapter: updateData });
       toast.success(" Chapter created.");

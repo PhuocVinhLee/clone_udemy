@@ -40,7 +40,7 @@ const CreatePage = () => {
       router.push(`/teacher/courses/${response?.data?._id}`);
       toast.success("Courses created");
     } catch (error) {
-      toast.error("Some thin went wrong!");
+      toast.error("Some thing went wrong!", error);
     }
   };
 

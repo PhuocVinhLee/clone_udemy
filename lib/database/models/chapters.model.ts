@@ -23,9 +23,7 @@ const ChaptersSchema = new Schema({
     type: Boolean,
     default: false,
   },
-  courseId:{
-    type: String
-  },
+  courseId:{ type: Schema.Types.ObjectId, ref: 'Courses' },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

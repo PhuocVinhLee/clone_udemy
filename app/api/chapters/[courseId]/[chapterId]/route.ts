@@ -3,7 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 
 import { NextResponse } from "next/server";
 import { NextRequest } from 'next/server'
-import { updateCourse } from "@/lib/actions/courses.action";
+import { updateCourse  } from "@/lib/actions/courses.action";
 import {
   createChapter,
   getAllChapterByCourseId,
@@ -18,6 +18,9 @@ import {
 } from "@/lib/actions/muxdata.action";
 import Mux from "@mux/mux-node";
 import { revalidatePath } from "next/cache";
+import { connectToDatabase } from "@/lib/database/mongoose";
+import Courses from "@/lib/database/models/courses.model";
+import Chapters from "@/lib/database/models/chapters.model";
 const mux = new Mux({
   tokenId: process.env.MUX_TOKEN_ID!,
   tokenSecret: process.env.MUX_TOKEN_SECRET!,
@@ -93,16 +96,19 @@ export async function PATCH(
 ) {
   try {
     const { userId } = auth();
-    const { chapterId } = params;
+    const { chapterId ,courseId} = params;
     const payload = await req.json();
-
-    console.log("userId in chapter", userId);
     if (!userId)
       return new NextResponse("UnAuthention in Update Chapter", {
         status: 401,
       });
+      await connectToDatabase();
+      const courseToUpdate = await Courses.findById(courseId);
+      if (!courseToUpdate || courseToUpdate?.userId !== userId) {
+        throw new Error("Unauthorized or Course not found");
+      }
     const DataChapter = {
-      courseId: params.courseId,
+      courseId: courseId,
       title: payload?.title,
       description: payload?.description,
       videoUrl: payload.videoUrl,
@@ -112,7 +118,7 @@ export async function PATCH(
     };
     if (DataChapter.videoUrl) {
       const MuxDeleted = await deleteMuxdataByChapterId(chapterId);
-      console.log("MuxDeleted", MuxDeleted);
+
       if (MuxDeleted) {
         await mux.video.assets.delete(MuxDeleted.assertId);
       }
@@ -130,14 +136,15 @@ export async function PATCH(
         });
       }
     }
-
-    const chapter = await updateChapter({
-      chapter: DataChapter,
-      userId,
+    const updatedChapter = await Chapters.findByIdAndUpdate(
       chapterId,
-    });
+      DataChapter,
+      {
+        new: false,
+      }
+    );
 
-    return NextResponse.json(chapter);
+    return NextResponse.json(updatedChapter);
   } catch (error) {
     console.log("erorr in Update chapter", error);
     return new NextResponse("Inter Error", { status: 500 });

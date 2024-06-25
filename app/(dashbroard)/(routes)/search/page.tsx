@@ -1,9 +1,25 @@
 import { getAllCategory } from "@/lib/actions/categorys.action";
 import Categories from "./_components/Categories";
 import SearchInput from "@/components/search-input";
+import { auth } from "@clerk/nextjs/server";
+import { ActionGetAllCoursesRefProgressRefCategory } from "@/lib/actions/courses.action";
+import { redirect } from "next/navigation";
+import CoursesList from "@/components/courses-list";
 
-const SearchPage = async () => {
+interface SearchPageProps {
+  searchParams: {
+    title: string;
+    categoryId: string;
+  };
+}
+
+const SearchPage = async ({ searchParams }: SearchPageProps) => {
+  const { userId } = auth();
+  if(!userId) redirect("/")
   const ArrCategories = await getAllCategory();
+
+  const courses = await  ActionGetAllCoursesRefProgressRefCategory({userId, ...searchParams})
+  console.log("course in Search",courses)
 
   return (
     <>
@@ -12,7 +28,12 @@ const SearchPage = async () => {
       </div>
 
       <div className="p-6">
+
         <Categories items={ArrCategories}></Categories>
+
+        <CoursesList items={courses}>
+
+        </CoursesList> 
       </div>
     </>
   );

@@ -9,6 +9,7 @@ import { updateCourse } from "./courses.action";
 import { deleteMuxdta } from "./muxdata.action";
 //import { handleError } from "../utils";
 import Mux from "@mux/mux-node";
+import { NextResponse } from "next/server";
 
 const mux = new Mux({
   tokenId: process.env.MUX_TOKEN_ID!,
@@ -21,18 +22,19 @@ export async function deleteChapter2(
   courseId: string
 ) {
   try {
-    console.log("Start delete chapter\n");
+    if (!userId) {
+      return new NextResponse("Anauthorrided Error", { status: 401 });
+    }
+    await connectToDatabase();
 
-    if (!userId) return null;
-
-    //const payload = await req.json();
-
+    const courseToUpdate = await Courses.findById(courseId);
+    if (!courseToUpdate || courseToUpdate?.userId !== userId) {
+      throw new Error("Unauthorized or Course not found");
+    }
     const chapterDeleted = await deleteChapter(chapterId, courseId);
     if (!chapterDeleted) {
       return null;
     }
-
-    console.log("chapterDeleted", chapterDeleted);
     if (chapterDeleted && chapterDeleted.videoUrl) {
       const muxdataDeleted = await deleteMuxdta(chapterId);
       console.log("muxdataDeleted", muxdataDeleted);
@@ -41,33 +43,25 @@ export async function deleteChapter2(
         await mux.video.assets.delete(muxdataDeleted.assertId);
       }
     }
-    const DataCourse = {
-      courseId: courseId,
-      isPublished: false,
-    };
+
     // find allchapter => check this course has any chapter to publish
     const allChapterByCourseId = await getAllChapterByCourseId(courseId);
     if (!allChapterByCourseId?.length) {
-      const course = await updateCourse({ course: DataCourse, userId });
-    }
-
-    console.log("End delete chapter\n");
-
-    try {
-      //teacher/courses/[courseId]
-      //revalidatePath("/", "layout");
-
-      revalidatePath(
-        "/(dashbroard)/(routes)/teacher/courses/[courseId]",
-        "layout"
+      const DataCourse = {
+        isPublished: false,
+      };
+      const updatedCourse = await Courses.findByIdAndUpdate(
+        courseId,
+        DataCourse,
+        {
+          new: false,
+        }
       );
-      //teacher/courses/666732a55e368059a32d05e0
-      console.log("Path revalidated 1");
-    } catch (err) {
-      console.error("Error revalidating path:", err);
-
-      // return res.status(500).json({ message: 'Error revalidating path' });
     }
+    revalidatePath(
+      "/(dashbroard)/(routes)/teacher/courses/[courseId]",
+      "layout"
+    );
     return JSON.parse(JSON.stringify(chapterDeleted));
   } catch (error) {
     console.log("An error in Delete Chapter out", error);
@@ -75,6 +69,7 @@ export async function deleteChapter2(
   }
 }
 
+// pass
 export async function getChapterHasEndPosition(courseId: string) {
   try {
     await connectToDatabase();
@@ -110,7 +105,6 @@ export async function deleteChapter(chapterId: string, courseId: string) {
   } finally {
   }
 }
-
 
 export async function getAllChapterByCourseId(courseId: string) {
   try {
@@ -188,7 +182,6 @@ export async function getChapterById(_id: string) {
     await connectToDatabase();
 
     const chapter = await Chapters.findById(_id);
-  
 
     return JSON.parse(JSON.stringify(chapter));
   } catch (error) {
@@ -212,6 +205,8 @@ type UpdateChapterParams = {
   chapterId: string;
   userId: string;
 };
+
+//pass
 export async function updateChapter({
   chapter,
   userId,
@@ -235,7 +230,7 @@ export async function updateChapter({
     );
 
     // revalidatePath(path);
-    revalidatePath(`/teacher/courses/${chapter.courseId}`);
+    // revalidatePath(`/teacher/courses/${chapter.courseId}`);
     return JSON.parse(JSON.stringify(updatedChapter));
   } catch (error) {
     // handleError(error)

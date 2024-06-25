@@ -18,6 +18,9 @@ import {
   getMuxdataByChapterId,
 } from "@/lib/actions/muxdata.action";
 import Mux from "@mux/mux-node";
+import Courses from "@/lib/database/models/courses.model";
+import { connectToDatabase } from "@/lib/database/mongoose";
+import Chapters from "@/lib/database/models/chapters.model";
 
 const mux = new Mux({
   tokenId: process.env.MUX_TOKEN_ID!,
@@ -40,17 +43,15 @@ export async function PATCH(
       });
     }
 
-    const course = await getCoursById(courseId);
-    if (!course) {
-      return new NextResponse("UnAuthention in Update Chapter", {
-        status: 401,
-      });
+    await connectToDatabase();
+    const courseToUpdate = await Courses.findById(courseId);
+    if (!courseToUpdate || courseToUpdate?.userId !== userId) {
+      throw new Error("Unauthorized or Course not found");
     }
 
     const Muxdata = await getMuxdataByChapterId(chapterId);
-    const chapter = await getChapterById(chapterId);
-    console.log("cnalsknclasnclasnclsaklcb",chapter)
-    console.log("sklasa", isPublished);
+    const chapter  = await Chapters.findById(chapterId);
+
     if ( isPublished && 
      ( !chapter ||
       !Muxdata ||
@@ -68,13 +69,15 @@ export async function PATCH(
       isPublished: isPublished,
     };
 
-    const chapterUpdated = await updateChapter({
-      chapter: DataChapter,
-      userId,
+    const updatedChapter = await Chapters.findByIdAndUpdate(
       chapterId,
-    });
+      DataChapter,
+      {
+        new: false,
+      }
+    );
 
-    return NextResponse.json(chapterUpdated);
+    return NextResponse.json(updatedChapter);
   } catch (error) {
     console.log("erorr in Update chapter", error);
     return new NextResponse("Inter Error", { status: 500 });

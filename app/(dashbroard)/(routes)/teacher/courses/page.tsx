@@ -3,7 +3,7 @@ import Link from "next/link";
 import React from "react";
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
-import { ActionGetAllChapterByUserId } from "@/lib/actions/courses.action";
+import { ActionGetAllCoursesByUserId } from "@/lib/actions/courses.action";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
@@ -15,7 +15,7 @@ const CoursesPage = async () => {
     return null;
   }
   
-  const ArrayCourse = await ActionGetAllChapterByUserId(userId);
+  const ArrayCourse = await ActionGetAllCoursesByUserId(userId);
   if (!ArrayCourse) {
     redirect("/");
     return null;

@@ -31,7 +31,7 @@ const formSchema = z.object({
 });
 
 interface ImageFromProps {
-  initialData: { title: string; description: string; imageUrl: string };
+  initialData: { imageUrl: string };
   courseId: string;
 }
 

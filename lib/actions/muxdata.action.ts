@@ -62,7 +62,9 @@ export async function deleteMuxdataByChapterId(chapterId: string) {
     return deletedUser ? JSON.parse(JSON.stringify(deletedUser)) : null;
   } catch (error) {
     //handleError(error);
+    
     console.log(" An error in action Delete a Muxda", error);
+    return null;
   }
 }
 // GET ONE

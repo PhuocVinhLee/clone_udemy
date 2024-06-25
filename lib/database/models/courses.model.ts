@@ -22,10 +22,10 @@ const CoursesSchema = new Schema({
     type: Boolean,
     default: true,
   },
-  categoryId: {
-    type: String,
-  },
-  // categoryId: { type: Schema.Types.ObjectId, ref: 'Categorys' },
+  // categoryId: {
+  //   type: String,
+  // }, 
+  categoryId: { type: Schema.Types.ObjectId, ref: 'Categorys' },
   // createdAt: { type: Date, default: Date.now },
   // updatedAt: { type: Date, default: Date.now }
 });

@@ -4,22 +4,46 @@ import { revalidatePath } from "next/cache";
 
 import Categorys from "../database/models/categorys.model";
 import { connectToDatabase } from "../database/mongoose";
+import Chapters from "../database/models/chapters.model";
+import UserProgress from "../database/models/userProgress.model";
 //import { handleError } from "../utils";
 
-export async function getAllCategory() {
+export async function getProgress(courseId: string, userId: string) {
   try {
     await connectToDatabase();
 
-    const allCategory = await Categorys.find({}); // { userId: 1233; title: test;}
-    console.log(allCategory);
+    const PublishedChapters = await Chapters.find({
+      courseId,
+      isPublished: true,
+      userId,
+    }).select("_id");
+    console.log("PublishedChapters", PublishedChapters);
 
-    return JSON.parse(JSON.stringify(allCategory));
+    const PublishedChaptersId = PublishedChapters.map((chapterId) => {
+      // arr
+      return chapterId._id;
+    });
+
+    const vaildCompleteChapters = await UserProgress.countDocuments({
+      userId: userId,
+      isCompleted: true,
+      chapterId: { $in: PublishedChaptersId },
+    });
+
+    const progressPercentage =
+      (vaildCompleteChapters / PublishedChaptersId.length) * 100;
+
+    return progressPercentage;
   } catch (error) {
     //handleError(error);
 
-    console.log(" An error in action get all Category ne;", error);
+    console.log(" An error in action get all Category", error);
   }
 }
+
+
+
+
 export async function createCategory(category: {
   userId: string;
   title: string;

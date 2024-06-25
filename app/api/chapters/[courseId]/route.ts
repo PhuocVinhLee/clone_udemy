@@ -4,8 +4,11 @@ import {
   createChapter,
   getAllChapterByCourseId,
   updateArrayChapter,
-  getChapterHasEndPosition
+  getChapterHasEndPosition,
 } from "@/lib/actions/chapter.action";
+import { connectToDatabase } from "@/lib/database/mongoose";
+import Chapters from "@/lib/database/models/chapters.model";
+import Courses from "@/lib/database/models/courses.model";
 
 export async function POST(
   req: Request,
@@ -19,26 +22,36 @@ export async function POST(
       return new NextResponse("Anauthorrided Error", { status: 401 });
     }
 
-    //const allChapters: any[] = await getAllChapterByCourseId(courseId);
-    //Product.findOne().sort({ best: -1 }).exec()
-    const chapterEndPosition = await getChapterHasEndPosition(courseId);
-
-    const position = chapterEndPosition ? chapterEndPosition.position  + 1: 1;
-
-    const chapter = await createChapter({
+    await connectToDatabase();
+    const courseToUpdate = await Courses.findById(courseId);
+    if (!courseToUpdate || courseToUpdate?.userId !== userId) {
+      throw new Error("Unauthorized or Course not found");
+    }
+    
+    const chapterEndPosition = await Chapters.findOne({ courseId: courseId })
+      .sort({ position: -1 })
+      .exec();
+    const position = chapterEndPosition ? chapterEndPosition.position + 1 : 1;
+    const chapterData = {
       courseId,
       title,
       position,
-    });
-    return NextResponse.json(chapter);
+    };
+
+    const newChapter = await Chapters.create(chapterData); // { userId: 1233; title: test;}
+
+    return NextResponse.json(newChapter);
   } catch (error) {
     console.log(error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
-export async function PUT(req: Request, { params }: { params: { courseId: string } }) {
+export async function PUT(
+  req: Request,
+  { params }: { params: { courseId: string } }
+) {
   try {
-    const { userId } =  auth();
+    const { userId } = auth();
     const { courseId } = params;
     const { arrayChapter } = await req.json();
     if (!userId) {
