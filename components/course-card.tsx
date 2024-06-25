@@ -10,9 +10,9 @@ interface CourseCardProps {
   title: string;
   imageUrl: string;
   price: number;
-  category?: string | null;
-  progress: number | null;
-  chaptersLength: number | null;
+  category?: string ;
+  progress: number ;
+  chaptersLength: number ;
 }
 
 const CourseCard = ({

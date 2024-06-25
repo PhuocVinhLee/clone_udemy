@@ -4,14 +4,14 @@ import CourseCard from "./course-card";
 type CoursesWithProgressWithCategory = {
   _id: string;
   courseId: string;
-  title: string | null;
-  description: string | null;
-  imageUrl: string | null;
-  price: number | null;
-  isPublished: boolean | null;
-  category: { name: string; _id: string } | null;
-  progress: number | null;
-  chapters: { _id: string }[] | null;
+  title: string ;
+  description: string;
+  imageUrl: string;
+  price: number ;
+  isPublished: boolean ;
+  category: { name: string; _id: string } ;
+  progress: number ;
+  chapters: { _id: string }[] 
 };
 
 interface CoursesListProps {
