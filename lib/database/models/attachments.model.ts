@@ -1,5 +1,15 @@
-import { Schema, model, models } from "mongoose";
+import { Schema, model, models,Document } from "mongoose";
 
+
+export interface AttackmentType extends Document {
+  _id: string;
+  name: string;
+  url: string;
+  courseId: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  
+}
 
 const AttackmentSchema = new Schema({
   name: {

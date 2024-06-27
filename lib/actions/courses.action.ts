@@ -19,7 +19,26 @@ const mux = new Mux({
 });
 
 
-export const   getCourseWithChaptersAndUserProgres = async (userId: string, courseId: string) =>{
+export async function getCourseWithChapters(courseId: string) {
+  const course = await Courses.aggregate([
+    { $match: { _id: new mongoose.Types.ObjectId(courseId) } },
+    {
+      $lookup: {
+        from: 'chapters',
+        let: { courseId: '$_id' },
+        pipeline: [
+          { $match: { $expr: { $and: [{ $eq: ['$courseId', '$$courseId'] }, { $eq: ['$isPublished', true] }] } } },
+          { $sort: { position: 1 } }, // Sort chapters by position in ascending order
+        ],
+        as: 'chapters'
+      }
+    }
+  ]);
+
+  return JSON.parse(JSON.stringify(course[0]));
+}
+
+export const  getCourseWithChaptersAndUserProgres = async (userId: string, courseId: string) =>{
   await connectToDatabase();
     
     const user = await getUserById(userId);  

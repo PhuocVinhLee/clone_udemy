@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import Chapters from "../database/models/chapters.model";
+import Chapters, { ChapterType } from "../database/models/chapters.model";
 import Courses from "../database/models/courses.model";
 import { connectToDatabase } from "../database/mongoose";
 import { updateCourse } from "./courses.action";
@@ -10,11 +10,109 @@ import { deleteMuxdta } from "./muxdata.action";
 //import { handleError } from "../utils";
 import Mux from "@mux/mux-node";
 import { NextResponse } from "next/server";
+import Purchase from "../database/models/purchase.model";
+import mongoose from "mongoose";
+import Acttachments, {
+  AttackmentType,
+} from "../database/models/attachments.model";
+import Muxdata from "../database/models/muxdata.model";
+import UserProgress from "../database/models/userProgress.model";
+import { getUserById } from "./user.actions";
 
 const mux = new Mux({
   tokenId: process.env.MUX_TOKEN_ID!,
   tokenSecret: process.env.MUX_TOKEN_SECRET!,
 });
+
+interface GetChapterProps {
+  userId: string;
+  courseId: string;
+  chapterId: string;
+}
+
+export async function ActionGetChapter({
+  userId,
+  courseId,
+  chapterId,
+}: GetChapterProps) {
+  try {
+    console.log("start action");
+    await connectToDatabase();
+
+    const user = await getUserById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const purchase = await Purchase.findOne({
+      userId: new mongoose.Types.ObjectId(user._id),
+      courseId: new mongoose.Types.ObjectId(courseId),
+    });
+
+    const course = await Courses.findOne(
+      { _id: new mongoose.Types.ObjectId(courseId), isPublished: true },
+      { price: 1, _id: 0 } // Select only the price field, exclude _id
+    ).exec();
+    console.log("course in action", course);
+
+    const chapter = await Chapters.findOne({
+      _id: new mongoose.Types.ObjectId(chapterId),
+      isPublished: true,
+    }).exec();
+
+    console.log("chapter in action", chapter);
+
+    if (!chapter || !course) {
+      throw new Error("Chapter or course not found!");
+    }
+    let muxData = null;
+    let attachments: AttackmentType[] = [];
+    let nextChapter: ChapterType | null = null;
+
+    if (purchase) {
+      attachments = await Acttachments.find({
+        courseId: courseId,
+      }).exec();
+    }
+
+    if (chapter?.isFree || purchase) {
+      muxData = await Muxdata.findOne({ chapterId: chapterId });
+
+      nextChapter = await Chapters.findOne({
+        courseId: new mongoose.Types.ObjectId(courseId),
+        isPublished: true,
+        position: { $gt: chapter.position },
+      })
+        .sort({ position: 1 })
+        .exec();
+    }
+    const userProgress = await UserProgress.findOne({
+      userId: new mongoose.Types.ObjectId(user._id),
+      chapterId: new mongoose.Types.ObjectId(chapterId),
+    }).exec();
+
+    return {
+      chapter,
+      course,
+      muxData,
+      attachments,
+      nextChapter,
+      userProgress,
+      purchase,
+    };
+  } catch (error) {
+    console.log("An erorr in Action get chapter", error);
+    return {
+      chapter: null,
+      course: null,
+      muxData: null,
+      attachments: null,
+      nextChapter: null,
+      userProgress: null,
+      purchase: null,
+    };
+  }
+}
 
 export async function deleteChapter2(
   userId: string,
