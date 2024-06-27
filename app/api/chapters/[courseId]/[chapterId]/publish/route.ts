@@ -21,6 +21,7 @@ import Mux from "@mux/mux-node";
 import Courses from "@/lib/database/models/courses.model";
 import { connectToDatabase } from "@/lib/database/mongoose";
 import Chapters from "@/lib/database/models/chapters.model";
+import { getUserById } from "@/lib/actions/user.actions";
 
 const mux = new Mux({
   tokenId: process.env.MUX_TOKEN_ID!,
@@ -44,8 +45,14 @@ export async function PATCH(
     }
 
     await connectToDatabase();
+    const user = await getUserById(userId);
+    if (!user) {
+      return new NextResponse("User not found", { status: 401 });
+    }
+
     const courseToUpdate = await Courses.findById(courseId);
-    if (!courseToUpdate || courseToUpdate?.userId !== userId) {
+
+    if (!courseToUpdate || courseToUpdate?.userId.toHexString() !== user._id) {
       throw new Error("Unauthorized or Course not found");
     }
 

@@ -10,7 +10,7 @@ type CoursesWithProgressWithCategory = {
   price: number ;
   isPublished: boolean ;
   category: { name: string; _id: string } ;
-  progress: number ;
+  progress: number| null ;
   chapters: { _id: string }[] 
 };
 

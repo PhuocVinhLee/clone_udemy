@@ -10,11 +10,53 @@ import { deleteChapter, getAllChapterByCourseId } from "./chapter.action";
 import { deleteMuxdataByChapterId } from "./muxdata.action";
 import mongoose, { Schema } from "mongoose";
 import { getProgress } from "./userprogress.action";
+import User from "../database/models/user.model";
+import { getUserById } from "./user.actions";
 
 const mux = new Mux({
   tokenId: process.env.MUX_TOKEN_ID!,
   tokenSecret: process.env.MUX_TOKEN_SECRET!,
 });
+
+
+export const   getCourseWithChaptersAndUserProgres = async (userId: string, courseId: string) =>{
+  await connectToDatabase();
+    
+    const user = await getUserById(userId);  
+    if (!user) {
+      throw new Error("User not found");
+      return [];
+    }
+
+  const course = await Courses.aggregate([
+    { $match: { _id: new mongoose.Types.ObjectId(courseId) } },
+    {
+      $lookup: {
+        from: 'chapters',
+        let: { courseId: '$_id' },
+        pipeline: [
+          { $match: { $expr: { $and: [{ $eq: ['$courseId', '$$courseId'] }, { $eq: ['$isPublished', true] }] } } },
+          { $sort: { position: 1 } },
+          {
+            $lookup: {
+              from: 'userprogress',
+              let: { chapterId: '$_id' },
+              pipeline: [
+                { $match: { $expr: { $and: [{ $eq: ['$chapterId', '$$chapterId'] }, { $eq: ['$userId', new mongoose.Types.ObjectId(user._id)] }] } } }
+              ],
+              as: 'userProgress'
+            }
+          },
+          { $unwind: { path: '$userProgress', preserveNullAndEmptyArrays: true } }
+        ],
+        as: 'chapters'
+      }
+    }
+  ]);
+  return JSON.parse(JSON.stringify(course[0]));
+
+  //return course[0];
+}
 
 type ActionGetAllCoursesRefProgressRefCategoryParams = {
   _id: string;
@@ -43,38 +85,38 @@ export const ActionGetAllCoursesRefProgressRefCategory = async ({
 > => {
   try {
     await connectToDatabase();
+    
     console.log(categoryId, title, userId);
+    const user = await getUserById(userId);  
+    if (!user) {
+      throw new Error("User not found");
+      return [];
+    }
 
+//...(categoryId && { categoryId: new  mongoose.Types.ObjectId(categoryId) }),
     const query = {
-      ...(title && { title: { $regex: title, $options: "i" } }),
+    ...(title && { title: { $regex: title, $options: "i" } }),
       isPublished: true,
       ...(categoryId && { categoryId: new  mongoose.Types.ObjectId(categoryId) }),
+      
     };
 
     const coursesWithDetails = await Courses.aggregate([
       { $match: query },
       {
         $lookup: {
-          from: "chapters",
-          let: { courseId: "$_id" },
+          from: 'chapters',
+          let: { courseId: '$_id' },
           pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ["$courseId", "$$courseId"] },
-                    { $eq: ["$isPrivate", true] },
-                  ],
-                },
-              },
-            },
+            { $match: { $expr: { $and: [{ $eq: ['$courseId', '$$courseId'] }, { $eq: ['$isPublished', true] }] } } },
+            { $project: { _id: 1 } }// only _id
           ],
-          as: "chapters",
+          as: 'chapters',
         },
       },
       {
         $lookup: {
-          from: "categories",
+          from: "categorys",
           localField: "categoryId",
           foreignField: "_id",
           as: "category",
@@ -83,8 +125,8 @@ export const ActionGetAllCoursesRefProgressRefCategory = async ({
       { $unwind: "$category" },
       {
         $lookup: {
-          from: "purchases",
-          let: { courseId: "$_id", userId: new  mongoose.Types.ObjectId(userId) },
+          from: "purchase",
+          let: { courseId: "$_id", userId: (user._id) },
           pipeline: [
             {
               $match: {
@@ -110,29 +152,31 @@ export const ActionGetAllCoursesRefProgressRefCategory = async ({
         $sort: { createdAt: -1 },
       },
     ]);
-    console.log("coursesWithDetails",coursesWithDetails)
-
+   console.log("coursesWithDetails",coursesWithDetails)
     const courseWithProgress: ActionGetAllCoursesRefProgressRefCategoryParams[] =
       await Promise.all(
         coursesWithDetails.map(async (course) => {
-          if (course.purchase.length === 0) {
+          if (!course?.purchase?.length) {
             return {
               ...course,
-              process: 0,
+              progress: null,
             };
           }
+         
 
-          const progressPercentage = await getProgress(userId, course._id);
-          return {
-            ...course,
-            process: progressPercentage,
-          };
+          // const progressPercentage = await getProgress(userId, course._id);
+          // return {
+          //   ...course,
+          //   progress: progressPercentage,
+          // };
         })
       );
 
       console.log("courseWithProgress",courseWithProgress)
 
-    return courseWithProgress;
+      
+    //return courseWithProgress;
+    return JSON.parse(JSON.stringify(courseWithProgress));
   } catch (error) {
     //handleError(error);
 
@@ -145,7 +189,12 @@ export async function ActionGetAllCoursesByUserId(userId: string) {
   try {
     await connectToDatabase();
 
-    const courses = await Courses.find({ userId }).sort({ createdAt: -1 });
+    const user = await getUserById(userId); 
+    if (!user) {
+   throw new Error("User not found");
+    }
+
+    const courses = await Courses.find({ userId: user._id }).sort({ createdAt: -1 });
 
     return JSON.parse(JSON.stringify(courses));
   } catch (error) {

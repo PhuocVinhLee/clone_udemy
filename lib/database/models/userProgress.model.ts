@@ -1,13 +1,18 @@
-import { Schema, model, models } from "mongoose";
+import { Schema, model, models ,Document} from "mongoose";
 
-
+export interface UserProgressType extends Document {
+  _id: string;
+  userId: string;
+  chapterId: string;
+  isCompleted: boolean;
+ 
+  createdAt?: Date;
+  updatedAt?: Date;
+  
+}
 const UserProgressSchema = new Schema({
-  userId: {
-    type: String,
-  },
-  chapterId: {
-    type: String,
-  },
+  userId: { type: Schema.Types.ObjectId, ref: "User" },
+  chapterId:{ type: Schema.Types.ObjectId, ref: "Chapters" },
   isCompleted: {
     type: Boolean,
     default: false

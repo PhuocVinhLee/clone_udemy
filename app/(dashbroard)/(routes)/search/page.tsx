@@ -27,7 +27,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
         <SearchInput></SearchInput>
       </div>
 
-      <div className="p-6">
+      <div className="p-6 space-y-4">
 
         <Categories items={ArrCategories}></Categories>
 

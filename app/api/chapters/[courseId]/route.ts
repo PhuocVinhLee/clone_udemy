@@ -9,6 +9,7 @@ import {
 import { connectToDatabase } from "@/lib/database/mongoose";
 import Chapters from "@/lib/database/models/chapters.model";
 import Courses from "@/lib/database/models/courses.model";
+import { getUserById } from "@/lib/actions/user.actions";
 
 export async function POST(
   req: Request,
@@ -23,8 +24,14 @@ export async function POST(
     }
 
     await connectToDatabase();
+    const user = await getUserById(userId); 
+    if (!user) {
+      return new NextResponse("User not found", { status: 401 });
+    }
+
     const courseToUpdate = await Courses.findById(courseId);
-    if (!courseToUpdate || courseToUpdate?.userId !== userId) {
+
+    if (!courseToUpdate || courseToUpdate?.userId.toHexString() !== user._id) {
       throw new Error("Unauthorized or Course not found");
     }
     

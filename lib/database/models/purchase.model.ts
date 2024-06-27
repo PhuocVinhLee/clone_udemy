@@ -2,9 +2,7 @@ import { Schema, model, models } from "mongoose";
 
 
 const PurchaseSchema = new Schema({
-  userId: {
-    type: String,
-  },
+  userId: { type: Schema.Types.ObjectId, ref: "User" },
   courseId:{ type: Schema.Types.ObjectId, ref: 'Courses' },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }

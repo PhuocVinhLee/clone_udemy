@@ -17,6 +17,8 @@ import {
   deleteMuxdta,
   getMuxdataByChapterId,
 } from "@/lib/actions/muxdata.action";
+import { getUserById } from "@/lib/actions/user.actions";
+import Courses from "@/lib/database/models/courses.model";
 
 export async function PATCH(
   req: Request,
@@ -34,13 +36,17 @@ export async function PATCH(
       });
     }
 
-    const course = await getCoursById(courseId);
-    if (!course) {
-      return new NextResponse("UnAuthention in Update Chapter", {
-        status: 401,
-      });
+  
+    const user = await getUserById(userId);
+    if (!user) {
+      return new NextResponse("User not found", { status: 401 });
     }
-    console.log("csacasc", course);
+
+    const course = await Courses.findById(courseId);
+
+    if (!course || course?.userId.toHexString() !== user._id) {
+      throw new Error("Unauthorized or Course not found");
+    }
 
     const chapterArray = await getAllChapterByCourseId(courseId);
     console.log("chapterArray", chapterArray);
@@ -61,16 +67,17 @@ export async function PATCH(
     }
 
     const DataCourse = {
-      courseId: params.courseId,
       isPublished: isPublished,
     };
+    const updatedCourse = await Courses.findByIdAndUpdate(
+      course._id,
+      DataCourse,
+      {
+        new: false,
+      }
+    );
 
-    const chapterUpdated = await updateCourse({
-      course: DataCourse,
-      userId,
-    });
-
-    return NextResponse.json(chapterUpdated);
+    return NextResponse.json(updatedCourse);
   } catch (error) {
     console.log("erorr in Update chapter", error);
     return new NextResponse("Inter Error", { status: 500 });

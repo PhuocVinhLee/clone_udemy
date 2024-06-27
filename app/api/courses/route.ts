@@ -4,6 +4,8 @@ import { NextResponse } from "next/server";
 
 import { connectToDatabase } from "@/lib/database/mongoose";
 import Courses from "@/lib/database/models/courses.model";
+import User from "@/lib/database/models/user.model";
+import { getUserById } from "@/lib/actions/user.actions";
 
 export async function POST(req: Request) {
   try {
@@ -14,7 +16,12 @@ export async function POST(req: Request) {
       return new NextResponse("Anauthorrided Error", { status: 401 });
     }
     await connectToDatabase();
-    const newCourses = await Courses.create({ title, userId }); // { userId: 1233; title: test;}
+    const user = await getUserById(userId);
+    if (!user) {
+      return new NextResponse("User not found", { status: 401 });
+    }
+   
+    const newCourses = await Courses.create({ title, userId: user._id }); // { userId: 1233; title: test;}
     return NextResponse.json(newCourses);
   } catch (error) {
     console.log(error);

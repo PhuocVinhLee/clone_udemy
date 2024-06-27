@@ -10,9 +10,9 @@ interface CourseCardProps {
   title: string;
   imageUrl: string;
   price: number;
-  category?: string ;
-  progress: number ;
-  chaptersLength: number ;
+  category?: string;
+  progress: number |null;
+  chaptersLength: number;
 }
 
 const CourseCard = ({
@@ -24,7 +24,9 @@ const CourseCard = ({
   progress,
   chaptersLength,
 }: CourseCardProps) => {
+  console.log("pro", progress)
   return (
+    
     <Link href={`/courses/${_id}`}>
       <div className=" group  hover:shadow-sm transition overflow-hidden border rounded-lg p-3 h-full">
         <div className=" relative aspect-video w-full rounded-md  overflow-hidden">
@@ -47,7 +49,7 @@ const CourseCard = ({
               <span>{chaptersLength} Chapters</span>
             </div>
           </div>
-
+  
           {progress !== null ? (
             <div>Todo: Progress component</div>
           ) : (

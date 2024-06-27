@@ -6,16 +6,23 @@ import Categorys from "../database/models/categorys.model";
 import { connectToDatabase } from "../database/mongoose";
 import Chapters from "../database/models/chapters.model";
 import UserProgress from "../database/models/userProgress.model";
+import { getUserById } from "./user.actions";
 //import { handleError } from "../utils";
 
 export async function getProgress(courseId: string, userId: string) {
   try {
     await connectToDatabase();
+    const user = await getUserById(userId);  
+    if (!user) {
+      throw new Error("User not found");
+      return 0;
+    }
+
 
     const PublishedChapters = await Chapters.find({
       courseId,
       isPublished: true,
-      userId,
+      userId: user._id,
     }).select("_id");
     console.log("PublishedChapters", PublishedChapters);
 
@@ -25,7 +32,7 @@ export async function getProgress(courseId: string, userId: string) {
     });
 
     const vaildCompleteChapters = await UserProgress.countDocuments({
-      userId: userId,
+      userId: user._id,
       isCompleted: true,
       chapterId: { $in: PublishedChaptersId },
     });
@@ -33,11 +40,14 @@ export async function getProgress(courseId: string, userId: string) {
     const progressPercentage =
       (vaildCompleteChapters / PublishedChaptersId.length) * 100;
 
+    if(!progressPercentage) return 0;
     return progressPercentage;
   } catch (error) {
+   
     //handleError(error);
 
     console.log(" An error in action get all Category", error);
+    return 0;
   }
 }
 

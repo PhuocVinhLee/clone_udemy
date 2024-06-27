@@ -1,5 +1,17 @@
-import { Schema, model, models } from "mongoose";
+import { Schema, model,Document, models } from "mongoose";
 
+export interface ChapterType extends Document {
+  _id: string;
+  title: string;
+  description: string;
+  videoUrl: string;
+  position: number;
+  isPublished: boolean;
+  isFree: boolean;
+  courseId: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
 const ChaptersSchema = new Schema({
 
