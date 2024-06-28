@@ -5,6 +5,11 @@ import { redirect } from "next/navigation";
 import React from "react";
 import VideoPlayer from "./_components/video-player";
 
+import CourseEnrollButton from "./_components/course-enroll-button";
+import { Separator } from "@/components/ui/separator";
+import { Review } from "@/components/review";
+import { File } from "lucide-react";
+
 const ChpaterIdPage = async ({
   params,
 }: {
@@ -56,11 +61,47 @@ const ChpaterIdPage = async ({
           chapterId={params.chapterId}
           title={chapter.title}
           courseId={params.courseId}
-          nextChapterId={nextChapter?._id ? nextChapter?._id : null} 
+          nextChapterId={nextChapter?._id ? nextChapter?._id : null}
           playbackId={muxData?.playbackId}
           isLocked={isLocked}
           completedOnEnd={completedOnEnd}
         ></VideoPlayer>
+      </div>
+
+      <div>
+        <div className="p-4 flex flex-col md:flex-row items-center justify-between">
+          <h2 className="text-2xl font-semibold mb-2">{chapter.title}</h2>
+          {purchase ? (
+            <div></div>
+          ) : (
+            <CourseEnrollButton
+              courseId={params.courseId}
+              price={course.price}
+            />
+          )}
+        </div>
+
+        <Separator />
+        <div>
+          <Review value={chapter.description!}></Review>
+        </div>
+
+        {!!attachments?.length && (
+          <>
+            <Separator></Separator>
+            <div className="p-4">
+              {attachments.map((attachment)=>(
+                <a href={attachment.url} target="_blank" key={attachment._id} className="flex items-center p-3 w-full
+                 bg-sky-200 text-sky-700 border rounded-md hover:underline" >
+                  
+                 <File></File>
+                  <p className=" line-clamp-1">{attachment.name}</p>
+                </a>
+
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
