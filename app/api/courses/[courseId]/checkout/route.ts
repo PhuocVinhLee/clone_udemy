@@ -5,7 +5,6 @@ import Purchase from "@/lib/database/models/purchase.model";
 import StripeCustomer from "@/lib/database/models/stripCustomer.model";
 import { currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { use } from "react";
 import Stripe from "stripe";
 
 export async function POST(
@@ -69,12 +68,12 @@ export async function POST(
     const session = await stripe.checkout.sessions.create({
         line_items,
         metadata: {
-          courseId: course._id,
-          userId: userFromDataBase._id
+          courseId: course._id?.toString(),
+          userId: userFromDataBase?._id.toString()
         },
         mode: 'payment',
-        success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/courses/${course._id}?success=1`,
-        cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/courses/${course._id}?canceled=1`,
+        success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/courses/${course._id?.toString()}?success=1`,
+        cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/courses/${course._id?.toString()}?canceled=1`,
       })
       return  NextResponse.json({url: session.url})
 

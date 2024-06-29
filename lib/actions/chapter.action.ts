@@ -91,6 +91,8 @@ export async function ActionGetChapter({
       chapterId: new mongoose.Types.ObjectId(chapterId),
     }).exec();
 
+    nextChapter =  JSON.parse(JSON.stringify(nextChapter));
+    
     return {
       chapter,
       course,
