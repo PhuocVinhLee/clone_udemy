@@ -115,6 +115,7 @@ export async function PATCH(
     if (!courseToUpdate || courseToUpdate?.userId.toHexString() !== user._id) {
       throw new Error("Unauthorized or Course not found");
     }
+    console.log("1")
     
     const DataChapter = {
       courseId: courseId,
@@ -127,7 +128,7 @@ export async function PATCH(
     };
     if (DataChapter.videoUrl) {
       const MuxDeleted = await deleteMuxdataByChapterId(chapterId);
-
+console.log("2")
       if (MuxDeleted) {
         await mux.video.assets.delete(MuxDeleted.assertId);
       }
@@ -155,7 +156,7 @@ export async function PATCH(
 
     return NextResponse.json(updatedChapter);
   } catch (error) {
-    console.log("erorr in Update chapter", error);
+    console.log("erorr in Update chapter :", error);
     return new NextResponse("Inter Error", { status: 500 });
   }
 }

@@ -14,7 +14,7 @@ interface VideoPlayerProps {
   completedOnEnd: boolean;
   title: string;
 }
-const videoPlayer = ({
+const VideoPlayer = ({
   playbackId,
   courseId,
   chapterId,
@@ -24,6 +24,7 @@ const videoPlayer = ({
   title,
 }: VideoPlayerProps) => {
     const [isReady, setIsReady] = useState(false);
+
   return (
     <div className=" relative aspect-video">
       {!isLocked && (
@@ -53,4 +54,4 @@ const videoPlayer = ({
   );
 };
 
-export default videoPlayer;
+export default VideoPlayer;
