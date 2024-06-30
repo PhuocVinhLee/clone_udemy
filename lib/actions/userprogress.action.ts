@@ -12,17 +12,16 @@ import { getUserById } from "./user.actions";
 export async function getProgress(courseId: string, userId: string) {
   try {
     await connectToDatabase();
-    const user = await getUserById(userId);  
+    const user = await getUserById(userId);
     if (!user) {
-      throw new Error("User not found");
+      throw new Error("User not found nek");
       return 0;
     }
-
 
     const PublishedChapters = await Chapters.find({
       courseId,
       isPublished: true,
-      userId: user._id,
+      // userId: user._id,
     }).select("_id");
     console.log("PublishedChapters", PublishedChapters);
 
@@ -37,22 +36,20 @@ export async function getProgress(courseId: string, userId: string) {
       chapterId: { $in: PublishedChaptersId },
     });
 
+    console.log("vaildCompleteChapters\n", vaildCompleteChapters);
     const progressPercentage =
       (vaildCompleteChapters / PublishedChaptersId.length) * 100;
+    console.log("progressPercentage\n", progressPercentage);
 
-    if(!progressPercentage) return 0;
+    if (!progressPercentage) return 0;
     return progressPercentage;
   } catch (error) {
-   
     //handleError(error);
 
-    console.log(" An error in action get all Category", error);
+    console.log(" An error in action getProgress ", error);
     return 0;
   }
 }
-
-
-
 
 export async function createCategory(category: {
   userId: string;

@@ -25,12 +25,15 @@ export async function POST(request: Request) {
 
   // CREATE
   if (eventType === "checkout.session.completed") {
-    const { id, amount_total, metadata } = event.data.object;
+   // const { id, amount_total, metadata } = event.data.object;
 
     const session = event.data.object as Stripe.Checkout.Session;
     const userId = session?.metadata?.userId;
     const courseId = session?.metadata?.courseId;
+    
+    console.log ( "userId and courseId",userId + " " + courseId)
     if (!userId || !courseId) {
+      
       return new NextResponse(`Wedhook Error: Missing metadata`, {
         status: 400,
       });

@@ -18,76 +18,124 @@ const mux = new Mux({
   tokenSecret: process.env.MUX_TOKEN_SECRET!,
 });
 
+// type DashboarhCourses{
+
+// }
+export const   getDashboarhCourses = (userId: string)  =>{
+  
+}
 
 export async function getCourseWithChapters(courseId: string) {
   const course = await Courses.aggregate([
     { $match: { _id: new mongoose.Types.ObjectId(courseId) } },
     {
       $lookup: {
-        from: 'chapters',
-        let: { courseId: '$_id' },
+        from: "chapters",
+        let: { courseId: "$_id" },
         pipeline: [
-          { $match: { $expr: { $and: [{ $eq: ['$courseId', '$$courseId'] }, { $eq: ['$isPublished', true] }] } } },
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$courseId", "$$courseId"] },
+                  { $eq: ["$isPublished", true] },
+                ],
+              },
+            },
+          },
           { $sort: { position: 1 } }, // Sort chapters by position in ascending order
         ],
-        as: 'chapters'
-      }
-    }
+        as: "chapters",
+      },
+    },
   ]);
 
   return JSON.parse(JSON.stringify(course[0]));
 }
 
-export const  getCourseWithChaptersAndUserProgres = async (userId: string, courseId: string) =>{
+export const getCourseWithChaptersAndUserProgres = async (
+  userId: string,
+  courseId: string
+) => {
   await connectToDatabase();
-    
-    const user = await getUserById(userId);  
-    if (!user) {
-      throw new Error("User not found");
-      return [];
-    }
+
+  const user = await getUserById(userId);
+  if (!user) {
+    throw new Error("User not found");
+    return [];
+  }
 
   const course = await Courses.aggregate([
     { $match: { _id: new mongoose.Types.ObjectId(courseId) } },
     {
       $lookup: {
-        from: 'chapters',
-        let: { courseId: '$_id' },
+        from: "chapters",
+        let: { courseId: "$_id" },
         pipeline: [
-          { $match: { $expr: { $and: [{ $eq: ['$courseId', '$$courseId'] }, { $eq: ['$isPublished', true] }] } } },
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$courseId", "$$courseId"] },
+                  { $eq: ["$isPublished", true] },
+                ],
+              },
+            },
+          },
           { $sort: { position: 1 } },
           {
             $lookup: {
-              from: 'userprogress',
-              let: { chapterId: '$_id' },
+              from: "userprogresses",
+              let: { chapterId: "$_id" },
               pipeline: [
-                { $match: { $expr: { $and: [{ $eq: ['$chapterId', '$$chapterId'] }, { $eq: ['$userId', new mongoose.Types.ObjectId(user._id)] }] } } }
+                {
+                  $match: {
+                    $expr: {
+                      $and: [
+                        { $eq: ["$chapterId", "$$chapterId"] },
+                        {
+                          $eq: [
+                            "$userId",
+                            new mongoose.Types.ObjectId(user._id),
+                          ],
+                        },
+                      ],
+                    },
+                  },
+                },
               ],
-              as: 'userProgress'
-            }
+              as: "userProgress",
+            },
           },
-          { $unwind: { path: '$userProgress', preserveNullAndEmptyArrays: true } }
+          {
+            $unwind: {
+              path: "$userProgress",
+              preserveNullAndEmptyArrays: true,
+            },
+          },
         ],
-        as: 'chapters'
-      }
-    }
+        as: "chapters",
+      },
+    },
   ]);
+
+  console.log("course in actio nen",course[0].chapters)
   return JSON.parse(JSON.stringify(course[0]));
 
   //return course[0];
-}
+};
 
 type ActionGetAllCoursesRefProgressRefCategoryParams = {
   _id: string;
   courseId: string;
-  title: string ;
-  description: string ;
-  imageUrl: string ;
-  price: number ;
-  isPublished: boolean ;
-  category: { name: string; _id: string } ;
-  progress: number ;
-  chapters: { _id: string }[] ;
+  title: string;
+  description: string;
+  imageUrl: string;
+  price: number;
+  isPublished: boolean;
+  category: { name: string; _id: string };
+  progress: number;
+  chapters: { _id: string }[];
 };
 type CoursesParams = {
   userId: string;
@@ -104,33 +152,43 @@ export const ActionGetAllCoursesRefProgressRefCategory = async ({
 > => {
   try {
     await connectToDatabase();
-    
+
     console.log(categoryId, title, userId);
-    const user = await getUserById(userId);  
+    const user = await getUserById(userId);
     if (!user) {
       throw new Error("User not found");
       return [];
     }
 
-//...(categoryId && { categoryId: new  mongoose.Types.ObjectId(categoryId) }),
+    //...(categoryId && { categoryId: new  mongoose.Types.ObjectId(categoryId) }),
     const query = {
-    ...(title && { title: { $regex: title, $options: "i" } }),
+      ...(title && { title: { $regex: title, $options: "i" } }),
       isPublished: true,
-      ...(categoryId && { categoryId: new  mongoose.Types.ObjectId(categoryId) }),
-      
+      ...(categoryId && {
+        categoryId: new mongoose.Types.ObjectId(categoryId),
+      }),
     };
 
     const coursesWithDetails = await Courses.aggregate([
       { $match: query },
       {
         $lookup: {
-          from: 'chapters',
-          let: { courseId: '$_id' },
+          from: "chapters",
+          let: { courseId: "$_id" },
           pipeline: [
-            { $match: { $expr: { $and: [{ $eq: ['$courseId', '$$courseId'] }, { $eq: ['$isPublished', true] }] } } },
-            { $project: { _id: 1 } }// only _id
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$courseId", "$$courseId"] },
+                    { $eq: ["$isPublished", true] },
+                  ],
+                },
+              },
+            },
+            { $project: { _id: 1 } }, // only _id
           ],
-          as: 'chapters',
+          as: "chapters",
         },
       },
       {
@@ -144,26 +202,31 @@ export const ActionGetAllCoursesRefProgressRefCategory = async ({
       { $unwind: "$category" },
       {
         $lookup: {
-          from: "purchase",
-          let: { courseId: "$_id", userId: (user._id) },
+          from: "purchases",
+          let: { courseId: "$_id", userId: user._id },
+
           pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ["$courseId", "$$courseId"] },
-                    { $eq: ["$userId", "$$userId"] },
-                  ],
-                },
-              },
-            },
+            { $match: { $expr: { $and: [{ $eq: ['$courseId', '$$courseId'] }, { $eq: ['$userId', new mongoose.Types.ObjectId(user._id)] }] } } }
           ],
-          as: "purchase",
+
+          // pipeline: [
+          //   {
+          //     $match: {
+          //       $expr: {
+          //         $and: [
+          //           { $eq: ["$courseId", "$$courseId"] },
+          //           { $eq: ["$userId", "$$userId"] },
+          //         ],
+          //       },
+          //     },
+          //   },
+          // ],
+          as: "purchases",
         },
       },
       {
         $unwind: {
-          path: "$purchase",
+          path: "$purchases",
           preserveNullAndEmptyArrays: true,
         },
       },
@@ -171,35 +234,36 @@ export const ActionGetAllCoursesRefProgressRefCategory = async ({
         $sort: { createdAt: -1 },
       },
     ]);
-   console.log("coursesWithDetails",coursesWithDetails)
+    console.log("coursesWithDetails", coursesWithDetails);
     const courseWithProgress: ActionGetAllCoursesRefProgressRefCategoryParams[] =
       await Promise.all(
         coursesWithDetails.map(async (course) => {
-          if (!course?.purchase?.length) {
+          if (!course?.purchases) {
             return {
               ...course,
               progress: null,
             };
           }
-         
-
-          // const progressPercentage = await getProgress(userId, course._id);
-          // return {
-          //   ...course,
-          //   progress: progressPercentage,
-          // };
+console.log("nexttttt")
+          const progressPercentage = await getProgress( course._id, userId);
+          return {
+            ...course,
+            progress: progressPercentage,
+          };
         })
       );
 
-      console.log("courseWithProgress",courseWithProgress)
+    console.log("courseWithProgress", courseWithProgress);
 
-      
     //return courseWithProgress;
     return JSON.parse(JSON.stringify(courseWithProgress));
   } catch (error) {
     //handleError(error);
 
-    console.log(" An error in ActionGetAllCoursesRefProgressRefCategory", error);
+    console.log(
+      " An error in ActionGetAllCoursesRefProgressRefCategory",
+      error
+    );
   }
   return [];
 };
@@ -208,12 +272,14 @@ export async function ActionGetAllCoursesByUserId(userId: string) {
   try {
     await connectToDatabase();
 
-    const user = await getUserById(userId); 
+    const user = await getUserById(userId);
     if (!user) {
-   throw new Error("User not found");
+      throw new Error("User not found");
     }
 
-    const courses = await Courses.find({ userId: user._id }).sort({ createdAt: -1 });
+    const courses = await Courses.find({ userId: user._id }).sort({
+      createdAt: -1,
+    });
 
     return JSON.parse(JSON.stringify(courses));
   } catch (error) {

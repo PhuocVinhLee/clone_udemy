@@ -18,6 +18,7 @@ const CourseLayout = async ({
   const course = await getCourseWithChaptersAndUserProgres(userId, params.courseId);
   if (!course) redirect("/");
   const progressCount = await getProgress(params.courseId, userId);
+  console.log("course nek ",course.chapters)
 
 
   return (

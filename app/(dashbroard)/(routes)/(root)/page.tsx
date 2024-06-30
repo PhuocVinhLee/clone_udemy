@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 
 
-export default function Home() {
+export default function Dashboard() {
   const { userId } = auth();
   return (
     <p className=" text-3xl border  border-red-600  text-blue-600"> 
@@ -13,7 +13,7 @@ export default function Home() {
       
     </UserButton>
     
-     </p>
+     </p> 
     
   );
 }

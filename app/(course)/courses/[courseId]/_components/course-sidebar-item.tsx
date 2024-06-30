@@ -27,8 +27,10 @@ function CourseSidebaItem({
 }: CourseSidebarItemProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const Icon = isLocked ? Lock : isCompleted ? CheckCircle : PlayCircle;
-  const isActive = pathname?.includes(id);
+  const Icon = isLocked ? Lock : (isCompleted ? CheckCircle : PlayCircle);
+  const isActive = pathname?.includes(id); 
+
+  console.log("Is Active",isCompleted)
   const onClick = () => {
     router.push(`/courses/${courseId}/chapters/${id}`);
   };
