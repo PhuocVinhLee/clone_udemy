@@ -13,7 +13,7 @@ type CoursesWithProgressWithCategory = {
   isPublished: boolean ;
   category: CategoryType ;
   progress: number| null ;
-  chapters: ChapterType[] 
+  chapters: { _id: string }[] 
 };
 
 interface CoursesListProps {

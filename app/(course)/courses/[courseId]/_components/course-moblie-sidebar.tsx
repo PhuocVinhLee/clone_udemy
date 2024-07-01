@@ -16,7 +16,7 @@ import { Menu } from "lucide-react";
 interface CourseMoblieSidebarProps {
   course: CourseType & {
     chapters: (ChapterType & {
-      userProgress: UserProgressType[] | null;
+      userProgress: UserProgressType | null;
     })[];
   };
   progressCount: number;

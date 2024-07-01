@@ -14,7 +14,7 @@ import CourseMobileSidebar from "./course-moblie-sidebar";
 interface CourseNavbarProps {
   course: CourseType & {
     chapters: (ChapterType & {
-      userProgress: UserProgressType[] | null;
+      userProgress: UserProgressType | null;
     })[];
   };
   progressCount: number;

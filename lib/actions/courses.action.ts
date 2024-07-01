@@ -226,7 +226,7 @@ type ActionGetAllCoursesRefProgressRefCategoryParams = {
   imageUrl: string;
   price: number;
   isPublished: boolean;
-  category: { name: string; _id: string };
+  category: CategoryType;
   progress: number;
   chapters: { _id: string }[];
 };

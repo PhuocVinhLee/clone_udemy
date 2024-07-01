@@ -12,7 +12,7 @@ interface CourseProgressButtonProps {
   chapterId: string;
   courseId: string;
   isCompleted: boolean;
-  nextChapterId: string;
+  nextChapterId: string | null;
 }
 const CourseProgressButton = ({
   chapterId,
