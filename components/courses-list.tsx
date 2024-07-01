@@ -1,17 +1,19 @@
 import React from "react";
 import CourseCard from "./course-card";
+import { CategoryType } from "@/lib/database/models/categorys.model";
+import { ChapterType } from "@/lib/database/models/chapters.model";
 
 type CoursesWithProgressWithCategory = {
   _id: string;
-  courseId: string;
+  // courseId: string;
   title: string ;
   description: string;
   imageUrl: string;
   price: number ;
   isPublished: boolean ;
-  category: { name: string; _id: string } ;
+  category: CategoryType ;
   progress: number| null ;
-  chapters: { _id: string }[] 
+  chapters: ChapterType[] 
 };
 
 interface CoursesListProps {
