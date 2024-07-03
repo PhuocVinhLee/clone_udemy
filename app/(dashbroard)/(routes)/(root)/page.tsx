@@ -18,7 +18,8 @@ export default async function Dashboard() {
   console.log("coursesInProgress",coursesInProgress)
   console.log("completedCourses",completedCourses)
   return (
-    <div className="p-6 space-x-4">
+    <div className="p-6 space-y-4">
+
       <div className=" grid grid-cols-1 sm:grid-cols-2 gap-4">
 
       <InforCard icon={Clock} label="In Progress" numberOfItems={coursesInProgress?.length}>

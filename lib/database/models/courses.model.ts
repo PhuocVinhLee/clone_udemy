@@ -38,7 +38,7 @@ const CoursesSchema = new Schema({
   },
   isPublished: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   categoryId: { type: Schema.Types.ObjectId, ref: "Categorys" },
   createdAt: { type: Date, default: Date.now },

@@ -4,6 +4,7 @@ import Courses from "@/lib/database/models/courses.model";
 import Purchase from "@/lib/database/models/purchase.model";
 import StripeCustomer from "@/lib/database/models/stripCustomer.model";
 import { currentUser } from "@clerk/nextjs/server";
+import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -25,9 +26,10 @@ export async function POST(
       _id: params.courseId,
       isPublished: true,
     });
+    console.log("course in checkout",course)
     const purchase = await Purchase.findOne({
-      userId: userFromDataBase._id,
-      courseId: params.courseId,
+      userId:  new mongoose.Types.ObjectId(userFromDataBase._id),
+      courseId: new mongoose.Types.ObjectId(params.courseId),
     });
 
     if (purchase) {

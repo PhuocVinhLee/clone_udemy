@@ -24,7 +24,7 @@ export async function POST(
     }
 
     await connectToDatabase();
-    const user = await getUserById(userId); 
+    const user = await getUserById(userId);
     if (!user) {
       return new NextResponse("User not found", { status: 401 });
     }
@@ -34,7 +34,7 @@ export async function POST(
     if (!courseToUpdate || courseToUpdate?.userId.toHexString() !== user._id) {
       throw new Error("Unauthorized or Course not found");
     }
-    
+
     const chapterEndPosition = await Chapters.findOne({ courseId: courseId })
       .sort({ position: -1 })
       .exec();
@@ -64,14 +64,34 @@ export async function PUT(
     if (!userId) {
       return new NextResponse("Anauthorrided Error", { status: 401 });
     }
+    await connectToDatabase();
 
-    const respon = await updateArrayChapter({
-      userId,
-      courseId,
-      arrayChapter: arrayChapter,
-    });
-    console.log("after userId1", userId);
-    return NextResponse.json(respon);
+    const user = await getUserById(userId);
+    if (!user) {
+      return new NextResponse("User not found", { status: 401 });
+    }
+    const coursToUpdate = await Courses.findById(courseId);
+
+    if (!coursToUpdate || coursToUpdate?.userId.toHexString() !== user._id) {
+      throw new Error("Unauthorized or Course not found");
+    }
+    for (const chapter of arrayChapter) {
+      const updatedChapter = await Chapters.findByIdAndUpdate(
+        chapter._id,
+        { position: chapter.position },
+        {
+          new: false,
+        }
+      );
+    }
+
+    // const respon = await updateArrayChapter({
+    //   userId,
+    //   courseId,
+    //   arrayChapter: arrayChapter,
+    // });
+
+    return NextResponse.json(coursToUpdate);
   } catch (error) {
     console.log(error);
     return new NextResponse("Internal Error", { status: 500 });
