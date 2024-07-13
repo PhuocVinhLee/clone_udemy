@@ -24,23 +24,18 @@ import { CourseActions } from "./_components/course-action";
 
 const coursesId = async ({ params }: { params: { courseId: string } }) => {
   const { userId } = auth();
-  // if (!userId) redirect("/");
+
   const course = await getCoursById(params.courseId);
   const categorys = await getAllCategory();
   const attachments = await getAllAttachmentsByCourseId(params.courseId);
   const chapters = await getAllChapterByCourseId(params.courseId);
 
-
   if (!course) {
     redirect("/");
-    return null;
   }
   if (!userId) {
     redirect("/");
-    return null;
   }
-
-  console.log("couse", course);
   const requiredFlieds = [
     course.title,
     course.description,
@@ -49,7 +44,7 @@ const coursesId = async ({ params }: { params: { courseId: string } }) => {
     course.categoryId,
     chapters?.some((chapter: any) => chapter.isPublished),
   ];
-  console.log(requiredFlieds)
+
   const totalFields = requiredFlieds.length;
   const completedFields = requiredFlieds.filter(Boolean).length;
   const completionText = `(${completedFields}/${totalFields})`;
@@ -61,7 +56,6 @@ const coursesId = async ({ params }: { params: { courseId: string } }) => {
         <Banner label="This course is unpublish. It will not be visible to the students."></Banner>
       )}
       <div className="p-6">
-       
         <div className=" flex items-center justify-between">
           <div className="flex flex-col gap-y-2">
             <h1 className="text-2xl font-medium">Courses setup</h1>

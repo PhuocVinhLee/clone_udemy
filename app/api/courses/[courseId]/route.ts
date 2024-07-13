@@ -1,6 +1,4 @@
-import { updateCourse } from "@/lib/actions/courses.action";
 import { getUserById } from "@/lib/actions/user.actions";
-import Categorys from "@/lib/database/models/categorys.model";
 import Courses from "@/lib/database/models/courses.model";
 import { connectToDatabase } from "@/lib/database/mongoose";
 import { auth } from "@clerk/nextjs/server";
@@ -18,7 +16,7 @@ export async function PATCH(
     if (!userId) return new NextResponse("UnAuthention", { status: 401 });
     await connectToDatabase();
 
-    const user = await getUserById(userId); 
+    const user = await getUserById(userId);
     if (!user) {
       return new NextResponse("User not found", { status: 401 });
     }
@@ -45,7 +43,6 @@ export async function PATCH(
     );
     return NextResponse.json(CourseUpdated);
   } catch (error) {
-    console.log(error)
     return new NextResponse("Inter Error", { status: 500 });
   }
 }

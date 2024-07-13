@@ -13,6 +13,7 @@ interface SearchPageProps {
   };
 }
 
+
 const SearchPage = async ({ searchParams }: SearchPageProps) => {
   const { userId } = auth();
   if(!userId) redirect("/")
@@ -24,7 +25,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
   return (
     <>
       <div className="px-6 pt-6 md:hidden md:mb-0 block">
-        <SearchInput></SearchInput>
+        <SearchInput ></SearchInput>
       </div>
 
       <div className="p-6 space-y-4">

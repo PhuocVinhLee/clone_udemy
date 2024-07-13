@@ -56,7 +56,7 @@ const VideoPlayer = ({
   };
 
   return (
-    <div className=" relative aspect-video">
+    <div className=" relative  w-full aspect-video border border-red-700">
       {!isLocked && (
         <div className=" absolute inset-0 flex items-center justify-center bg-slate-800">
           <Loader2 className="h-8 w-8 animate-spin text-secondary"></Loader2>
@@ -76,7 +76,7 @@ const VideoPlayer = ({
       {!isLocked && (
         <MuxPlayer
           title={title}
-          className={cn(!isReady && "hidden")}
+          className={cn(!isReady && "hidden" , "w-full")}
           onCanPlay={() => setIsReady(true)}
           onEnded={onEnd}
           // autoPlay

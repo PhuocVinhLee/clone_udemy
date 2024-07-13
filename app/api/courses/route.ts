@@ -1,10 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-//import { createCourses } from "@/lib/actions/courses.action";
 
 import { connectToDatabase } from "@/lib/database/mongoose";
 import Courses from "@/lib/database/models/courses.model";
-import User from "@/lib/database/models/user.model";
 import { getUserById } from "@/lib/actions/user.actions";
 
 export async function POST(req: Request) {
@@ -26,6 +24,6 @@ export async function POST(req: Request) {
   } catch (error) {
     console.log(error);
     return new NextResponse("Internal Error", { status: 500 });
-    //return NextResponse.json({ message: "NOTOK", error: error });
+    
   }
 }

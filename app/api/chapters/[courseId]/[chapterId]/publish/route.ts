@@ -2,31 +2,18 @@ import { auth } from "@clerk/nextjs/server";
 
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
-import { getCoursById, updateCourse } from "@/lib/actions/courses.action";
-import {
-  createChapter,
-  getAllChapterByCourseId,
-  updateArrayChapter,
-  updateChapter,
-  deleteChapter,
-  getChapterById,
-} from "@/lib/actions/chapter.action";
+
 import {
   createMuxdata,
   deleteMuxdataByChapterId,
   deleteMuxdta,
   getMuxdataByChapterId,
 } from "@/lib/actions/muxdata.action";
-import Mux from "@mux/mux-node";
+
 import Courses from "@/lib/database/models/courses.model";
 import { connectToDatabase } from "@/lib/database/mongoose";
 import Chapters from "@/lib/database/models/chapters.model";
 import { getUserById } from "@/lib/actions/user.actions";
-
-const mux = new Mux({
-  tokenId: process.env.MUX_TOKEN_ID!,
-  tokenSecret: process.env.MUX_TOKEN_SECRET!,
-});
 
 export async function PATCH(
   req: Request,
@@ -35,7 +22,7 @@ export async function PATCH(
   try {
     const { userId } = auth();
     const { chapterId, courseId } = params;
-    const {isPublished} = await req.json();
+    const { isPublished } = await req.json();
 
     console.log("userId in chapter", userId);
     if (!userId) {
@@ -57,14 +44,15 @@ export async function PATCH(
     }
 
     const Muxdata = await getMuxdataByChapterId(chapterId);
-    const chapter  = await Chapters.findById(chapterId);
+    const chapter = await Chapters.findById(chapterId);
 
-    if ( isPublished && 
-     ( !chapter ||
-      !Muxdata ||
-      !chapter.title ||
-      !chapter.description ||
-      !chapter.videoUrl)
+    if (
+      isPublished &&
+      (!chapter ||
+        !Muxdata ||
+        !chapter.title ||
+        !chapter.description ||
+        !chapter.videoUrl)
     ) {
       return new NextResponse("Missing required fields", {
         status: 400,

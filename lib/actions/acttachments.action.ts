@@ -68,29 +68,3 @@ type UpdateCourseParams = {
   };
   userId: string;
 };
-export async function updateCourse({ course, userId }: UpdateCourseParams) {
-  try {
-    await connectToDatabase();
-
-    const coursToUpdate = await Attachments.findById(course.courseId);
-
-    if (!coursToUpdate || coursToUpdate?.userId !== userId) {
-      throw new Error("Unauthorized or image not found");
-    }
-console.log(course)
-    const updatedCourse = await Attachments.findByIdAndUpdate(
-      course.courseId,
-      course,
-      {
-        new: false,
-      }
-    );
-
-    // revalidatePath(path);
-
-    return JSON.parse(JSON.stringify(updatedCourse));
-  } catch (error) {
-    // handleError(error)
-    console.log(error);
-  }
-}

@@ -9,8 +9,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 
-import { revalidatePath } from "next/cache";
-import { deleteChapter2 } from "@/lib/actions/chapter.action";
+
 import { deleteCourse } from "@/lib/actions/courses.action";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
 

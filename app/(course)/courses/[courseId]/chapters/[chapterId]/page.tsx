@@ -57,7 +57,7 @@ const ChpaterIdPage = async ({
         ></Banner>
       )}
 
-      <div className="p-4">
+      <div className="p-4 ">
         <VideoPlayer
           chapterId={params.chapterId}
           title={chapter.title}

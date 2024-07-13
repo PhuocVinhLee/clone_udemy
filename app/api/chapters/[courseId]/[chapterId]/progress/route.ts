@@ -2,33 +2,13 @@ import { auth } from "@clerk/nextjs/server";
 
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
-import { getCoursById, updateCourse } from "@/lib/actions/courses.action";
-import {
-  createChapter,
-  getAllChapterByCourseId,
-  updateArrayChapter,
-  updateChapter,
-  deleteChapter,
-  getChapterById,
-} from "@/lib/actions/chapter.action";
-import {
-  createMuxdata,
-  deleteMuxdataByChapterId,
-  deleteMuxdta,
-  getMuxdataByChapterId,
-} from "@/lib/actions/muxdata.action";
-import Mux from "@mux/mux-node";
+
 import Courses from "@/lib/database/models/courses.model";
 import { connectToDatabase } from "@/lib/database/mongoose";
-import Chapters from "@/lib/database/models/chapters.model";
+
 import { getUserById } from "@/lib/actions/user.actions";
 import UserProgress from "@/lib/database/models/userProgress.model";
 import mongoose from "mongoose";
-
-const mux = new Mux({
-  tokenId: process.env.MUX_TOKEN_ID!,
-  tokenSecret: process.env.MUX_TOKEN_SECRET!,
-});
 
 export async function PUT(
   req: Request,

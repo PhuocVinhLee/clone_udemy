@@ -2,13 +2,10 @@ import { auth } from "@clerk/nextjs/server";
 
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
-import { updateCourse } from "@/lib/actions/courses.action";
+
 import {
-  createChapter,
   getAllChapterByCourseId,
-  updateArrayChapter,
-  updateChapter,
-  deleteChapter,
+ 
 } from "@/lib/actions/chapter.action";
 import {
   createMuxdata,
@@ -16,7 +13,7 @@ import {
   deleteMuxdta,
 } from "@/lib/actions/muxdata.action";
 import Mux from "@mux/mux-node";
-import { revalidatePath } from "next/cache";
+
 import { connectToDatabase } from "@/lib/database/mongoose";
 import Courses from "@/lib/database/models/courses.model";
 import Chapters from "@/lib/database/models/chapters.model";
@@ -25,12 +22,13 @@ const mux = new Mux({
   tokenId: process.env.MUX_TOKEN_ID!,
   tokenSecret: process.env.MUX_TOKEN_SECRET!,
 });
+// dont use 
 export async function DELETE(
   req: Request,
   { params }: { params: { chapterId: string; courseId: string } }
 ) {
   try {
-    console.log("Start delete chapter\n");
+  
     const { userId } = auth();
     if (!userId)
       return new NextResponse("UnAuthention in Update Chapter", {
@@ -38,9 +36,9 @@ export async function DELETE(
       });
 
     const { chapterId } = params;
-    //const payload = await req.json();
+    const chapterDeleted = await Chapters.findByIdAndDelete(chapterId);
 
-    const chapterDeleted = await deleteChapter(chapterId, params.courseId);
+  
     if (!chapterDeleted) {
       return new NextResponse("Some thing went wrong", { status: 401 });
     }
@@ -54,35 +52,33 @@ export async function DELETE(
         await mux.video.assets.delete(muxdataDeleted.assertId);
       }
     }
-    const DataCourse = {
-      courseId: params?.courseId,
-      isPublished: false,
-    };
+   
     // find allchapter => check this course has any chapter to publish
     const allChapterByCourseId = await getAllChapterByCourseId(
       params?.courseId
     );
     if (!allChapterByCourseId?.length) {
-      const course = await updateCourse({ course: DataCourse, userId });
+      
+      const DataCourse = {
+        isPublished: false,
+      };
+      const updatedCourse = await Courses.findByIdAndUpdate(
+        params?.courseId,
+        DataCourse,
+        {
+          new: false,
+        }
+      );
     }
 
     console.log("End delete chapter\n");
     console.log(params?.courseId);
 
     try {
-      //teacher/courses/[courseId]
-      revalidatePath("/", "layout");
-
-      revalidatePath(
-        "/(dashbroard)/(routes)/teacher/courses/[courseId]",
-        "layout"
-      );
-      //teacher/courses/666732a55e368059a32d05e0
-      console.log("Path revalidated 1");
+      
     } catch (err) {
       console.error("Error revalidating path:", err);
       return new NextResponse("'Error revalidating path'", { status: 500 });
-      // return res.status(500).json({ message: 'Error revalidating path' });
     }
     return NextResponse.json(chapterDeleted);
   } catch (error) {
@@ -115,8 +111,7 @@ export async function PATCH(
     if (!courseToUpdate || courseToUpdate?.userId.toHexString() !== user._id) {
       throw new Error("Unauthorized or Course not found");
     }
-    console.log("1")
-    
+
     const DataChapter = {
       courseId: courseId,
       title: payload?.title,
@@ -128,7 +123,7 @@ export async function PATCH(
     };
     if (DataChapter.videoUrl) {
       const MuxDeleted = await deleteMuxdataByChapterId(chapterId);
-console.log("2")
+
       if (MuxDeleted) {
         await mux.video.assets.delete(MuxDeleted.assertId);
       }

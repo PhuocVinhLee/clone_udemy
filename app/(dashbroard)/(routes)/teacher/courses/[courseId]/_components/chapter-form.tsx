@@ -20,10 +20,10 @@ import { Loader2, Pencil, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
-import { Textarea } from "@/components/ui/textarea";
+
 import { Input } from "@/components/ui/input";
 import { ChapterList } from "./chapter-list";
-// import { useRouter } from "next/router";
+
 
 const formSchema = z.object({
   title: z.string().min(2, {

@@ -1,0 +1,74 @@
+"use client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TestCaseType } from "@/lib/database/models/questions.model";
+import { cn } from "@/lib/utils";
+
+interface TestCaseErrorProps {
+  testCases?: TestCaseType[] | null;
+  result: string[];
+  errorCompiled: string;
+}
+const TestCaseError = ({ testCases, result, errorCompiled }: TestCaseErrorProps) => {
+  return (
+    <Tabs defaultValue="testcase" className="w-full">
+      <TabsList>
+        <TabsTrigger  value="testcase">Test case</TabsTrigger>
+        <TabsTrigger className={cn(
+          errorCompiled && " border border-red-500"
+        )}  value="password">Console</TabsTrigger>
+      </TabsList>
+      <TabsContent className="px-2  text-sm" value="testcase">
+   {  testCases && <Tabs defaultValue={testCases[0]?._id} className="w-full  ">
+        <TabsList className=" bg-white  space-x-2"  >
+          {testCases?.map((testcase, index) => {
+            return (
+              <TabsTrigger  key={index} value={testcase._id} 
+              className={cn( " ",
+                result[0] && (result[index] === testcase?.output ? "border border-lime-400": "border border-red-400" )
+              )} > <p >Case{index + 1}</p> </TabsTrigger>
+            );
+          })}
+        </TabsList>
+
+        {testCases?.map((testcase, index) => {
+          return (
+
+              <TabsContent key={index}
+              className="  p-2 text-sm w-full "
+              value={testcase._id}
+            >
+              
+              <div className="flex flex-col gap-y-2">
+              <div className=" grid w-full  items-center gap-2">
+                <Label htmlFor={testcase._id + index} >Input</Label>
+                <Input className="w-full border-2"  readOnly={true} value={testcase?.input} id={testcase._id + index} type="text" />
+              </div>
+              <div className=" grid w-full  items-center gap-2">
+                <Label htmlFor={testcase._id + index} >Ouput</Label>
+                <Input className={cn( "w-full border-2",
+                result[0] && (result[index] !== testcase?.output && "border border-red-400" )
+              )}  readOnly={true} value={testcase?.output} id={testcase._id + index}type="text" />
+              </div>
+              <div className=" grid w-full  items-center gap-2">
+                <Label htmlFor={testcase._id + index} >Got</Label>
+                <Input className={cn( "w-full border-2",
+                  
+              )}  readOnly={true} value={result[index] ? (result[index]): ("")} id={testcase._id + index +"got"}type="text" />
+              </div>
+              </div>
+            </TabsContent>
+          );
+        })}
+      </Tabs>}
+      </TabsContent>
+
+      <TabsContent className="px-4 " value="password">
+        <p className=" p-0 text-sm">{errorCompiled}</p>
+      </TabsContent>
+    </Tabs>
+  );
+};
+
+export default TestCaseError;

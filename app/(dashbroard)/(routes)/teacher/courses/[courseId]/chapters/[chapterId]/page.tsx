@@ -19,7 +19,7 @@ const ChapterIdPage = async ({
   params: { courseId: string; chapterId: string };
 }) => {
   const { userId } = auth(); // because this component in Server=> use auth() not getAuth()
-  console.log("chapterId UserId", userId);
+
    if (!userId) redirect("/");
   const chapter = await getChapterById(params.chapterId);
   console.log("chapter in page", chapter)
@@ -44,7 +44,7 @@ if (!chapter) return redirect("/");
       <div className="p-6">
         <div className="flex items-center justify-between">
           <div className="w-full">
-            <div>userId{userId}</div>
+            
             <Link
               href={`/teacher/courses/${params.courseId}`}
               className="flex items-center text-sm hover:opacity-75 transition mb-6"

@@ -1,10 +1,10 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import {
-  createChapter,
+
   getAllChapterByCourseId,
-  updateArrayChapter,
-  getChapterHasEndPosition,
+ 
+  
 } from "@/lib/actions/chapter.action";
 import { connectToDatabase } from "@/lib/database/mongoose";
 import Chapters from "@/lib/database/models/chapters.model";
@@ -84,13 +84,6 @@ export async function PUT(
         }
       );
     }
-
-    // const respon = await updateArrayChapter({
-    //   userId,
-    //   courseId,
-    //   arrayChapter: arrayChapter,
-    // });
-
     return NextResponse.json(coursToUpdate);
   } catch (error) {
     console.log(error);

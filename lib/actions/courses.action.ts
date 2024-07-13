@@ -6,13 +6,13 @@ import Courses, { CourseType } from "../database/models/courses.model";
 import { connectToDatabase } from "../database/mongoose";
 //import { handleError } from "../utils";
 import Mux from "@mux/mux-node";
-import { deleteChapter, getAllChapterByCourseId } from "./chapter.action";
+
 import { deleteMuxdataByChapterId } from "./muxdata.action";
 import mongoose, { Schema } from "mongoose";
 import { getProgress } from "./userprogress.action";
-import User from "../database/models/user.model";
+
 import { getUserById } from "./user.actions";
-import { ChapterType } from "../database/models/chapters.model";
+import Chapters, { ChapterType } from "../database/models/chapters.model";
 import { CategoryType } from "../database/models/categorys.model";
 import Purchase from "../database/models/purchase.model";
 
@@ -311,18 +311,7 @@ export const ActionGetAllCoursesRefProgressRefCategory = async ({
             },
           ],
 
-          // pipeline: [
-          //   {
-          //     $match: {
-          //       $expr: {
-          //         $and: [
-          //           { $eq: ["$courseId", "$$courseId"] },
-          //           { $eq: ["$userId", "$$userId"] },
-          //         ],
-          //       },
-          //     },
-          //   },
-          // ],
+        
           as: "purchases",
         },
       },
@@ -370,6 +359,7 @@ export const ActionGetAllCoursesRefProgressRefCategory = async ({
   return [];
 };
 
+// pass//
 export async function ActionGetAllCoursesByUserId(userId: string) {
   try {
     await connectToDatabase();
@@ -393,7 +383,7 @@ export async function ActionGetAllCoursesByUserId(userId: string) {
     return [];
   }
 }
-
+// action delete course //
 export async function deleteCourse(userId: string, courseId: string) {
   try {
     console.log("Start delete course\n");
@@ -410,7 +400,8 @@ export async function deleteCourse(userId: string, courseId: string) {
             await mux.video.assets.delete(muxdataDeleted.assertId);
           }
         }
-        const chapterDeleted = await deleteChapter(chapter._id, courseId);
+      
+        const chapterDeleted = await Chapters.findByIdAndDelete(chapter._id);
       }
     }
     const courseDeleted = await Courses.findByIdAndDelete(courseId);
@@ -433,26 +424,7 @@ export async function deleteCourse(userId: string, courseId: string) {
     return null;
   }
 }
-
-//transition
-export async function createCourses(courses: {
-  userId: string;
-  title: string;
-}) {
-  try {
-    await connectToDatabase();
-
-    const newCourses = await Courses.create(courses); // { userId: 1233; title: test;}
-
-    console.log("newCourses", newCourses);
-    return JSON.parse(JSON.stringify(newCourses));
-  } catch (error) {
-    //handleError(error);
-
-    console.log(" An error in action create Courses", error);
-  }
-}
-// GET ONE
+// GET ONE //
 export async function getCoursById(courseId: string) {
   try {
     await connectToDatabase();
@@ -466,47 +438,5 @@ export async function getCoursById(courseId: string) {
     //handleError(error)
     console.log(" An error in action find a Course", error);
     return null;
-  }
-}
-//Update
-// transition
-
-type UpdateCourseParams = {
-  course: {
-    courseId: string;
-    title?: string;
-    description?: string;
-    imageUrl?: string;
-    price?: number;
-    isPublished?: boolean;
-    category?: string;
-    acttachments?: { name: string; url: string }[];
-  };
-  userId: string;
-};
-export async function updateCourse({ course, userId }: UpdateCourseParams) {
-  try {
-    await connectToDatabase();
-
-    const coursToUpdate = await Courses.findById(course.courseId);
-
-    if (!coursToUpdate || coursToUpdate?.userId !== userId) {
-      throw new Error("Unauthorized or image not found");
-    }
-    console.log(course);
-    const updatedCourse = await Courses.findByIdAndUpdate(
-      course.courseId,
-      course,
-      {
-        new: false,
-      }
-    );
-
-    // revalidatePath(path);
-
-    return JSON.parse(JSON.stringify(updatedCourse));
-  } catch (error) {
-    // handleError(error)
-    console.log(error);
   }
 }

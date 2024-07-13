@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   isFree: z.boolean().default(false),
+  
 });
 
 interface ChapterAccessFromProps {

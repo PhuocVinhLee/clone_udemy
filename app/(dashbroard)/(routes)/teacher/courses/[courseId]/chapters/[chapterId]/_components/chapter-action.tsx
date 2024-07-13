@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-import { revalidatePath } from "next/cache";
 import { deleteChapter2 } from "@/lib/actions/chapter.action";
 
 interface ChapterActionsProp {

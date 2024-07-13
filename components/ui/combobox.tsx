@@ -54,7 +54,7 @@ export const Combobox = ({ options, value, onChange }: ComboboxProps) => {
   console.log(value);
   console.log(options);
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover  open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -68,12 +68,12 @@ export const Combobox = ({ options, value, onChange }: ComboboxProps) => {
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-full p-0">
         <Command>
           <CommandInput placeholder="Search option..." />
           <CommandEmpty>No option found.</CommandEmpty>
           <CommandGroup>
-          <CommandList>
+          <CommandList className="w-full">
             {options?.map((option) => (
               <CommandItem
                 key={option.value}

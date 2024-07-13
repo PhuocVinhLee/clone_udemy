@@ -10,6 +10,8 @@ import CourseSidebarItem from "./course-sidebar-item";
 import NavbarRoutes from "@/components/navbar-routes";
 import CourseMoblieSidebar from "./course-moblie-sidebar";
 import CourseMobileSidebar from "./course-moblie-sidebar";
+import { Button } from "@/components/ui/button";
+import { Flag } from "lucide-react";
 
 interface CourseNavbarProps {
   course: CourseType & {
@@ -24,13 +26,33 @@ function CourseNavbar({ course, progressCount }: CourseNavbarProps) {
   // if (!userId) return redirect("/");
 
   return (
-    <div className="p-4 border-b h-full flex items-center bg-white shadow-sm">
-      <CourseMobileSidebar
-        course={course}
-        progressCount={progressCount}
-      ></CourseMobileSidebar>
+    <div className="p-4 border-b h-full flex items-center justify-between  bg-white shadow-sm">
 
+      <div className=" flex items-center justify-between   border  border-blue-600 ">
+        <CourseMobileSidebar
+          course={course}
+          progressCount={progressCount}
+        ></CourseMobileSidebar>
+
+        <div className="flex gap-x-2">
+          <Button size="sm">Previous</Button>
+          <Button size="sm">1</Button>
+          <Button size="sm">Next</Button>
+          <div>
+            <Button size="sm">
+              <Flag></Flag>
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className= " flex gap-x-2">
+Chapter:
+        <h4>Khoa hoc node js Viet Nam</h4>
+      </div>
+      <div className="">
       <NavbarRoutes></NavbarRoutes>
+      </div>
     </div>
   );
 }

@@ -14,9 +14,10 @@ import SearchInput from './search-input';
   const isTeacherPage = pathname?.startsWith("/teacher");
   const isCoursePage = pathname?.includes("/courses");
   const isSearchPage = pathname === "/search"
+  const isQuestionPage = pathname === "/teacher/questions"
    return (
     <>
-    {isSearchPage && (
+    {(isSearchPage || isQuestionPage) && (
       <div className=' hidden md:block'>
         <SearchInput>
           
