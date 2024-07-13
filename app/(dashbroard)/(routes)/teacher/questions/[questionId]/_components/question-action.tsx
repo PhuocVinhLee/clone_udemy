@@ -30,20 +30,20 @@ export const QuestionActions = ({
   const onClick = async () => {
     try {
       if (isPublished) {
-        const respon = await axios.patch(`/api/courses/${questionId}/publish`, {
+        const respon = await axios.patch(`/api/questions/${questionId}/publish`, {
           isPublished: !isPublished,
         });
         if (respon) {
-          toast.success(" Course unpublished.");
+          toast.success(" Question unpublished.");
         }
       } else {
         /// should add more API for isPublished
-        const respon = await axios.patch(`/api/courses/${questionId}/publish`, {
+        const respon = await axios.patch(`/api/questions/${questionId}/publish`, {
           isPublished: !isPublished,
         });
         if (respon) {
           console.log(respon);
-          toast.success(" Course published.");
+          toast.success(" Question published.");
           confetti.onOpen();
         }
       }
@@ -57,15 +57,15 @@ export const QuestionActions = ({
   };
   const onDelete = async () => {
     try {
-      setIsLoading(true);
-      //  await axios.delete(`/api/chapters/${courseId}/${chapterId}`);
-      const CourseToDelete = await deleteCourse(userId, questionId);
-      if (CourseToDelete) {
-        toast.success(" Course delete.");
-        router.refresh(); //chỉ hoạt động cho tuyến đường hiện tại và nó sẽ khiến tuyến đường hiện tại không sử dụng bộ đệm trong lần truy cập tiếp theo.
+      // setIsLoading(true);
+      // //  await axios.delete(`/api/chapters/${courseId}/${chapterId}`);
+      // const CourseToDelete = await deleteCourse(userId, questionId);
+      // if (CourseToDelete) {
+      //   toast.success(" Course delete.");
+      //   router.refresh(); //chỉ hoạt động cho tuyến đường hiện tại và nó sẽ khiến tuyến đường hiện tại không sử dụng bộ đệm trong lần truy cập tiếp theo.
 
-        router.push(`/teacher/courses`);
-      }
+      //   router.push(`/teacher/courses`);
+      // }
     } catch (error) {
       toast.error("Some thing went wrong!");
     } finally {

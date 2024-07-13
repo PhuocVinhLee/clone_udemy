@@ -22,6 +22,7 @@ export interface QuestionType extends Document {
     asexample: boolean;
     position: number;
   }[];
+  isPublished: boolean;
   categoryId: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -54,9 +55,7 @@ const QuestionsSchema = new Schema({
   answer: {
     type: String,
   },
-  code: {
-    type: String,
-  },
+  
   questionTypeId: { type: Schema.Types.ObjectId, ref: "QuestionTypes" },
   template: {
     type: String,
