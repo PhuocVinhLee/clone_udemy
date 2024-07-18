@@ -35,9 +35,11 @@ import Loading from "@/components/clipLoader";
 import { formatResult } from "@/lib/format";
 interface PanelReSizeProps {
   question: any;
+  pathToUpdateAndGet: string
+
 }
 
-export default function PanelReSize({ question }: PanelReSizeProps) {
+export default function PanelReSize({ question, pathToUpdateAndGet }: PanelReSizeProps) {
   console.log("question in page", question);
 
   const ref = useRef<ImperativePanelGroupHandle>(null);
@@ -84,7 +86,7 @@ export default function PanelReSize({ question }: PanelReSizeProps) {
   const handleRunCode = async () => {
     try {
       setIsLoading(true);
-      axios.patch(`/api/questions/${question._id}`, {
+      axios.patch(pathToUpdateAndGet, {
         answer: valueAnswerCode,
       });
 
@@ -151,7 +153,7 @@ export default function PanelReSize({ question }: PanelReSizeProps) {
 
   const getFullCode = async () => {
     const fullsource: any = await axios.get(
-      `/api/questions/${question._id}/fullsource`
+      `${pathToUpdateAndGet}/fullsource`
     );
     console.log("full code", fullsource);
     if (fullsource?.data) {
@@ -183,6 +185,7 @@ export default function PanelReSize({ question }: PanelReSizeProps) {
                   {testCases?.length ? (
                     testCases?.map((testcase: any, index: number) => (
                       <TestCaseForm
+                      pathToUpdateAndGet={pathToUpdateAndGet}
                         key={index}
                         questionId={question?._id}
                         initialData={testcase}
@@ -191,6 +194,7 @@ export default function PanelReSize({ question }: PanelReSizeProps) {
                     ))
                   ) : (
                     <TestCaseForm
+                    pathToUpdateAndGet={pathToUpdateAndGet}
                       questionId={question?._id}
                       initialData={{
                         input: "",
@@ -214,6 +218,7 @@ export default function PanelReSize({ question }: PanelReSizeProps) {
               </TabsContent>
               <TabsContent value="template" className="h-full overflow-auto">
                 <TemplateForm
+                pathToUpdateAndGet={pathToUpdateAndGet}
                   initialData={question}
                   questionId={question._id}
                 ></TemplateForm>

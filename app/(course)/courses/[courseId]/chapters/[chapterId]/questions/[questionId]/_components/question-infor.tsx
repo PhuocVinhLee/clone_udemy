@@ -1,14 +1,18 @@
 import { Button } from '@/components/ui/button'
 import React from 'react'
 import { Badge } from "@/components/ui/badge"
+import { QuestionType } from '@/lib/database/models/questions.model'
 
 
-const QuestionInfor = () => {
+interface QuestionInforProp{
+  question: QuestionType;
+}
+const QuestionInfor = ({question}: QuestionInforProp) => {
   return (
     <div className='px-2 py-2'>
       <div className='flex gap-x-2 flex-wrap'>
       <p className=' text-sm flex'>
-        Question 1. write to me plus 2 number ?
+       {question?.title}
        </p>
        <Badge className='  bg-yellow-400'  variant="outline">Medium</Badge>
       </div>

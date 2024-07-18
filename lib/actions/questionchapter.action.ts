@@ -16,13 +16,14 @@ import Chapters, { ChapterType } from "../database/models/chapters.model";
 import { CategoryType } from "../database/models/categorys.model";
 import Purchase from "../database/models/purchase.model";
 import Questions from "../database/models/questions.model";
+import QuestionsChapter from "../database/models/questionschapter.model";
 
 // GET ONE
-export async function getQuestionById(questionId: string) {
+export async function getQuestionChapterById(questionId: string) {
   try {
     await connectToDatabase();
 
-    const question = await Questions.findById(questionId);
+    const question = await QuestionsChapter.findById(questionId);
 
     if (!question) {
       throw new Error("Question not found");
@@ -37,7 +38,7 @@ export async function getQuestionById(questionId: string) {
   }
 }
 
-export async function ActionAllQuestionByUserId(userId:string) {
+export async function ActionAllQuestionByChapterId(userId:string, chapterId: string) {
   try {
     await connectToDatabase();
 
@@ -46,41 +47,15 @@ export async function ActionAllQuestionByUserId(userId:string) {
       throw new Error("User not found");
     }
 
-    const questions = await Questions.find({ userId: user._id }).sort({
-      createdAt: -1,
+    const questions = await QuestionsChapter.find({ userId: user._id , chapterId: chapterId}).sort({
+      position: 1,
     });
 
     return JSON.parse(JSON.stringify(questions));
   } catch (error) {
     //handleError(error)
     console.log(
-      " An error in action ActionGetAllQuestionsByUserId questions",
-      error
-    );
-    return [];
-  }
-
-}
-
-
-export async function ActionAllQuestionByCategoryId(userId: string, categoryId:string) {
-  try {
-    await connectToDatabase();
-
-    const user = await getUserById(userId);
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    const questions = await Questions.find({ userId: user._id, categoryId: categoryId }).sort({
-      createdAt: -1,
-    });
-
-    return JSON.parse(JSON.stringify(questions));
-  } catch (error) {
-    //handleError(error)
-    console.log(
-      " An error in action ActionAllQuestionByCategoryId questions",
+      " An error in action ActionAllQuestionByChapterId questions",
       error
     );
     return [];

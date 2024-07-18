@@ -10,22 +10,22 @@ import {
 import { cn } from "@/lib/utils";
 import { Grid, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-interface ChapterListProps {
+interface QuestionListProps {
   items: any[];
   onReOrder: (updateData: { _id: string; position: number }[]) => void;
   onEdit: (_id: string) => void;
 }
 
-export const ChapterList = ({ items, onReOrder, onEdit }: ChapterListProps) => {
+export const QuestionList = ({ items, onReOrder, onEdit }: QuestionListProps) => {
   const [isMounted, setIsMounted] = useState(false);
-  const [chapters, setChapters] = useState(items);
-  console.log("item", chapters);
+  const [questions, setQuestions] = useState(items);
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
   useEffect(() => {
-    setChapters(items);
+    setQuestions(items);
   }, [items]);
 
   if (!isMounted) {
@@ -34,7 +34,7 @@ export const ChapterList = ({ items, onReOrder, onEdit }: ChapterListProps) => {
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
-    const items = Array.from(chapters);
+    const items = Array.from(questions);
 
     const [reorderedItem] = items.splice(result.source.index, 1);
 
@@ -44,9 +44,9 @@ export const ChapterList = ({ items, onReOrder, onEdit }: ChapterListProps) => {
     const endIndex = Math.max(result.source.index, result.destination.index);
 
    
-    const updatedChapters = items.slice(startIndex, endIndex + 1);
-    setChapters(items);
-    const bulkUpdateData = updatedChapters.map((chapter) => ({
+    const updatedQuestions = items.slice(startIndex, endIndex + 1);
+    setQuestions(items);
+    const bulkUpdateData = updatedQuestions.map((chapter) => ({
       _id: chapter._id,
       position: items.findIndex((item) => item._id === chapter._id),
     }));
@@ -56,10 +56,10 @@ export const ChapterList = ({ items, onReOrder, onEdit }: ChapterListProps) => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="chapters">
+      <Droppable droppableId="questions">
         {(provided) => (
           <div {...provided.droppableProps} ref={provided.innerRef}>
-            {chapters.map((chapter, index) => (
+            {questions.map((chapter, index) => (
               <Draggable key={chapter._id} draggableId={chapter._id} index={index}>
                 {(provided) => (
                   <div

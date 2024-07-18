@@ -34,6 +34,7 @@ const formSchema = z.object({
 });
 
 interface TestCaseProps {
+  pathToUpdateAndGet: string;
   initialData: {
     input: string;
     output: string;
@@ -51,6 +52,7 @@ interface TestCaseProps {
 }
 
 export const TestCaseForm = ({
+  pathToUpdateAndGet,
   initialData,
   questionId,
   testCases,
@@ -73,7 +75,7 @@ export const TestCaseForm = ({
       const testCasesFilter = testCases.filter((testcase, index) => {
         return testcase.position != initialData.position;
       });
-      await axios.patch(`/api/questions/${questionId}`, {
+      await axios.patch(pathToUpdateAndGet ,{
         testCases: [
           ...testCasesFilter,
           { ...values, position: initialData.position },
@@ -99,7 +101,7 @@ export const TestCaseForm = ({
         return {...testcase, position: index + 1}
       })
 
-    const respone =  await axios.patch(`/api/questions/${questionId}`, {
+    const respone =  await axios.patch(pathToUpdateAndGet, {
         testCases:testCasesMapPosition
       });
       if (respone) {

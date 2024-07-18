@@ -32,9 +32,10 @@ interface TitleFromProps {
     title: string;
   };
   questionId: string;
+  path: string;
 }
 
-export const TitleForm = ({ initialData, questionId }: TitleFromProps) => {
+export const TitleForm = ({ initialData, questionId, path }: TitleFromProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const toggleEdit = () => setIsEditing((current) => !current);
   const router = useRouter();
@@ -48,7 +49,7 @@ export const TitleForm = ({ initialData, questionId }: TitleFromProps) => {
     
     try {
      
-        await axios.patch(`/api/questions/${questionId}`, values)
+        await axios.patch(path, values)
         toast.success(" Question updated.")
         toggleEdit();
         router.refresh();// refresh state

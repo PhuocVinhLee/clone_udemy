@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 
 import { Input } from "@/components/ui/input";
 import { ChapterList } from "./chapter-list";
+import { arrayBuffer } from "stream/consumers";
 
 
 const formSchema = z.object({
@@ -69,8 +70,9 @@ export const ChapterForm = ({ initialData, courseId }: ChapterFormProps) => {
       setIsUpdating(true);
      
       //update Chapters
+      console.log("cha-ter", updateData)
       await axios.put(`/api/chapters/${courseId}`, { arrayChapter: updateData });
-      toast.success(" Chapter created.");
+      toast.success(" Chapter updates.");
       router.refresh(); 
     } catch (error) {
       toast.error("Some thing went wrong");

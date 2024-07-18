@@ -22,9 +22,10 @@ interface TestCaseProps {
     testCases: TestCaseType[];
   };
   questionId: string;
+  link: string;
 }
 
-export const TestCase = ({ initialData, questionId }: TestCaseProps) => {
+export const TestCase = ({ initialData, questionId , link}: TestCaseProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const toggleEdit = () => setIsEditing((current) => !current);
   const router = useRouter();
@@ -33,7 +34,7 @@ export const TestCase = ({ initialData, questionId }: TestCaseProps) => {
     <div className="mt-6 broder bg-slate-100 rounded-md p-4">
       <div className=" font-medium flex items-center justify-between mb-4">
         Test cases
-        <Link href={`/teacher/questions/${questionId}/code-testcases`}>
+        <Link href={link}>
           {initialData?.testCases[0] ? (
             <span className="flex items-center justify-between gap-x-1">
               <Pencil className="h-4 w-4  "></Pencil>

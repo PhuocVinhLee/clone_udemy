@@ -16,6 +16,7 @@ interface QuestionActionsProp {
   questionId: string;
   isPublished: boolean;
   userId: string;
+  path: string
 }
 
 export const QuestionActions = ({
@@ -23,6 +24,7 @@ export const QuestionActions = ({
   questionId,
   isPublished,
   userId,
+  path
 }: QuestionActionsProp) => {
   const router = useRouter();
   const confetti = useConfettiStore();
@@ -30,7 +32,7 @@ export const QuestionActions = ({
   const onClick = async () => {
     try {
       if (isPublished) {
-        const respon = await axios.patch(`/api/questions/${questionId}/publish`, {
+        const respon = await axios.patch(path+"/publish", {
           isPublished: !isPublished,
         });
         if (respon) {
@@ -38,7 +40,7 @@ export const QuestionActions = ({
         }
       } else {
         /// should add more API for isPublished
-        const respon = await axios.patch(`/api/questions/${questionId}/publish`, {
+        const respon = await axios.patch(path+"/publish" ,{
           isPublished: !isPublished,
         });
         if (respon) {

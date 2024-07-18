@@ -15,11 +15,27 @@ import { getUserById } from "./user.actions";
 import Chapters, { ChapterType } from "../database/models/chapters.model";
 import { CategoryType } from "../database/models/categorys.model";
 import Purchase from "../database/models/purchase.model";
+import { getAllChapterByCourseId } from "./chapter.action";
+import Questions from "../database/models/questions.model";
 
 const mux = new Mux({
   tokenId: process.env.MUX_TOKEN_ID!,
   tokenSecret: process.env.MUX_TOKEN_SECRET!,
 });
+
+
+
+export const ActionGetCategoryIdByCourseId = async (courseId: string)=>{
+ try {
+  await connectToDatabase();
+  const course = await Courses.findById(courseId).select('categoryId');
+  
+  return JSON.parse(JSON.stringify(course.categoryId));
+  // Respond with the categoryId
+ } catch (error) {
+  console.log("An erorr in getDashboarhCourses", error);
+ }
+}
 
 type CourseWithProgressWithCaregory = CourseType & {
   category: CategoryType;

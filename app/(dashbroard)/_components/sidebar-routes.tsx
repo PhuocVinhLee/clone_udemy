@@ -31,7 +31,7 @@ const teacherRoutes = [
   },
   {
     icon: FileQuestionIcon,
-    label: "Questions",
+    label: "Root questions",
     href: "/teacher/questions",
   },
 ];

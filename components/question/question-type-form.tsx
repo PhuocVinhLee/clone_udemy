@@ -9,68 +9,90 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 
-
-import { Pencil } from "lucide-react";
+import { Cog, FileCog, Pencil, ReplaceAll } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
-import { Textarea } from "@/components/ui/textarea";
+
+import { Combobox } from "@/components/ui/combobox";
+import { QuestionTypeType } from "@/lib/database/models/questionTypes.model";
+import { QuestionType } from "@/lib/database/models/questions.model";
+
 
 const formSchema = z.object({
-  description: z.string().min(2, {
-    message: "Description required",
+  questionTypeId: z.string().min(1, {
+    message: "category required",
   }),
 });
 
-interface DescriptionFormProps {
+interface QuestionTypeFormProps {
   initialData: {
-    description: string;
+    questionTypeId: string;
   };
-  questionId: string;
+  question: QuestionType;
+  options: { label: string; value: string; template: string }[];
+  path: string;
 }
 
-export const DescriptionForm = ({
+export const QuestionTypeForm = ({
   initialData,
-  questionId,
-}: DescriptionFormProps) => {
+  question,
+  options,
+  path
+}: QuestionTypeFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  
   const toggleEdit = () => setIsEditing((current) => !current);
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: initialData
   });
-  const { isSubmitting, isValid } = form.formState;
+  const { isSubmitting, isValid  } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log(questionId);
-      await axios.patch(`/api/questions/${questionId}`, values);
-      toast.success(" Question updated.");
+      console.log("value", values);
+      const seclectedAfterOption = options.find(
+        (option) => option.value === values?.questionTypeId
+      );
+      await axios.patch(path, {...values, template: seclectedAfterOption?.template});
+      toast.success(" Couruse updated.");
       toggleEdit();
       router.refresh(); // refresh state
     } catch (error) {
       toast.error("Something went wrong!");
     }
   };
+  const seclectedOption = options.find(
+    (option) => option.value === initialData?.questionTypeId
+  );
+  console.log(initialData);
   return (
     <div className="mt-6 broder bg-slate-100 rounded-md p-4">
       <div className=" font-medium flex items-center justify-between">
-        Question discription
+        Question types 
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
             <>Scanel</>
           ) : (
             <>
-            <Pencil className="h-4 w-4 mr-2"></Pencil> 
-             Edit description</>
+            <div className=" gap-x-4  flex">
+
+            <div className="flex">
+             <FileCog className="h-4 w-4 mr-1"></FileCog>
+             Edit 
+             </div>
+             
+            </div>
+
+            </>
           )}
         </Button>
       </div>
@@ -78,11 +100,11 @@ export const DescriptionForm = ({
         <p
           className={cn(
             "text-sm mt-2",
-            !initialData.description && " text-slate-500 italic"
+            !initialData.questionTypeId && " text-slate-500 italic"
           )}
         >
           {" "}
-          {initialData.description || "No description"}
+          {seclectedOption?.label || "No question type"}
         </p>
       )}
       {isEditing && (
@@ -93,20 +115,19 @@ export const DescriptionForm = ({
           >
             <FormField
               control={form.control}
-              name="description"
+              name="questionTypeId"
               render={({ field }) => (
                 <FormItem>
-                   
                   <FormControl>
-                    <Textarea
-                      disabled={isSubmitting}
-                      placeholder="This course is about..."
-                      {...field}
+                    <Combobox
+                      options={options}
+                      value={field.value}
+                      onChange={field.onChange}
                     />
                   </FormControl>
-                  {/* <FormDescription>
+                  {/* <FormCategory>
                       This is your public display name.
-                    </FormDescription> */}
+                    </FormCategory> */}
                   <FormMessage />
                 </FormItem>
               )}

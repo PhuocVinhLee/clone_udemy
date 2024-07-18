@@ -14,24 +14,55 @@ import {
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { QuestionType } from "@/lib/database/models/questions.model";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-
 
 export type Question = {
   _id: string;
   title: string;
   description: string;
-  price: number;
-  imageUrl: string;
   categoryId: string;
   isPublished: boolean;
+  exist: boolean;
 };
 
 export const columns: ColumnDef<Question>[] = [
   // type course
+  {
+    id: "select",
+    header: ({ table }) => {
+      const rows = table.getRowModel().rows;
+      const someExist = rows.some((row) => row.original.exist);
+      const allExist = rows.every((row) => row.original.exist);
+      return (
+        <Checkbox
+          disabled={someExist || allExist}
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      );
+    },
+    cell: ({ row }) => {
+      const exist = row.getValue("exist") || false;
+      return (
+        <Checkbox
+          disabled={exist as boolean}
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      );
+    },
+
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: "title",
     header: ({ column }) => {
@@ -46,7 +77,20 @@ export const columns: ColumnDef<Question>[] = [
       );
     },
   },
-
+  {
+    accessorKey: "description",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Description
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
   {
     accessorKey: "isPublished",
     header: ({ column }) => {
@@ -69,6 +113,29 @@ export const columns: ColumnDef<Question>[] = [
       );
     },
   },
+
+  {
+    accessorKey: "exist",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Exist
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const exist = row.getValue("exist") || false;
+      return (
+        <Badge className={cn("bg-slate-500", exist && "bg-sky-700")}>
+          {exist ? "Exist" : "Draft"}
+        </Badge>
+      );
+    },
+  },
   {
     id: "actions",
     cell: ({ row }) => {
@@ -83,7 +150,7 @@ export const columns: ColumnDef<Question>[] = [
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end">
-            <Link href={`/teacher/questions/${_id}`}>
+            <Link href={`/teacher/courses/${_id}`}>
               <DropdownMenuItem>
                 <Pencil className="h-4 w-4 mr-2"></Pencil> Edit
               </DropdownMenuItem>

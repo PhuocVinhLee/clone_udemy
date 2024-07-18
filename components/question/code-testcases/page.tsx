@@ -6,27 +6,24 @@ import {
   PanelGroup,
   PanelResizeHandle,
 } from "react-resizable-panels";
-
+import CodeMirror from "./code-mirror";
 import { FaChevronDown } from "react-icons/fa";
 import { FaChevronUp } from "react-icons/fa";
 
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-
-
-import PanelReSize from "@/components/question/code-testcases/panel-resize";
-
+import { TestCaseForm } from "./test-case-form";
 import { getQuestionById } from "@/lib/actions/question.action";
+import PanelReSize from "./panel-resize";
 
 export default async function CodeTestCasesPage({
   params,
 }: {
-  params: { questionId: string;  };
+  params: { questionId: string };
 }) {
   const question = await getQuestionById(params.questionId);
   console.log("question in page", question)
 
-  const pathToUpdateAndGet = `/api/questions/${params.questionId}`;
   return (
     <div className="h-full flex flex-col">
       
@@ -39,7 +36,7 @@ export default async function CodeTestCasesPage({
         </Link>
       
       <div className="h-full flex-1 overflow-hidden">
-      <PanelReSize pathToUpdateAndGet={pathToUpdateAndGet} question={question}></PanelReSize>
+      <PanelReSize question={question}></PanelReSize>
       </div>
     </div>
   );

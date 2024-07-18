@@ -24,9 +24,11 @@ interface TitleFromProps {
     answer: string;
   };
   questionId: string;
+
+  link: string;
 }
 
-export const Answer = ({ initialData, questionId }: TitleFromProps) => {
+export const Answer = ({ initialData, questionId, link }: TitleFromProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const toggleEdit = () => setIsEditing((current) => !current);
   const router = useRouter();
@@ -46,7 +48,7 @@ export const Answer = ({ initialData, questionId }: TitleFromProps) => {
             ></Checkbox>
             <span>Hiden</span>
           </div>
-          <Link href={`/teacher/questions/${questionId}/code-testcases`}>
+          <Link href={link}>
             {initialData?.answer ? (
               <span className="flex items-center justify-between gap-x-1">
                 <Pencil className="h-4 w-4  "></Pencil>
@@ -63,7 +65,6 @@ export const Answer = ({ initialData, questionId }: TitleFromProps) => {
       </div>
 
       <CodeMirror
-      
         className={cn("  text-sm mt-2 w-full", hiden && " blur-sm")}
         value={initialData?.answer}
         // content="Your answer"

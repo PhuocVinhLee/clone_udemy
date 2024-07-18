@@ -15,23 +15,22 @@ import { ArrowLeft } from "lucide-react";
 
 
 import PanelReSize from "@/components/question/code-testcases/panel-resize";
-
-import { getQuestionById } from "@/lib/actions/question.action";
+import { getQuestionChapterById } from "@/lib/actions/questionchapter.action";
 
 export default async function CodeTestCasesPage({
   params,
 }: {
-  params: { questionId: string;  };
+  params: { questionId: string;  courseId: string; chapterId: string };
 }) {
-  const question = await getQuestionById(params.questionId);
+  const question = await getQuestionChapterById(params.questionId);
   console.log("question in page", question)
 
-  const pathToUpdateAndGet = `/api/questions/${params.questionId}`;
+  const pathToUpdateAndGet = `/api/chapters/${params.courseId}/${params.chapterId}/questionschapter/${params.questionId}`;
   return (
     <div className="h-full flex flex-col">
       
         <Link
-          href={`/teacher/questions/${params.questionId}`}
+          href={`/teacher/courses/${params.courseId}/chapters/${params.chapterId}/questionchapter/${params.questionId}`}
           className="flex p-2  h-[40px]  items-center  text-sm hover:opacity-75 transition "
         >
           <ArrowLeft className="h-4  w-4 mr-2"></ArrowLeft>

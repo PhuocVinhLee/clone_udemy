@@ -37,11 +37,13 @@ interface TemplateFromProps {
     template: string;
   };
   questionId: string;
+  pathToUpdateAndGet: string
 }
 
 export const TemplateForm = ({
   initialData,
   questionId,
+  pathToUpdateAndGet
 }: TemplateFromProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const toggleEdit = () => setIsEditing((current) => !current);
@@ -54,7 +56,7 @@ export const TemplateForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch(`/api/questions/${questionId}`, values);
+      await axios.patch(pathToUpdateAndGet, values);
       toast.success(" Question updated.");
       toggleEdit();
       router.refresh(); // refresh state

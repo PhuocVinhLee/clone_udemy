@@ -5,7 +5,13 @@ import { redirect } from "next/navigation";
 import { getChapterById } from "@/lib/actions/chapter.action";
 import { getMuxdataByChapterId } from "@/lib/actions/muxdata.action";
 import Link from "next/link";
-import { ArrowLeft, Eye, LayoutDashboard, Video } from "lucide-react";
+import {
+  ArrowLeft,
+  Eye,
+  LayoutDashboard,
+  ListChecks,
+  Video,
+} from "lucide-react";
 import { IconBadge } from "@/components/icon-badge";
 import { ChapterTitleForm } from "./_components/chapter-title-form";
 import { ChapterDescriptionForm } from "./_components/chapter-description-form";
@@ -13,6 +19,12 @@ import { ChapterAccessForm } from "./_components/chapter-access-form";
 import { ChapterVideoForm } from "./_components/chapter-video-form";
 import { Banner } from "@/components/banner";
 import { ChapterActions } from "./_components/chapter-action";
+import { QuetionForm } from "./_components/question-form";
+import { ActionAllQuestionByChapterId } from "@/lib/actions/questionchapter.action";
+import { ActionAllQuestionByCategoryId } from "@/lib/actions/question.action";
+import { ActionGetCategoryIdByCourseId } from "@/lib/actions/courses.action";
+import { QuestionType } from "@/lib/database/models/questions.model";
+import { QuestionChapterType } from "@/lib/database/models/questionschapter.model";
 const ChapterIdPage = async ({
   params,
 }: {
@@ -20,11 +32,31 @@ const ChapterIdPage = async ({
 }) => {
   const { userId } = auth(); // because this component in Server=> use auth() not getAuth()
 
-   if (!userId) redirect("/");
+  if (!userId) redirect("/");
   const chapter = await getChapterById(params.chapterId);
-  console.log("chapter in page", chapter)
+  console.log("chapter in page", chapter);
   const muxdata = await getMuxdataByChapterId(params.chapterId);
-if (!chapter) return redirect("/");
+
+  const categoryId = await ActionGetCategoryIdByCourseId(params.courseId);
+  if (!chapter) return redirect("/");
+  const questions = await ActionAllQuestionByChapterId(
+    userId,
+    params.chapterId
+  );
+  const questionByCategoryId = await ActionAllQuestionByCategoryId(
+    userId,
+    categoryId
+  );
+  const questionCheckedExist = questionByCategoryId.map(
+    (question: QuestionType) => {
+      const findQuestion = questions.find(
+        (q: QuestionChapterType) => question._id === q._id
+      );
+      if (findQuestion) return { ...question, exist: true };
+      return { ...question, exist: false };
+    }
+  );
+  console.log("qunkandad", questionCheckedExist);
 
   const requiredFlieds = [chapter.title, chapter.description, chapter.videoUrl];
   const totalFields = requiredFlieds.length;
@@ -44,7 +76,6 @@ if (!chapter) return redirect("/");
       <div className="p-6">
         <div className="flex items-center justify-between">
           <div className="w-full">
-            
             <Link
               href={`/teacher/courses/${params.courseId}`}
               className="flex items-center text-sm hover:opacity-75 transition mb-6"
@@ -91,6 +122,21 @@ if (!chapter) return redirect("/");
 
             <div>
               <div className="flex items-center gap-x-2">
+                <IconBadge icon={Video}></IconBadge>
+                <h2 className=" text-xl">Add video ne</h2>
+              </div>
+              <ChapterVideoForm
+                initialData={chapter}
+                chapterId={params.chapterId}
+                courseId={params.courseId}
+                playbackId={muxdata?.playbackId}
+              ></ChapterVideoForm>
+            </div>
+          </div>
+
+          <div className=" space-y-4">
+            <div>
+              <div className="flex items-center gap-x-2">
                 <IconBadge icon={Eye}></IconBadge>
                 <h2 className=" text-xl">Access Settings</h2>
               </div>
@@ -100,19 +146,19 @@ if (!chapter) return redirect("/");
                 courseId={params.courseId}
               ></ChapterAccessForm>
             </div>
-          </div>
 
-          <div>
-            <div className="flex items-center gap-x-2">
-              <IconBadge icon={Video}></IconBadge>
-              <h2 className=" text-xl">Add video ne</h2>
+            <div>
+              <div className="flex items-center gap-x-2">
+                <IconBadge icon={ListChecks}></IconBadge>
+                <h2 className="text-xl"> Question form</h2>
+              </div>
+              <QuetionForm
+                questionByCategoryId={questionCheckedExist}
+                initialData={{ questions: questions }}
+                chapterId={params.chapterId}
+                courseId={params.courseId}
+              ></QuetionForm>
             </div>
-            <ChapterVideoForm
-              initialData={chapter}
-              chapterId={params.chapterId}
-              courseId={params.courseId}
-              playbackId={muxdata?.playbackId}
-            ></ChapterVideoForm>
           </div>
         </div>
       </div>

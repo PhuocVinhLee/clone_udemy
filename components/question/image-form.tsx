@@ -33,9 +33,10 @@ const formSchema = z.object({
 interface ImageFromProps {
   initialData: { imageUrl: string };
   questionId: string;
+  path: string;
 }
 
-export const ImageForm = ({ initialData, questionId }: ImageFromProps) => {
+export const ImageForm = ({ initialData, questionId, path }: ImageFromProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const toggleEdit = () => setIsEditing((current) => !current);
   const router = useRouter();
@@ -50,7 +51,7 @@ export const ImageForm = ({ initialData, questionId }: ImageFromProps) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
   
-      await axios.patch(`/api/questions/${questionId}`, values);
+      await axios.patch(path, values);
       toast.success(" Question updated.");
       toggleEdit();
       router.refresh(); // refresh state

@@ -32,6 +32,7 @@ import { QuestionTypeForm } from "@/components/question/question-type-form";
 import { Answer } from "@/components/question/answer";
 import { TestCase } from "@/components/question/test-case";
 import { QuestionTypeType } from "@/lib/database/models/questionTypes.model";
+import { getQuestionChapterById } from "@/lib/actions/questionchapter.action";
 
 const QuestionIdPage = async ({
   params,
@@ -41,7 +42,7 @@ const QuestionIdPage = async ({
   const { userId } = auth();
   if (!userId) redirect("/");
 
-  const question = await getQuestionById(params.questionId);
+  const question = await getQuestionChapterById(params.questionId);
   const categorys = await getAllCategory();
   // const languages = await getAllLanguage();
   const questionTypes = await getAllQuestionTypes();
@@ -59,7 +60,6 @@ const QuestionIdPage = async ({
     question.questionTypeId,
     question.template,
     question.testCases,
-   question.categoryId
   ];
 
   console.log(requiredFlieds);
@@ -68,9 +68,9 @@ const QuestionIdPage = async ({
   const completionText = `(${completedFields}/${totalFields})`;
   const isComplete = requiredFlieds.every(Boolean);
 
-  const pathToUpdate = `/api/questions/${params.questionId}`;
-  //const pathToAddAnswerTestCases = `/api/questions/${params.questionId}/code-testcases`;
-  const link = `/teacher/questions/${params.questionId}/code-testcases`;
+  const pathToUpdate = `/api/chapters/${params.courseId}/${params.chapterId}/questionschapter/${params.questionId}`;
+  //const pathToAddAnswerTestCases = `/api/chapters/${params.courseId}/${params.chapterId}/questionschapter/${params.questionId}/code-testcases`;
+  const link = `/teacher/courses/${params.courseId}/chapters/${params.chapterId}/questionchapter/${params.questionId}/code-testcases`;
 
   return (
     <>
@@ -79,11 +79,11 @@ const QuestionIdPage = async ({
       )}
       <div className="p-6">
         <Link
-          href={`/teacher/questions`}
+          href={`/teacher/courses/${params.courseId}/chapters/${params.chapterId}`}
           className="flex items-center text-sm hover:opacity-75 transition mb-6"
         >
           <ArrowLeft className="h-4 w-4 mr-2"></ArrowLeft>
-          Back table question
+          Back to chapter set up
         </Link>
 
         <div className=" flex items-center justify-between">
@@ -93,7 +93,7 @@ const QuestionIdPage = async ({
           </div>
 
           <QuestionActions
-          path={pathToUpdate}
+            path={pathToUpdate}
             disabled={!isComplete}
             questionId={params.questionId}
             isPublished={question.isPublished}
@@ -156,12 +156,11 @@ const QuestionIdPage = async ({
 
               <Answer
                 link={link}
-               
                 questionId={params.questionId}
                 initialData={question}
               ></Answer>
               <TestCase
-               link={link}
+                link={link}
                 initialData={question}
                 questionId={question._id}
               ></TestCase>
