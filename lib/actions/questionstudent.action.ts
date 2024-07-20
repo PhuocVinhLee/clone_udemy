@@ -20,48 +20,30 @@ import QuestionsChapter from "../database/models/questionschapter.model";
 import QuestionStudents from "../database/models/questionstudents.model";
 
 // GET ONE
-export async function getQuestionChapterById(questionId: string) {
+export async function getQuestionStudentByQuestionId(
+  userId: string,
+  questionId: string
+) {
   try {
     await connectToDatabase();
-
-    const question = await QuestionsChapter.findById(questionId);
-   // const questionStudent = await QuestionStudents.find({})
-
-    if (!question) {
-      throw new Error("Question not found");
-    }
-    question.testCases.sort((a: any, b: any) => a.position - b.position);
-
-    return JSON.parse(JSON.stringify(question));
-  } catch (error) {
-    //handleError(error)
-    console.log(" An error in action find a question", error);
-    return null;
-  }
-}
-
-
-export async function ActionAllQuestionByChapterId(userId:string, chapterId: string) {
-  try {
-    await connectToDatabase();
-
     const user = await getUserById(userId);
     if (!user) {
       throw new Error("User not found");
     }
 
-    const questions = await QuestionsChapter.find({ userId: user._id , chapterId: chapterId}).sort({
-      position: 1,
+    const questionStudent = await QuestionStudents.findOne({
+      userId: user._id,
+      questionId,
     });
+    // const questionStudent = await QuestionStudents.find({})
 
-    return JSON.parse(JSON.stringify(questions));
+ 
+    
+
+    return JSON.parse(JSON.stringify(questionStudent));
   } catch (error) {
     //handleError(error)
-    console.log(
-      " An error in action ActionAllQuestionByChapterId questions",
-      error
-    );
-    return [];
+    console.log(" An error in action find a question", error);
+    return null;
   }
-
 }

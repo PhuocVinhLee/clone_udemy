@@ -162,7 +162,7 @@ export async function getCourseWithChapters(courseId: string) {
   return JSON.parse(JSON.stringify(course[0]));
 }
 
-export const getCourseWithChaptersAndUserProgres = async (
+export const getCourseWithChaptersAndQuestionAndUserProgres = async (
   userId: string,
   courseId: string
 ) => {
@@ -220,6 +220,26 @@ export const getCourseWithChaptersAndUserProgres = async (
             $unwind: {
               path: "$userProgress",
               preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: "questionschapters",
+              let: { chapterId: "$_id" },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $and: [
+                        { $eq: ["$chapterId", "$$chapterId"] },
+                        { $eq: ["$isPublished", true] },
+                      ],
+                    },
+                  },
+                },
+                { $sort: { position: 1 } },
+              ],
+              as: "questions",
             },
           },
         ],

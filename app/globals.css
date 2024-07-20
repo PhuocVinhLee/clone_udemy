@@ -83,5 +83,8 @@
   .ql-container{
     font-size: 16px !important;
   }
-
+  .quill-content .ql-editor {
+    padding: 0px; /* Tailwind equivalent: p-4 */
+    margin: 0px;  /* Tailwind equivalent: m-4 */
+  }
   /* @import "~@uploadthing/react/stlyes.css" */

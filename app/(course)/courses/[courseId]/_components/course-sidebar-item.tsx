@@ -6,7 +6,12 @@ import { UserProgressType } from "@/lib/database/models/userProgress.model";
 import { cn } from "@/lib/utils";
 import { auth } from "@clerk/nextjs/server";
 import { CheckCircle, Lock, PlayCircle } from "lucide-react";
-import { redirect, usePathname, useRouter } from "next/navigation";
+import {
+  redirect,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 
 import {
   Accordion,
@@ -18,6 +23,7 @@ import {
 import React from "react";
 import { from } from "svix/dist/openapi/rxjsStub";
 import Link from "next/link";
+import { QuestionChapterType } from "@/lib/database/models/questionschapter.model";
 
 interface CourseSidebarItemProps {
   label: string;
@@ -25,6 +31,7 @@ interface CourseSidebarItemProps {
   id: string;
   isCompleted: boolean;
   isLocked: boolean;
+  questions: QuestionChapterType[];
 }
 function CourseSidebaItem({
   label,
@@ -32,13 +39,17 @@ function CourseSidebaItem({
   isLocked,
   id,
   isCompleted,
+  questions,
 }: CourseSidebarItemProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const router = useRouter();
   const Icon = isLocked ? Lock : isCompleted ? CheckCircle : PlayCircle;
   const isActive = pathname?.includes(id);
 
-  console.log("Is Active", isCompleted);
+
+//  console.log("Is questionId", questionId);
   const onClick = () => {
     router.push(`/courses/${courseId}/chapters/${id}`);
   };
@@ -47,7 +58,7 @@ function CourseSidebaItem({
     <>
       <Accordion type="single" collapsible>
         <AccordionItem value="item-1">
-          <div className=" relative   ">
+          <div className=" relative    ">
             <div
               className={cn(
                 "    flex items-center justify-between gap-x-2 text-slate-500 text-sm font-[500] pl-2 transition-all hover:text-slate-600 hover:bg-slate-300/20",
@@ -84,18 +95,26 @@ function CourseSidebaItem({
             ></div>
           </div>
 
-          <AccordionContent>
-            <Link    href={`/courses/${courseId}/chapters/${id}/questions/12345`} className=" pl-2 line-clamp-1">
-             
-              Q.1: Yes. It adheres to the WAI-ARIA design pattern.
-            </Link>
-          </AccordionContent>
-          <AccordionContent>
-            <p className=" pl-2 line-clamp-1">
-              
-              Q.2: Yes. It adheres to the WAI-ARIA design pattern.
-            </p>
-          </AccordionContent>
+          {questions?.map((question, index) => {
+            return (
+              <AccordionContent key={index} className=" p-2  ">
+                <Link
+                  href={`/courses/${courseId}/chapters/${id}/questions/${question._id}`}
+                  className=" pl-2 line-clamp-1"
+                >
+                  <span
+                    className={cn(
+                      pathname?.includes(question._id) && " font-bold",
+                      " line-clamp-1 hover:bg-slate-300/20"
+                    )}
+                  >
+                    {" "}
+                    Q.{index + 1}: {question?.title}
+                  </span>
+                </Link>
+              </AccordionContent>
+            );
+          })}
         </AccordionItem>
       </Accordion>
     </>

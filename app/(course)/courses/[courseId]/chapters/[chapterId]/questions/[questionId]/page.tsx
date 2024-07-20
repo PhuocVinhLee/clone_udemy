@@ -1,16 +1,29 @@
 "use server";
 
-import { getQuestionById } from "@/lib/actions/question.action";
+import { getQuestionChapterById } from "@/lib/actions/questionchapter.action";
 import PanelResize from "./_components/panel-resize";
+import { auth } from "@clerk/nextjs/server";
+import { getQuestionStudentByQuestionId } from "@/lib/actions/questionstudent.action";
+import { redirect } from "next/navigation";
+
 
 export default async function QuestionIdPage({
   params,
 }: {
-  params: { questionId: string };
+  params: { questionId: string; chapterId: string };
 }) {
-  const question = await getQuestionById(params?.questionId);
+  const { userId } = auth();
+  if(!userId){ redirect("/");}
+  const question = await getQuestionChapterById(params?.questionId);
+  const questionStudent = await getQuestionStudentByQuestionId(
+    userId,
+    params?.questionId
+  );
+  console.log("questionStudent in Page", questionStudent);
 
-  console.log("question in Page",question)
-
-  return <PanelResize question={question}></PanelResize>;
+  return (
+    <div className="w-full h-full overflow-hidden">
+      <PanelResize questionStudent={questionStudent} question={question}></PanelResize>
+    </div>
+  );
 }

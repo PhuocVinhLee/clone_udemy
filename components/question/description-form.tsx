@@ -22,6 +22,9 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
+import { Editor } from "../editor";
+import { Review } from "../review";
+
 
 const formSchema = z.object({
   description: z.string().min(2, {
@@ -84,7 +87,7 @@ export const DescriptionForm = ({
           )}
         >
           {" "}
-          {initialData.description || "No description"}
+          {initialData.description ? <Review value={initialData.description}></Review>  :  "No description"}
         </p>
       )}
       {isEditing && (
@@ -100,11 +103,12 @@ export const DescriptionForm = ({
                 <FormItem>
                    
                   <FormControl>
-                    <Textarea
+                    {/* <Textarea
                       disabled={isSubmitting}
                       placeholder="This course is about..."
                       {...field}
-                    />
+                    /> */}
+                     <Editor {...field} />
                   </FormControl>
                   {/* <FormDescription>
                       This is your public display name.

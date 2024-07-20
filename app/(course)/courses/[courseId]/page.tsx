@@ -5,13 +5,13 @@ import { redirect } from "next/navigation";
 
 
 const CourseIdPage =  async({params}: {params:{courseId: string}}) => {
-  const {userId} = auth();
-  if(!userId) return redirect("/");
+  // const {userId} = auth();
+  // if(!userId) return redirect("/");
 
   const course = await getCourseWithChapters(params.courseId)
   console.log("asd",course);
 
-  if(!course) return redirect("/");
+ // if(!course) return redirect("/");
   return  redirect(`/courses/${course._id}/chapters/${course.chapters[0]._id}`)
 }
 

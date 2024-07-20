@@ -2,11 +2,17 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TestCaseType } from "@/lib/database/models/questions.model";
+import { TestCaseType } from "@/lib/database/models/questionschapter.model";
 import { cn } from "@/lib/utils";
 
 interface TestCaseErrorProps {
-  testCases?: TestCaseType[] | null;
+  testCases?: {
+    _id: string;
+    input: string;
+    output: string;
+    asexample: boolean;
+    position: number;
+  }[] | null;
   result: string[];
   errorCompiled: string;
 }
@@ -26,7 +32,7 @@ const TestCaseError = ({ testCases, result, errorCompiled }: TestCaseErrorProps)
             return (
               <TabsTrigger  key={index} value={testcase._id} 
               className={cn( " ",
-                result[0] && (result[index] === testcase?.output ? "border border-lime-400": "border border-red-400" )
+                result[0] && (result[index] === testcase?.output ? "border border-green-400": "border border-red-400" )
               )} > <p >Case{index + 1}</p> </TabsTrigger>
             );
           })}

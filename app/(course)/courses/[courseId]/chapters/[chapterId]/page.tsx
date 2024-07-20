@@ -42,7 +42,7 @@ const ChpaterIdPage = async ({
   const completedOnEnd = !!purchase && !userProgress?.isCompleted;
 
   return (
-    <div>
+    <div className="md:pl-80">
       {userProgress?.isCompleted && (
         <Banner
           variant="success"

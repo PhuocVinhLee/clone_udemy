@@ -15,7 +15,7 @@ export const Review = ({ value}: ReviewProps) => {
    
       <ReactQuill theme="bubble"
       value={value}
-      readOnly
+      readOnly className=" quill-content "
      >
 
       </ReactQuill>
