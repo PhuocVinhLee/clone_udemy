@@ -16,7 +16,7 @@ import { Menu } from "lucide-react";
 import Purchase from "@/lib/database/models/purchase.model";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import CourseSidebarQuestion from "./course-sidebar-question";
+
 import { QuestionChapterType } from "@/lib/database/models/questionschapter.model";
 
 interface ChapterMobileSidebarProps {

@@ -18,7 +18,7 @@ const CodeMirrorCpn = ({
   valueProp: string;
   onChangeProp?: (value: string) => void;
   extensionsProp?: any[];
-  className: string;
+  className?: string;
 }) => {
   const { theme } = useTheme();
 

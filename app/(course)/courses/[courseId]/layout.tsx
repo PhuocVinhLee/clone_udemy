@@ -15,9 +15,11 @@ const CourseLayout = async ({
   children: React.ReactNode;
   params: { courseId: string; chapterId: string };
 }) => {
-  const { userId } = await auth();
+  const { userId, has } = await auth();
   if (!userId) return;
   // redirect("/");
+  const isTeacher = has({ role: "org:teacher" });
+  console.log("isTeacher in page ", isTeacher)
 
   const course = await getCourseWithChaptersAndQuestionAndUserProgres(
     userId,

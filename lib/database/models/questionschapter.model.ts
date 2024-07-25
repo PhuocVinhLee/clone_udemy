@@ -24,7 +24,7 @@ export interface QuestionChapterType extends Document {
   }[];
   isPublished: boolean;
   position: number;
-  level: stirng;
+  level: string;
   categoryId: string;
   createdAt?: Date;
   updatedAt?: Date;

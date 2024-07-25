@@ -24,7 +24,8 @@ import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { autocompletion } from "@codemirror/autocomplete";
 import { cpp } from "@codemirror/lang-cpp";
-import CodeMirrorCpn from "./code-mirror";
+import CodeMirrorCpn from "./code-testcases/code-mirror";
+
 
 const formSchema = z.object({
   template: z.string().min(2, {

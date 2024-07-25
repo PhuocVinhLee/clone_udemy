@@ -16,7 +16,7 @@ import { Flag } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { QuestionChapterType } from "@/lib/database/models/questionschapter.model";
-import ActionQuestion from "./action-question";
+
 
 interface CourseNavbarProps {
   course: CourseType & {

@@ -23,17 +23,20 @@ export async function POST(
   try {
     const { userId, has } = auth();
     const current_User = await currentUser();
-    const { chapterId, courseId } = params;
-    const payload= await req.json();
-
-    console.log(current_User)
-    const canManage = has({ permission:"admin" });//org:member
-    console.log(canManage)
-    if (!userId) {
+    if (!userId ) {
       return new NextResponse("UnAuthention in Update Chapter", {
         status: 401,
       });
     }
+    const { chapterId, courseId } = params;
+    const payload= await req.json();
+
+    console.log(current_User)
+    const isTeacher = current_User?.publicMetadata?.role === "teacher";
+   // const canManage = has({ permission: "org:teacher" });//org:member
+    console.log("maskcbkasbc",isTeacher)
+    
+    
 
     await connectToDatabase();
     const user = await getUserById(userId);
