@@ -63,11 +63,12 @@ export async function POST(req: Request) {
     const { id } = evt.data;
     const eventType = evt.type;
     console.log("id in sjkkasbdk db a djkbakdbasjkl dklasdklas kdlas lkl dh\n", id);
-    if (id) {
-      await clerkClient.users.updateUser(id, {
-        publicMetadata: { role: "teachter" },
-      });
-    }
+    // if (id) {
+    //   await clerkClient.users.updateUser(id, {
+       
+    //     publicMetadata: { role: "teachter" },
+    //   });
+    // }
     // CREATE
     console.log("cretw account 1");
     if (eventType === "user.created") {

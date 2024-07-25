@@ -1,9 +1,12 @@
 import Nav from "./_components/nav";
 import Sidebar from "./_components/sidebar";
-import { auth } from '@clerk/nextjs/server'
+import { auth} from '@clerk/nextjs/server'
 
 const DashbroardLayout = ({ children }: { children: React.ReactNode }) => {
   //auth().protect()
+  const {has} = auth();
+  const isTeacher = has({ role: "org:teacher" });
+  console.log("isTeacher in page ", isTeacher)
   return (
     <div className=" h-full ">
       <div className="h-[80px] md:pl-56 fixed inset-y-0 w-full z-50">
