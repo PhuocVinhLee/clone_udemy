@@ -27,3 +27,11 @@ declare type UpdateUserParams = {
   username: string;
   photo: string;
 };
+
+export { };
+declare global {
+  interface ClerkAuthorization {
+    permission: 'org:quiz:create' | 'org:quiz:grade' | 'org:quiz:read' | 'org:quiz:fill';
+    role: 'org:manager' | 'org:teacher' | 'org:student';
+  }
+}

@@ -60,7 +60,7 @@ export const ImageForm = ({ initialData, questionId, path }: ImageFromProps) => 
     }
   };
   return (
-    <div className="mt-6 broder bg-slate-100 rounded-md p-4">
+    <div className="mt-6 broder  dark:bg-slate-700 bg-slate-100 rounded-md p-4">
       <div className=" font-medium flex items-center justify-between">
         Question Image
         <Button onClick={toggleEdit} variant="ghost">

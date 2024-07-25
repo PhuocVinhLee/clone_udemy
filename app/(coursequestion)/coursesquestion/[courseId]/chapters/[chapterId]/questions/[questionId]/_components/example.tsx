@@ -15,7 +15,7 @@ const Example = ({ examples }: ExampleProps) => {
   return (
     <div>
       {examples.map((testcase, index) => {
-        return (
+        return ( testcase.asexample &&
           <div key={index} className="flex flex-col gap-y-2 mb-5">
             <div className=" font-bold">Example {index + 1}:</div>
             <div>

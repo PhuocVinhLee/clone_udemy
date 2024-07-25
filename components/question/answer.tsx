@@ -18,6 +18,7 @@ import CodeMirror from "@uiw/react-codemirror";
 import { EditorState } from "@codemirror/state";
 import { autocompletion } from "@codemirror/autocomplete";
 import { cpp } from "@codemirror/lang-cpp";
+import CodeMirrorCpn from "./code-testcases/code-mirror";
 
 interface TitleFromProps {
   initialData: {
@@ -35,7 +36,7 @@ export const Answer = ({ initialData, questionId, link }: TitleFromProps) => {
 
   const [hiden, setHiden] = useState<boolean>(true);
   return (
-    <div className="mt-6 broder bg-slate-100 rounded-md p-4">
+    <div className="mt-6 broder  dark:bg-slate-700 bg-slate-100 rounded-md p-4">
       <div className=" font-medium flex items-center justify-between">
         Answer
         <div className="flex items-center gap-x-2">
@@ -64,14 +65,12 @@ export const Answer = ({ initialData, questionId, link }: TitleFromProps) => {
         </div>
       </div>
 
-      <CodeMirror
+      <CodeMirrorCpn
         className={cn("  text-sm mt-2 w-full", hiden && " blur-sm")}
-        value={initialData?.answer}
-        // content="Your answer"
-        height="full"
-        width="full"
+        valueProp={initialData?.answer}
+       
         // extensions={[javascript({ jsx: true }),]}
-        extensions={[cpp(), EditorState.readOnly.of(true)]}
+        extensionsProp={[cpp(), EditorState.readOnly.of(true)]}
         //extensions={[cpp()]}
       />
     </div>

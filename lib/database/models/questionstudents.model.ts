@@ -19,7 +19,7 @@ export interface QuestionStudentType extends Document {
     got: string;
   }[];
   isCorrect: boolean;
-
+  flag: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -42,6 +42,9 @@ const QuestionsStudentSchema = new Schema({
   isCorrect: {
     type: Boolean,
     default: false,
+  },
+  flag: {
+    type: Boolean
   },
 
   gotAnwsers: {

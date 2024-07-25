@@ -56,10 +56,10 @@ const VideoPlayer = ({
   };
 
   return (
-    <div className=" relative  w-full aspect-video border border-red-700">
+    <div className=" relative  w-full aspect-video ">
       {!isLocked && (
         <div className=" absolute inset-0 flex items-center justify-center bg-slate-800">
-          <Loader2 className="h-8 w-8 animate-spin text-secondary"></Loader2>
+          <Loader2 className="h-8 w-8 animate-spin text-secondary dark:text-white"></Loader2>
         </div>
       )}
 

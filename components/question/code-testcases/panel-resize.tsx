@@ -33,6 +33,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import Loading from "@/components/clipLoader";
 import { formatResult } from "@/lib/format";
+import CodeMirrorCpn from "./code-mirror";
 interface PanelReSizeProps {
   question: any;
   pathToUpdateAndGet: string
@@ -241,14 +242,14 @@ export default function PanelReSize({ question, pathToUpdateAndGet }: PanelReSiz
                     value="youranswer"
                     className="flex-1 overflow-auto"
                   >
-                    <CodeMirror
-                      value={valueAnswerCode}
+                    <CodeMirrorCpn
+                      valueProp={valueAnswerCode}
                       // content="Your answer"
-                      height="full"
+                      
                       // extensions={[javascript({ jsx: true }),]}
-                      extensions={[cpp(), autocompletion()]}
+                      extensionsProp={[cpp(), autocompletion()]}
                       //extensions={[cpp()]}
-                      onChange={(value) => {
+                      onChangeProp={(value) => {
                         setValueAnswerCode(value);
                       }}
                     />
@@ -257,12 +258,15 @@ export default function PanelReSize({ question, pathToUpdateAndGet }: PanelReSiz
                     value="fullcode"
                     className="flex-1 overflow-auto"
                   >
-                    <CodeMirror
-                      value={fullCode}
+                    <CodeMirrorCpn
+                      valueProp={fullCode}
                       // content="Your answer"
-                      height=""
+                      onChangeProp={(value) => {
+                        
+                      }}
+                  
                       // extensions={[javascript({ jsx: true }),]}
-                      extensions={[
+                      extensionsProp={[
                         cpp(),
                         autocompletion(),
                         EditorState.readOnly.of(true),
@@ -280,21 +284,21 @@ export default function PanelReSize({ question, pathToUpdateAndGet }: PanelReSiz
                 maxSize={95}
                 defaultSize={6}
               >
-                <div className="  overflow-auto pb-[35px]">
+                <div className="  overflow-auto pb-[35px] h-full  bg-slate-100 dark:bg-black">
                   <TestCaseError
                     testCases={question?.testCases}
                     result={resultCompiled}
                     errorCompiled={handelErrorCompiled}
                   ></TestCaseError>
                 </div>
-                <div className=" rounded-sm px-2 bg-slate-300  hover:bg-slate-400 text-black  md:h-[45px]  h-[10px] sm:h-[30px]  
+                <div className="  dark:bg-customDark dark:text-white rounded-sm px-2 bg-slate-300  hover:bg-slate-400 text-black  md:h-[45px]  h-[10px] sm:h-[30px]  
                 absolute bottom-0 right-0 flex items-center justify-between w-full">
                   <div onClick={handleShowConsole}>
                     {" "}
                     {showConsole ? <FaChevronDown /> : <FaChevronUp />}{" "}
                   </div>
                   <div className="flex gap-x-2">
-                    <Button className="p-3 md:h-5 h-2  w-13" onClick={handleRunCode}>
+                    <Button className=" p-3 md:h-5 h-2  w-13" onClick={handleRunCode}>
                       {isLoading && (
                         <span className="flex items-center justify-between">
                           <Loading loading={isLoading}></Loading>

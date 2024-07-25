@@ -19,13 +19,69 @@ import Questions from "../database/models/questions.model";
 import QuestionsChapter from "../database/models/questionschapter.model";
 import QuestionStudents from "../database/models/questionstudents.model";
 
+export async function getQuestionsWithStudentStatus(
+  chapterId: string,
+  userId: string
+) {
+  await connectToDatabase();
+  const user = await getUserById(userId);
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const results = await QuestionsChapter.aggregate([
+    {
+      $match: {
+        chapterId: new mongoose.Types.ObjectId(chapterId),
+        isPublished: true,
+      },
+    },
+    {
+      $lookup: {
+        from: "questionstudents",
+        let: {
+          questionId: "$_id",
+          userId: new mongoose.Types.ObjectId(user._id),
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$questionId", "$$questionId"] },
+                  { $eq: ["$userId", "$$userId"] },
+                ],
+              },
+            },
+          },
+          { $project: { isCorrect: 1 , flag: 1} },
+        ],
+        as: "studentStatus",
+      },
+    },
+    {
+      $addFields: {
+        isCorrect: { $arrayElemAt: ["$studentStatus.isCorrect", 0] },
+        id_questionstudents: { $arrayElemAt: ["$studentStatus._id", 0] },
+        flag: { $arrayElemAt: ["$studentStatus.flag", 0] }
+      },
+    },
+    {
+      $project: {
+        studentStatus: 0,
+      },
+    },
+  ]);
+  return JSON.parse(JSON.stringify(results));
+ 
+}
 // GET ONE
 export async function getQuestionChapterById(questionId: string) {
   try {
     await connectToDatabase();
 
     const question = await QuestionsChapter.findById(questionId);
-   // const questionStudent = await QuestionStudents.find({})
+    // const questionStudent = await QuestionStudents.find({})
 
     if (!question) {
       throw new Error("Question not found");
@@ -40,8 +96,10 @@ export async function getQuestionChapterById(questionId: string) {
   }
 }
 
-
-export async function ActionAllQuestionByChapterId(userId:string, chapterId: string) {
+export async function ActionAllQuestionByChapterId(
+  userId: string,
+  chapterId: string
+) {
   try {
     await connectToDatabase();
 
@@ -50,7 +108,10 @@ export async function ActionAllQuestionByChapterId(userId:string, chapterId: str
       throw new Error("User not found");
     }
 
-    const questions = await QuestionsChapter.find({ userId: user._id , chapterId: chapterId}).sort({
+    const questions = await QuestionsChapter.find({
+      userId: user._id,
+      chapterId: chapterId,
+    }).sort({
       position: 1,
     });
 
@@ -63,5 +124,4 @@ export async function ActionAllQuestionByChapterId(userId:string, chapterId: str
     );
     return [];
   }
-
 }

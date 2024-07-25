@@ -1,13 +1,12 @@
-
-import NavbarRoutes from '@/components/navbar-routes'
-import MobileSidebar from'./mobile-sidebar'
+import NavbarRoutes from "@/components/navbar-routes";
+import MobileSidebar from "./mobile-sidebar";
 const NavBar = () => {
   return (
-    <div className=' p-4 flex  items-center border-b h-full bg-white shadow-sm'>
-       <MobileSidebar></MobileSidebar>
-       <NavbarRoutes/>
+    <div className=" p-4 flex  items-center border-b h-full bg-white  dark:bg-customDark shadow-sm">
+      <MobileSidebar></MobileSidebar>
+      <NavbarRoutes />
     </div>
-  )
-}
+  );
+};
 
-export default NavBar
+export default NavBar;

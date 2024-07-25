@@ -18,6 +18,9 @@ import Acttachments, {
 import Muxdata from "../database/models/muxdata.model";
 import UserProgress from "../database/models/userProgress.model";
 import { getUserById } from "./user.actions";
+import QuestionsChapter, {
+  QuestionChapterType,
+} from "../database/models/questionschapter.model";
 
 const mux = new Mux({
   tokenId: process.env.MUX_TOKEN_ID!,
@@ -29,6 +32,8 @@ interface GetChapterProps {
   courseId: string;
   chapterId: string;
 }
+
+
 
 export async function ActionGetChapter({
   userId,
@@ -68,11 +73,20 @@ export async function ActionGetChapter({
     let muxData = null;
     let attachments: AttackmentType[] = [];
     let nextChapter: ChapterType | null = null;
+    let questionChapter: QuestionChapterType[] = [];
 
     if (purchase) {
       attachments = await Acttachments.find({
         courseId: courseId,
       }).exec();
+
+      questionChapter = await QuestionsChapter.find({
+        chapterId: chapterId,
+        isPublished: true,
+      })
+        .select(["title", "position"])
+        .sort({ position: 1 })
+        .exec();
     }
 
     if (chapter?.isFree || purchase) {
@@ -91,8 +105,9 @@ export async function ActionGetChapter({
       chapterId: new mongoose.Types.ObjectId(chapterId),
     }).exec();
 
-    nextChapter =  JSON.parse(JSON.stringify(nextChapter));
-    
+    nextChapter = JSON.parse(JSON.stringify(nextChapter));
+    questionChapter = JSON.parse(JSON.stringify(questionChapter));
+    attachments = JSON.parse(JSON.stringify(attachments));
     return {
       chapter,
       course,
@@ -101,6 +116,7 @@ export async function ActionGetChapter({
       nextChapter,
       userProgress,
       purchase,
+      questionChapter,
     };
   } catch (error) {
     console.log("An erorr in Action get chapter", error);
@@ -112,6 +128,7 @@ export async function ActionGetChapter({
       nextChapter: null,
       userProgress: null,
       purchase: null,
+      questionChapter: null,
     };
   }
 }
@@ -131,7 +148,7 @@ export async function deleteChapter2(
     if (!courseToUpdate || courseToUpdate?.userId !== userId) {
       throw new Error("Unauthorized or Course not found");
     }
-   
+
     const chapterDeleted = await Chapters.findByIdAndDelete(chapterId);
     if (!chapterDeleted) {
       return null;
@@ -170,7 +187,6 @@ export async function deleteChapter2(
   }
 }
 
-
 // pass//
 export async function getAllChapterByCourseId(courseId: string) {
   try {
@@ -186,7 +202,6 @@ export async function getAllChapterByCourseId(courseId: string) {
   }
 }
 
-
 // GET ONE//
 export async function getChapterById(_id: string) {
   try {
@@ -201,4 +216,3 @@ export async function getChapterById(_id: string) {
     return null;
   }
 }
-

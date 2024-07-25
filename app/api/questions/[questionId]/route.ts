@@ -37,6 +37,7 @@ export async function PATCH(
       questionTypeId: payload?.questionTypeId,
       template: payload?.template,
       testCases: payload?.testCases,
+      level: payload?.level,
       updatedAt: new Date()
     };
     console.log("dataQuestion",dataQuestion)

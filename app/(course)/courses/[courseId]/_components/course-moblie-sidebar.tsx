@@ -16,13 +16,13 @@ import { Menu } from "lucide-react";
 import Purchase from "@/lib/database/models/purchase.model";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import CourseSidebarQuestion from "./course-sidebar-question";
+
 
 interface CourseMoblieSidebarProps {
   course: CourseType & {
     chapters: (ChapterType & {
       userProgress: UserProgressType | null;
-    } & { questions: QuestionChapterType[] })[];
+    } )[];
   };
   progressCount: number;
   purchase: any;
@@ -51,12 +51,12 @@ const CourseMobileSidebar = ({
       </SheetTrigger>
       <SheetContent side="left" className="p-0 bg-white w-80">
        
-      <CourseSidebarQuestion
+      <CourseSidebar
           purchase={purchase}
           course={course}
           progressCount={progressCount}
           
-        ></CourseSidebarQuestion>
+        ></CourseSidebar>
       </SheetContent>
     </Sheet>
   );

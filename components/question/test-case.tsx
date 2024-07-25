@@ -31,7 +31,7 @@ export const TestCase = ({ initialData, questionId , link}: TestCaseProps) => {
   const router = useRouter();
 
   return (
-    <div className="mt-6 broder bg-slate-100 rounded-md p-4">
+    <div className="mt-6 broder  dark:bg-slate-700 dark:text-white  bg-slate-100 rounded-md p-4">
       <div className=" font-medium flex items-center justify-between mb-4">
         Test cases
         <Link href={link}>
@@ -72,11 +72,11 @@ export const TestCase = ({ initialData, questionId , link}: TestCaseProps) => {
               <div className="flex flex-col mb-3 gap-2">
                 <span className="flex gap-x-2 items-center justify-between">
                   Input:{" "}
-                  <div className="bg-white w-full p-2">{testcase.input}</div>
+                  <div className="bg-white dark:bg-customDark w-full p-2">{testcase.input}</div>
                 </span>
                 <span className="flex gap-x-2 items-center justify-between">
                   Output:{" "}
-                  <div className="bg-white w-full p-2">{testcase.output}</div>
+                  <div className="bg-white  dark:bg-customDark w-full p-2">{testcase.output}</div>
                 </span>
               </div>
               <div className="border-dashed border-2">

@@ -31,7 +31,7 @@ interface CourseSidebarItemProps {
   id: string;
   isCompleted: boolean;
   isLocked: boolean;
-  questions: QuestionChapterType[];
+ 
 }
 function CourseSidebaItem({
   label,
@@ -39,7 +39,7 @@ function CourseSidebaItem({
   isLocked,
   id,
   isCompleted,
-  questions,
+ 
 }: CourseSidebarItemProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -48,8 +48,7 @@ function CourseSidebaItem({
   const Icon = isLocked ? Lock : isCompleted ? CheckCircle : PlayCircle;
   const isActive = pathname?.includes(id);
 
-
-//  console.log("Is questionId", questionId);
+  //  console.log("Is questionId", questionId);
   const onClick = () => {
     router.push(`/courses/${courseId}/chapters/${id}`);
   };
@@ -61,10 +60,10 @@ function CourseSidebaItem({
           <div className=" relative    ">
             <div
               className={cn(
-                "    flex items-center justify-between gap-x-2 text-slate-500 text-sm font-[500] pl-2 transition-all hover:text-slate-600 hover:bg-slate-300/20",
+                "    flex items-center justify-between gap-x-2  text-sm font-[500] pl-2 transition-all hover:text-slate-400 hover:bg-slate-300/20",
                 isActive &&
-                  "text-slate-700 bg-slate-200/20 hover:bg-slate-200/20 hover:text-slate-700",
-                isCompleted && "text-emerald-700 hover:text-emerald-700",
+                  " bg-slate-200/20 hover:bg-slate-200/20 hover:text-slate-400",
+                isCompleted && "text-green-500 hover:text-green-500",
                 isCompleted && isActive && "bg-emerald-200/20"
               )}
             >
@@ -84,7 +83,7 @@ function CourseSidebaItem({
                 {label}
               </button>
 
-              <AccordionTrigger></AccordionTrigger>
+              {/* <AccordionTrigger></AccordionTrigger> */}
             </div>
             <div
               className={cn(
@@ -95,7 +94,7 @@ function CourseSidebaItem({
             ></div>
           </div>
 
-          {questions?.map((question, index) => {
+          {/* {questions?.map((question, index) => {
             return (
               <AccordionContent key={index} className=" p-2  ">
                 <Link
@@ -114,7 +113,7 @@ function CourseSidebaItem({
                 </Link>
               </AccordionContent>
             );
-          })}
+          })} */}
         </AccordionItem>
       </Accordion>
     </>

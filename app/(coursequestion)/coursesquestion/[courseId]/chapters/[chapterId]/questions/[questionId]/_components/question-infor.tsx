@@ -6,6 +6,7 @@ import { Review } from "@/components/review";
 
 import Image from "next/image";
 import Example from "./example";
+import { cn } from "@/lib/utils";
 interface QuestionInforProp {
   question: QuestionType;
 }
@@ -17,8 +18,17 @@ const QuestionInfor = ({ question }: QuestionInforProp) => {
           {" "}
           <span className=" font-bold">{question?.title}</span>
         </p>
-        <Badge className="  bg-yellow-400" variant="outline">
-          Medium
+        <Badge
+          className={cn(
+            question.level === "medium" && " bg-yellow-500",
+            question.level === "hard" && "  bg-red-500",
+            question.level === "easy" && " bg-green-500"
+          )}
+        >
+          <span className="capitalize">
+            {" "}
+            {question?.level ? question?.level : "None"}
+          </span>
         </Badge>
       </div>
       <div className=" relative mt-2 ">
@@ -30,9 +40,8 @@ const QuestionInfor = ({ question }: QuestionInforProp) => {
           src={question?.imageUrl}
         />
       </div>
-     <span className=" font-semibold gap-x-0"> Description:</span>
-          <Review value={question?.description!}></Review>
-        
+      <span className=" font-semibold gap-x-0"> Description:</span>
+      <Review value={question?.description!}></Review>
 
       <Example examples={question?.testCases}></Example>
     </div>

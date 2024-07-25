@@ -24,6 +24,7 @@ export interface QuestionChapterType extends Document {
   }[];
   isPublished: boolean;
   position: number;
+  level: stirng;
   categoryId: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -73,7 +74,7 @@ const QuestionsChapterSchema = new Schema({
     default: false,
   },
   position: { type: Number },
-
+level: {type: String},
   categoryId: { type: Schema.Types.ObjectId, ref: "Categorys" },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },

@@ -22,7 +22,7 @@ interface CourseNavbarProps {
   course: CourseType & {
     chapters: (ChapterType & {
       userProgress: UserProgressType | null;
-    } & { questions: QuestionChapterType[] })[];
+    })[];
   };
   progressCount: number;
   purchase: any;
@@ -31,20 +31,12 @@ function CourseNavbar({ course, progressCount, purchase }: CourseNavbarProps) {
   // const { userId } = auth();
   // if (!userId) return redirect("/");
   const pathname = usePathname();
-  const isQuestion = pathname?.includes("/questions");
-  // const isChapter = pathname?.includes();
-  const pathSegments = pathname?.split("/");
-  const chapterId = pathSegments ? pathSegments[pathSegments.length - 3] : null;
-  const chapter = course?.chapters?.find((chapter) => {
-    return chapter?._id === chapterId;
-  });
-  console.log("chapter", chapter);
 
   return (
-    <div className={cn(!isQuestion && " md:pl-80 ")}>
+    <div className={cn(" md:pl-80 ")}>
       <div
         className={cn(
-          " p-4 border-b  h-[50px] flex flex-row w-full items-center justify-between  bg-white shadow-sm "
+          "  bg-white dark:bg-customDark p-4 border-b   h-[50px] flex flex-row w-full items-center justify-between shadow-sm "
         )}
       >
         <div className=" flex items-center justify-between    ">
@@ -53,15 +45,6 @@ function CourseNavbar({ course, progressCount, purchase }: CourseNavbarProps) {
             course={course}
             progressCount={progressCount}
           ></CourseMobileSidebar>
-
-          <ActionQuestion
-          courseId={course._id} chapterId={chapter?._id}
-            questions={chapter?.questions ? chapter?.questions : []}
-          ></ActionQuestion>
-        </div>
-
-        <div className={cn("  hidden gap-x-2", isQuestion && "flex")}>
-          <h4 className=" font-bold">{chapter?.title}</h4>
         </div>
 
         <div className=" ">

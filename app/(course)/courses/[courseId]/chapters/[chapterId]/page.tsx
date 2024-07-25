@@ -4,12 +4,17 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import React from "react";
 import VideoPlayer from "./_components/video-player";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import CourseEnrollButton from "./_components/course-enroll-button";
 import { Separator } from "@/components/ui/separator";
 import { Review } from "@/components/review";
 import { File } from "lucide-react";
 import CourseProgressButton from "./_components/course-progress-button";
+import Resoures from "./_components/resoures";
+import QandA from "./_components/QandA";
+import Exercise from "./_components/exercise";
+import { at } from "lodash";
 
 const ChpaterIdPage = async ({
   params,
@@ -27,6 +32,7 @@ const ChpaterIdPage = async ({
     nextChapter,
     userProgress,
     purchase,
+    questionChapter,
   } = await ActionGetChapter({
     userId,
     courseId: params.courseId,
@@ -35,9 +41,6 @@ const ChpaterIdPage = async ({
 
   // if(!chapter || ! course) {return redirect("/");}
 
-  console.log("chapter", chapter);
-
-  console.log("purchase", purchase);
   const isLocked = !chapter?.isFree && !purchase;
   const completedOnEnd = !!purchase && !userProgress?.isCompleted;
 
@@ -73,8 +76,12 @@ const ChpaterIdPage = async ({
         <div className="p-4 flex flex-col md:flex-row items-center justify-between">
           <h2 className="text-2xl font-semibold mb-2">{chapter.title}</h2>
           {purchase ? (
-            <CourseProgressButton chapterId = {params.chapterId} courseId={params.courseId} nextChapterId={nextChapter?._id ? nextChapter?._id : null} 
-            isCompleted={!!userProgress?.isCompleted}/>
+            <CourseProgressButton
+              chapterId={params.chapterId}
+              courseId={params.courseId}
+              nextChapterId={nextChapter?._id ? nextChapter?._id : null}
+              isCompleted={!!userProgress?.isCompleted}
+            />
           ) : (
             <CourseEnrollButton
               courseId={params.courseId}
@@ -82,28 +89,32 @@ const ChpaterIdPage = async ({
             />
           )}
         </div>
-
-        <Separator />
-        <div>
-          <Review value={chapter.description!}></Review>
-        </div>
-
-        {!!attachments?.length && (
-          <>
-            <Separator></Separator>
-            <div className="p-4">
-              {attachments.map((attachment)=>(
-                <a href={attachment.url} target="_blank" key={attachment._id} className="flex items-center p-3 w-full
-                 bg-sky-200 text-sky-700 border rounded-md hover:underline" >
-                  
-                 <File></File>
-                  <p className=" line-clamp-1">{attachment.name}</p>
-                </a>
-
-              ))}
+        <Tabs defaultValue="Overview" className="w-full">
+          <TabsList className="w-full  flex items-center justify-between rounded-none">
+            <TabsTrigger value="Overview"> Overview</TabsTrigger>
+            <TabsTrigger value="Exercise">Exercise</TabsTrigger>
+            <TabsTrigger value="Resoures">Resoures</TabsTrigger>
+            <TabsTrigger value="Q&A"> Q&A</TabsTrigger>
+            <TabsTrigger value="Reviews">Reviews</TabsTrigger>
+          </TabsList>
+          <TabsContent className=" min-h-[400px]" value="Overview">
+            <div className=" p-4">
+              <Review value={chapter.description!}></Review>
             </div>
-          </>
-        )}
+          </TabsContent>
+          <TabsContent value="Exercise" className=" min-h-[400px]">
+            <Exercise courseId={params.courseId}  chapterId={params.chapterId} questions={questionChapter}></Exercise>
+          </TabsContent>
+          <TabsContent value="Resoures" className=" min-h-[400px]">
+            <Resoures attachments={attachments}></Resoures>{" "}
+          </TabsContent>
+          <TabsContent className=" min-h-[400px]" value="Q&A">
+            <QandA chapterId={params.chapterId} courseId={params.courseId} userId={userId}></QandA>
+          </TabsContent>
+          <TabsContent className=" min-h-[400px]" value="Reviews">
+            Change your password here.
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

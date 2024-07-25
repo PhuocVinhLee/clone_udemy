@@ -8,15 +8,11 @@ import {
   PanelGroup,
   PanelResizeHandle,
 } from "react-resizable-panels";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { FaChevronDown } from "react-icons/fa";
 import { FaChevronUp } from "react-icons/fa";
 
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-
-import { getQuestionById } from "@/lib/actions/question.action";
 
 import CodeMirror from "@uiw/react-codemirror";
 import { EditorView } from "codemirror";
@@ -34,12 +30,16 @@ import { QuestionChapterType } from "@/lib/database/models/questionschapter.mode
 import TestCaseError from "@/components/question/code-testcases/testcase-error";
 import QuestionInfor from "./question-infor";
 import { QuestionStudentType } from "@/lib/database/models/questionstudents.model";
+import CodeMirrorCpn from "@/components/question/code-testcases/code-mirror";
 interface PanelReSizeProps {
   question: QuestionChapterType;
-  questionStudent: QuestionStudentType
+  questionStudent: QuestionStudentType;
 }
 
-export default function PanelReSize({ questionStudent,question }: PanelReSizeProps) {
+export default function PanelReSize({
+  questionStudent,
+  question,
+}: PanelReSizeProps) {
   const ref = useRef<ImperativePanelGroupHandle>(null);
 
   const resetLayout = (top: number, bottom: number) => {
@@ -62,7 +62,9 @@ export default function PanelReSize({ questionStudent,question }: PanelReSizePro
   const [testCases, setTestCase] = useState(question?.testCases || []);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [valueAnswerCode, setValueAnswerCode] = useState(question?.answer);
+  const [valueAnswerCode, setValueAnswerCode] = useState(
+    questionStudent?.answer
+  );
   const [resultCompiled, setResultCompiled] = useState<string[]>([]);
   const [statusCodeRealtime, setStatusCodeRealtime] = useState("");
   const [handelErrorCompiled, setHandelErrorCompiled] = useState<any>(null);
@@ -85,28 +87,30 @@ export default function PanelReSize({ questionStudent,question }: PanelReSizePro
 
       if (1) {
         //respone?.data.he_id
-        //const he_id = respone.data.he_id;
-        const he_id = "7c8cd661-fb51-49cc-b2d5-51a0c42e9a0b";
+        const he_id = respone.data.he_id;
+        //const he_id = "7c8cd661-fb51-49cc-b2d5-51a0c42e9a0b";
         //const he_id = "009dd95b-93d7-4fbd-a843-2f7439cef762";
         const respone2 = await axios.get(`/api/hackerearth/${he_id}`);
         console.log("respone2", respone2);
         setStatusCodeRealtime("Compiled");
-        // const output = respone2?.data?.result?.run_status?.output;
-        const output =
-          "https://he-s3.s3.amazonaws.com/media/userdata/AnonymousUser/code/8c98722";
+        const output = respone2?.data?.result?.run_status?.output;
+        // const output = "https://he-s3.s3.amazonaws.com/media/userdata/AnonymousUser/code/8c98722";
         // const output =  "32#<ab@17943918#@>#35#<ab@17943918#@>#36"
         const compile_status = respone2?.data?.result?.compile_status;
         if (compile_status != "OK") {
           setHandelErrorCompiled(compile_status);
           setResultCompiled([]);
+          toast(" This answer will not save");
         }
+
+        let mapQuestionStudentGotAnwsers: any[] = [];
         if (output) {
           const respone3 = await axios.get(output);
           console.log("respone3", respone3);
 
           const resultFormated = formatResult(respone3?.data);
 
-          const mapQuestionStudentGotAnwsers = question?.testCases.map(
+          mapQuestionStudentGotAnwsers = question?.testCases.map(
             (testcase, index) => {
               return {
                 ...testcase,
@@ -114,28 +118,25 @@ export default function PanelReSize({ questionStudent,question }: PanelReSizePro
               };
             }
           );
-          const responeQuestionStudent = await axios.patch(
-            `/api/questionstudents/${question._id}`,
-            {
-              gotAnwsers: mapQuestionStudentGotAnwsers,
-              answer: valueAnswerCode,
-            }
-          );
-          console.log(responeQuestionStudent);
-          if(responeQuestionStudent?.data?.isCorrect){
-            toast.success(" You are passed question")
-          }
-         
+
           setResultCompiled(resultFormated);
 
           setHandelErrorCompiled(null);
+        }
 
-          //           "32
-          // #<ab@17943918#@>#
-          // 35
-          // #<ab@17943918#@>#
-          // 36
-          // "
+        const responeQuestionStudent = await axios.patch(
+          `/api/questionstudents/${question._id}`,
+          {
+            gotAnwsers: mapQuestionStudentGotAnwsers,
+            answer: valueAnswerCode,
+          }
+        );
+        if (compile_status == "OK" && responeQuestionStudent?.data?.isCorrect) {
+          if (questionStudent?.isCorrect) {
+            toast(" This answer will not save");
+          } else {
+            toast.success(" You are passed question");
+          }
         }
       }
 
@@ -160,23 +161,28 @@ export default function PanelReSize({ questionStudent,question }: PanelReSizePro
           <Panel defaultSize={50} maxSize={90} className="h-full">
             <QuestionInfor question={question}></QuestionInfor>
           </Panel>
-          <PanelResizeHandle className=" p-[2px] w-[2px] hover:bg-slate-500 bg-slate-200 cursor-pointer" />
+          <PanelResizeHandle className=" p-[2px] w-[2px] hover:bg-slate-500 bg-slate-200  cursor-pointer" />
           <Panel defaultSize={50}>
             <PanelGroup direction="vertical" ref={ref}>
-              <Panel maxSize={95} minSize={5} defaultSize={95} >
+              <Panel maxSize={95} minSize={5} defaultSize={95}>
                 <div className=" h-full overflow-auto">
-                <CodeMirror
-                className=" overflow-auto"
-                  value={questionStudent?.answer}
-                  // content="Your answer"
-                  height="full"
-                  // extensions={[javascript({ jsx: true }),]}
-                  extensions={[cpp(), autocompletion()]}
-                  //extensions={[cpp()]}
-                  onChange={(value) => {
-                    setValueAnswerCode(value);
-                  }}
-                />
+                  {/* <CodeMirror
+                    className=" overflow-auto"
+                    value={valueAnswerCode}
+                    // content="Your answer"
+                    height="full"
+                    // extensions={[javascript({ jsx: true }),]}
+                    extensions={[cpp(), autocompletion()]}
+                    //extensions={[cpp()]}
+                    onChange={(value) => {
+                      setValueAnswerCode(value);
+                    }}
+                  /> */}
+                  <CodeMirrorCpn  extensionsProp={[cpp(), autocompletion()]} valueProp={valueAnswerCode} onChangeProp={(value) => {
+                      setValueAnswerCode(value);
+                    }}>
+                    
+                  </CodeMirrorCpn>
                 </div>
               </Panel>
               <PanelResizeHandle className=" p-[2px] h-[2px] hover:bg-slate-500 bg-slate-200 cursor-pointer" />
@@ -186,15 +192,21 @@ export default function PanelReSize({ questionStudent,question }: PanelReSizePro
                 maxSize={95}
                 defaultSize={6}
               >
-                <div className="  overflow-auto pb-[35px]">
+                <div className="  overflow-auto pb-[35px] h-full  bg-slate-100 dark:bg-black">
                   <TestCaseError
                     testCases={question?.testCases}
-                    result={questionStudent?.gotAnwsers.map((answer)=>{ return answer?.got})}
+                    result={
+                      resultCompiled?.length
+                        ? resultCompiled
+                        : questionStudent?.gotAnwsers.map((answer) => {
+                            return answer?.got;
+                          })
+                    }
                     errorCompiled={handelErrorCompiled}
                   ></TestCaseError>
                 </div>
                 <div
-                  className=" rounded-sm px-2 bg-slate-300  hover:bg-slate-400 text-black  md:h-[45px]  h-[10px] sm:h-[30px]  
+                  className=" rounded-sm px-2  bg-white dark:bg-customDark md:h-[45px]  h-[10px] sm:h-[30px]  
                 absolute bottom-0 right-0 flex items-center justify-between w-full"
                 >
                   <div onClick={handleShowConsole}>

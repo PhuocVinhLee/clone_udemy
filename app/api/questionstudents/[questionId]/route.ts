@@ -46,17 +46,23 @@ export async function PATCH(
         checkIsCorrect = false;
       }
     }
-    const questionStudent = await QuestionStudents.findById(questionId)
+    const questionStudent = await QuestionStudents.findOne( { questionId: questionId, userId: user._id });
+    console.log("questionStudent", questionStudent)
     if (questionStudent?.isCorrect) {
+      console.log("isCorrect")
       const QuestionUpdated = await QuestionStudents.findOneAndUpdate(
         { questionId: questionId, userId: user._id },
-        { ...dataQuestionStudent, answer: questionStudent.answer,subAnswer: payload?.answer  },
+        {
+          updatedAt: new Date(),
+          subAnswer: payload?.answer,
+        },
         {
           new: false,
         }
       );
       return NextResponse.json(QuestionUpdated);
-    } else{
+    } else {
+      console.log("NotisCorrect")
       const QuestionUpdated = await QuestionStudents.findOneAndUpdate(
         { questionId: questionId, userId: user._id },
         { ...dataQuestionStudent, isCorrect: checkIsCorrect },
@@ -67,8 +73,6 @@ export async function PATCH(
       );
       return NextResponse.json(QuestionUpdated);
     }
-
-  
   } catch (error) {
     console.log("error", error);
     return new NextResponse("Inter Error", { status: 500 });

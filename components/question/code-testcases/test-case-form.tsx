@@ -121,7 +121,7 @@ export const TestCaseForm = ({
   }, [initialData]);
   return (
     <>
-      <div className=" broder bg-slate-100 rounded-md p-4 ">
+      <div className=" broder dark:bg-slate-700 bg-slate-100 rounded-none p-4 ">
         <div className=" font-medium flex items-center justify-between">
           Case {initialData.position}
           <div>
@@ -155,11 +155,11 @@ export const TestCaseForm = ({
               <div className="flex flex-col mb-3 gap-2">
                 <span className="flex gap-x-2 items-center justify-between">
                   Input:{" "}
-                  <div className="bg-white w-full p-2">{initialData.input}</div>
+                  <div className="bg-white  dark:bg-customDark w-full p-2">{initialData.input}</div>
                 </span>
                 <span className="flex gap-x-2 items-center justify-between">
                   Output:{" "}
-                  <div className="bg-white w-full p-2">{initialData.output}</div>
+                  <div className="bg-white  dark:bg-customDark w-full p-2">{initialData.output}</div>
                 </span>
               </div>
               

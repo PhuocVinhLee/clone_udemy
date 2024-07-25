@@ -222,26 +222,26 @@ export const getCourseWithChaptersAndQuestionAndUserProgres = async (
               preserveNullAndEmptyArrays: true,
             },
           },
-          {
-            $lookup: {
-              from: "questionschapters",
-              let: { chapterId: "$_id" },
-              pipeline: [
-                {
-                  $match: {
-                    $expr: {
-                      $and: [
-                        { $eq: ["$chapterId", "$$chapterId"] },
-                        { $eq: ["$isPublished", true] },
-                      ],
-                    },
-                  },
-                },
-                { $sort: { position: 1 } },
-              ],
-              as: "questions",
-            },
-          },
+          // {
+          //   $lookup: {
+          //     from: "questionschapters",
+          //     let: { chapterId: "$_id" },
+          //     pipeline: [
+          //       {
+          //         $match: {
+          //           $expr: {
+          //             $and: [
+          //               { $eq: ["$chapterId", "$$chapterId"] },
+          //               { $eq: ["$isPublished", true] },
+          //             ],
+          //           },
+          //         },
+          //       },
+          //       { $sort: { position: 1 } },
+          //     ],
+          //     as: "questions",
+          //   },
+          // },
         ],
         as: "chapters",
       },

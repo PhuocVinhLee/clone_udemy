@@ -33,6 +33,7 @@ import { Answer } from "@/components/question/answer";
 import { TestCase } from "@/components/question/test-case";
 import { QuestionTypeType } from "@/lib/database/models/questionTypes.model";
 import { getQuestionChapterById } from "@/lib/actions/questionchapter.action";
+import { LevelForm } from "@/components/question/level-form";
 
 const QuestionIdPage = async ({
   params,
@@ -71,6 +72,9 @@ const QuestionIdPage = async ({
   const pathToUpdate = `/api/chapters/${params.courseId}/${params.chapterId}/questionschapter/${params.questionId}`;
   //const pathToAddAnswerTestCases = `/api/chapters/${params.courseId}/${params.chapterId}/questionschapter/${params.questionId}/code-testcases`;
   const link = `/teacher/courses/${params.courseId}/chapters/${params.chapterId}/questionchapter/${params.questionId}/code-testcases`;
+const levels : {label: string; value: string}[] = [{label: "Hard", value: "hard"}, 
+  {label: "Medium", value: "medium"},
+  {label: "Easy", value: "easy"}]
 
   return (
     <>
@@ -123,6 +127,9 @@ const QuestionIdPage = async ({
               initialData={question}
               questionId={question._id}
             ></ImageForm>
+            <LevelForm  path={pathToUpdate} options={levels} questionId={question._id}  initialData={question}>
+
+            </LevelForm>
             <CategoryForm
               initialData={question}
               questionId={question._id}

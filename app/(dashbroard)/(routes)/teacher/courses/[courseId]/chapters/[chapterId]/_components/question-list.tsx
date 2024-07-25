@@ -90,8 +90,8 @@ export const QuestionList = ({ items, onReOrder, onEdit }: QuestionListProps) =>
 
                       <Badge
                         className={cn(
-                          "bg-slate-500",
-                          chapter.isPublished && " bg-slate-700"
+                          "bg-slate-500 dark:text-white dark:hover:text-black",
+                          chapter.isPublished && " bg-slate-700 "
                         )}
                       >
                         {chapter.isPublished ? "Published" : "Draft"}
