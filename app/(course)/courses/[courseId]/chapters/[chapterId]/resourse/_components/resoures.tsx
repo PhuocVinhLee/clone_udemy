@@ -9,7 +9,7 @@ const Resoures = ({ attachments }: ResouresProps) => {
       {!!attachments?.length && (
           <>
             {/* <Separator></Separator> */}
-            <div className="p-4 flex gap-y-4 flex-col">
+            <div className=" flex gap-y-4 flex-col">
               {attachments.map((attachment) => (
                 <a
                   href={attachment.url}

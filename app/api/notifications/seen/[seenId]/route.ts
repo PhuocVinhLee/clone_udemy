@@ -16,9 +16,9 @@ import Chapters from "@/lib/database/models/chapters.model";
 import { getUserById } from "@/lib/actions/user.actions";
 import QandA from "@/lib/database/models/qanda.model";
 
-export async function POST(
+export async function PATCH(
   req: Request,
-  { params }: { params: { chapterId: string; courseId: string } }
+  { params }: { params: { seenId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -28,11 +28,7 @@ export async function POST(
         status: 401,
       });
     }
-    const { chapterId, courseId } = params;
-    const payload = await req.json();
-
- 
-    const isTeacher = current_User?.publicMetadata?.role === "teacher";
+    const { seenId } = params;
 
     await connectToDatabase();
     const user = await getUserById(userId);
@@ -41,22 +37,16 @@ export async function POST(
     }
 
     const DataQandA = {
-      chapterId: chapterId,
-      courseId: courseId,
-      //  name: current_User?.username,
-      message: payload?.message,
-      userId: user._id,
-      // isTeacher: isTeacher,
-      //urlAvatar: current_User?.imageUrl,
-      root: true,
-      createdAt: new Date(),
+      seen: true,
     };
 
-    const message = await QandA.create(DataQandA);
+    const message = await QandA.findByIdAndUpdate(seenId, DataQandA, {
+      new: false,
+    });
 
     return NextResponse.json(message);
   } catch (error) {
-    console.log("erorr in Update chapter", error);
+    console.log("erorr in Seen Q and A", error);
     return new NextResponse("Inter Error", { status: 500 });
   }
 }

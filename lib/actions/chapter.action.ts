@@ -56,7 +56,7 @@ export async function ActionGetChapter({
 
     const course = await Courses.findOne(
       { _id: new mongoose.Types.ObjectId(courseId), isPublished: true },
-      { price: 1, _id: 0 } // Select only the price field, exclude _id
+      { price: 1, _id: 0, userId: 1 } // Select only the price field, exclude _id
     ).exec();
     console.log("course in action", course);
 

@@ -16,9 +16,9 @@ import Chapters from "@/lib/database/models/chapters.model";
 import { getUserById } from "@/lib/actions/user.actions";
 import QandA from "@/lib/database/models/qanda.model";
 
-export async function POST(
+export async function GET(
   req: Request,
-  { params }: { params: { chapterId: string; courseId: string } }
+  { params }: { params: { rootId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -28,10 +28,9 @@ export async function POST(
         status: 401,
       });
     }
-    const { chapterId, courseId } = params;
-    const payload = await req.json();
-
- 
+    const { rootId } = params;
+    
+    console.log(current_User);
     const isTeacher = current_User?.publicMetadata?.role === "teacher";
 
     await connectToDatabase();
@@ -39,22 +38,17 @@ export async function POST(
     if (!user) {
       return new NextResponse("User not found", { status: 401 });
     }
+    const showMoreMessage = await QandA.find({
+      root: false,
+      rootId: rootId,
+    }).sort({ createdAt: 1 }).populate('userId', 'username photo role') // Specify the fields you want to include from the Chapters model
+    .populate('userIdReplay', 'username photo role').exec();
+    if (!showMoreMessage) {
+      return new NextResponse("ShowMoreMessage not found", { status: 401 });
+    }
 
-    const DataQandA = {
-      chapterId: chapterId,
-      courseId: courseId,
-      //  name: current_User?.username,
-      message: payload?.message,
-      userId: user._id,
-      // isTeacher: isTeacher,
-      //urlAvatar: current_User?.imageUrl,
-      root: true,
-      createdAt: new Date(),
-    };
-
-    const message = await QandA.create(DataQandA);
-
-    return NextResponse.json(message);
+//console.log(".sort({ createdAt: 1 })",showMoreMessage )
+    return NextResponse.json(showMoreMessage);
   } catch (error) {
     console.log("erorr in Update chapter", error);
     return new NextResponse("Inter Error", { status: 500 });

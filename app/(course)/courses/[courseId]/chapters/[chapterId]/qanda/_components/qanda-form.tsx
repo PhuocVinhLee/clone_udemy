@@ -16,15 +16,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-
 import { Pencil } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
+import { useNotification } from "@/components/context/notificationContext";
 
 const formSchema = z.object({
-    message: z.string().min(2, {
+  message: z.string().min(2, {
     message: "Title required",
   }),
 });
@@ -35,15 +35,27 @@ interface QandQFormProps {
   };
   chapterId: string;
   userId: string;
-  courseId: string
-
+  courseId: string;
+  path: string;
+  rootId?: string;
+  togleReplay: (value: boolean) => void;
+  isEditingProp: boolean;
+  type: "new" | "replay";
 }
 
 export const QandQForm = ({
   initialData,
-  chapterId, userId, courseId
+  chapterId,
+  userId,
+  courseId,
+  path,
+  rootId,
+  togleReplay,
+  isEditingProp,
+  type
 }: QandQFormProps) => {
-  const [isEditing, setIsEditing] = useState(false);
+  const { setTarget, setTargetType } = useNotification();
+  const [isEditing, setIsEditing] = useState(isEditingProp);
   const toggleEdit = () => setIsEditing((current) => !current);
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -54,46 +66,34 @@ export const QandQForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-    
-      await axios.post(`/api/chapters/${courseId}/${chapterId}/qanda`, values);
-      toast.success(" Couruse updated.");
+      const respone = await axios.post(`${path}`, values);
+      if (respone) {
+        if (type === "new") {
+          setTargetType("new:comment");
+        }
+        if (type === "replay") {
+          setTargetType("replay:comment");
+        }
+        console.log("data", respone);
+        setTarget({
+          rootId: respone?.data.rootId,
+          targetId: respone?.data._id,
+        });
+      }
+      toast.success("  Updated.");
       toggleEdit();
-     // router.refresh(); // refresh state
+      form.reset();
+      // router.refresh(); // refresh state
     } catch (error) {
+      console.log("error", error);
       toast.error("Something went wrong!");
     }
   };
   return (
-    <div className="mt-6 broder  dark:bg-slate-700 bg-slate-100 rounded-md p-4">
-      <div className=" font-medium flex items-center justify-between">
-        Course discription
-        <Button onClick={toggleEdit} variant="ghost">
-          {isEditing ? (
-            <>Scanel</>
-          ) : (
-            <>
-            <Pencil className="h-4 w-4 mr-2"></Pencil> 
-             Edit description</>
-          )}
-        </Button>
-      </div>
-      {!isEditing && (
-        <p
-          className={cn(
-            "text-sm mt-2",
-            !initialData.message && " text-slate-500 italic"
-          )}
-        >
-          {" "}
-          {initialData.message || "No description"}
-        </p>
-      )}
-      {isEditing && (
+    <div className=" broder  rounded-md w-full">
+      {
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 mt-4"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 ">
             <FormField
               control={form.control}
               name="message"
@@ -101,8 +101,11 @@ export const QandQForm = ({
                 <FormItem>
                   <FormControl>
                     <Textarea
+                      onClick={() => {
+                        setIsEditing(true);
+                      }}
                       disabled={isSubmitting}
-                      placeholder="This course is about..."
+                      placeholder="Write your message..."
                       {...field}
                     />
                   </FormControl>
@@ -113,12 +116,32 @@ export const QandQForm = ({
                 </FormItem>
               )}
             />
-            <Button disabled={!isValid || isSubmitting} type="submit">
-              Save
-            </Button>
+
+            {isEditing && (
+              <div className="flex gap-x-2">
+                <Button
+                  variant="ghost"
+                  type="reset"
+                  onClick={() => {
+                    setIsEditing(false);
+                    togleReplay(false);
+                    form.reset();
+                  }}
+                >
+                  Scanel
+                </Button>
+                <Button
+                  variant="ghost"
+                  disabled={!isValid || isSubmitting}
+                  type="submit"
+                >
+                  Save
+                </Button>
+              </div>
+            )}
           </form>
         </Form>
-      )}
+      }
     </div>
   );
 };

@@ -15,7 +15,7 @@ interface ExerciseProps {
 }
 const Exercise = ({ questions, chapterId, courseId }: ExerciseProps) => {
   return (
-    <div className=" px-4 py-2 flex flex-col gap-y-4">
+    <div className="  flex flex-col gap-y-4">
       {questions?.map((question, index) => {  
         return (
           <div

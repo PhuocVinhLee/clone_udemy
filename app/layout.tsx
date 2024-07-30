@@ -3,14 +3,17 @@ import {
   SignInButton,
   SignedIn,
   SignedOut,
-  UserButton
-} from '@clerk/nextjs'
+  UserButton,
+} from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ToastProvider } from '@/components/providers/toaster-provider';
-import { ConfettiProvider } from '@/components/providers/confetti-provider';
-import { ThemeProvider } from '@/components/providers/theme-provider';
+import { ToastProvider } from "@/components/providers/toaster-provider";
+import { ConfettiProvider } from "@/components/providers/confetti-provider";
+import { ThemeProvider } from "@/components/providers/theme-provider";
+import { NotificationProvider } from "@/components/context/notificationContext";
+import PermissionHandler from "@/components/permission-handler";
+import NotificationHandler from "@/components/notification-handler";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,24 +29,24 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-
-    <html lang="en">
-      <body className={inter.className}>
-      <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-        <ConfettiProvider>
-          
-        </ConfettiProvider>
-        <ToastProvider></ToastProvider>
-        {children}
-        </ThemeProvider>
-        
+      <html lang="en">
+        <body className={inter.className}>
+          <NotificationProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+               
+               {/* <NotificationHandler /> */}
+              <ConfettiProvider></ConfettiProvider>
+              <ToastProvider></ToastProvider>
+              {children}
+            </ThemeProvider>
+          </NotificationProvider>
         </body>
-    </html>
+      </html>
     </ClerkProvider>
   );
 }

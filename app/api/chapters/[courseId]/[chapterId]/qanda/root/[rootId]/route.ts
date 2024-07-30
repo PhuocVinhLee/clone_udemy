@@ -16,9 +16,9 @@ import Chapters from "@/lib/database/models/chapters.model";
 import { getUserById } from "@/lib/actions/user.actions";
 import QandA from "@/lib/database/models/qanda.model";
 
-export async function POST(
+export async function GET(
   req: Request,
-  { params }: { params: { chapterId: string; courseId: string } }
+  { params }: { params: { rootId: string; chapterId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -28,10 +28,9 @@ export async function POST(
         status: 401,
       });
     }
-    const { chapterId, courseId } = params;
-    const payload = await req.json();
+    const { rootId, chapterId } = params;
 
- 
+    console.log(current_User);
     const isTeacher = current_User?.publicMetadata?.role === "teacher";
 
     await connectToDatabase();
@@ -39,22 +38,13 @@ export async function POST(
     if (!user) {
       return new NextResponse("User not found", { status: 401 });
     }
-
-    const DataQandA = {
-      chapterId: chapterId,
-      courseId: courseId,
-      //  name: current_User?.username,
-      message: payload?.message,
-      userId: user._id,
-      // isTeacher: isTeacher,
-      //urlAvatar: current_User?.imageUrl,
-      root: true,
-      createdAt: new Date(),
-    };
-
-    const message = await QandA.create(DataQandA);
-
-    return NextResponse.json(message);
+    const message = await QandA.findById(
+      rootId
+    ).populate("userId", "_id username photo role"); // Specify the fields you want to include from the Chapters model
+    const qandaWithRelay = message.toObject();
+    qandaWithRelay.length_of_relay = 0;
+    //console.log(".sort({ createdAt: 1 })",showMoreMessage )
+    return NextResponse.json(qandaWithRelay);
   } catch (error) {
     console.log("erorr in Update chapter", error);
     return new NextResponse("Inter Error", { status: 500 });

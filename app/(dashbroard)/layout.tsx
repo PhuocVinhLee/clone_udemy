@@ -5,7 +5,7 @@ import { auth} from '@clerk/nextjs/server'
 const DashbroardLayout = ({ children }: { children: React.ReactNode }) => {
   //auth().protect()
   const {has} = auth();
-  const isTeacher = has({ role: "org:teacher" });
+  const isTeacher = has({ role: "teacher" });
   console.log("isTeacher in page ", isTeacher)
   return (
     <div className=" h-full ">

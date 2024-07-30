@@ -6,6 +6,7 @@ import { LogOut } from "lucide-react";
 import Link from "next/link";
 import SearchInput from "./search-input";
 import { ModeToggle } from "./mode-toggle";
+import Notification from "./notification";
 
 const NavbarRoutes = () => {
   const pathname = usePathname();
@@ -38,6 +39,7 @@ const NavbarRoutes = () => {
               </Button>
             </Link>
           )}
+          <Notification></Notification>
           <UserButton afterSignOutUrl="/"></UserButton>
           <div>
           <ModeToggle></ModeToggle>

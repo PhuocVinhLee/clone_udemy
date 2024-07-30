@@ -11,10 +11,11 @@ import { Separator } from "@/components/ui/separator";
 import { Review } from "@/components/review";
 import { File } from "lucide-react";
 import CourseProgressButton from "./_components/course-progress-button";
-import Resoures from "./_components/resoures";
-import QandA from "./_components/QandA";
-import Exercise from "./_components/exercise";
-import { at } from "lodash";
+import Resoures from "./resourse/_components/resoures";
+import QandA from "./qanda/_components/qanda";
+import Exercise from "./exercise/_components/exercise";
+import { getAllMessagByChapterId } from "@/lib/actions/qanda.action";
+
 
 const ChpaterIdPage = async ({
   params,
@@ -44,79 +45,12 @@ const ChpaterIdPage = async ({
   const isLocked = !chapter?.isFree && !purchase;
   const completedOnEnd = !!purchase && !userProgress?.isCompleted;
 
-  return (
-    <div className="md:pl-80">
-      {userProgress?.isCompleted && (
-        <Banner
-          variant="success"
-          label="You already completed this chapter."
-        ></Banner>
-      )}
+  const allMessage = await getAllMessagByChapterId(params.chapterId);
+  console.log("all", course)
+  return ( <div>
 
-      {isLocked && (
-        <Banner
-          variant="warning"
-          label="You need to purchase this course to watch this chapter."
-        ></Banner>
-      )}
-
-      <div className="p-4 ">
-        <VideoPlayer
-          chapterId={params.chapterId}
-          title={chapter.title}
-          courseId={params.courseId}
-          nextChapterId={nextChapter?._id ? nextChapter?._id : null}
-          playbackId={muxData?.playbackId}
-          isLocked={isLocked}
-          completedOnEnd={completedOnEnd}
-        ></VideoPlayer>
-      </div>
-
-      <div>
-        <div className="p-4 flex flex-col md:flex-row items-center justify-between">
-          <h2 className="text-2xl font-semibold mb-2">{chapter.title}</h2>
-          {purchase ? (
-            <CourseProgressButton
-              chapterId={params.chapterId}
-              courseId={params.courseId}
-              nextChapterId={nextChapter?._id ? nextChapter?._id : null}
-              isCompleted={!!userProgress?.isCompleted}
-            />
-          ) : (
-            <CourseEnrollButton
-              courseId={params.courseId}
-              price={course.price}
-            />
-          )}
-        </div>
-        <Tabs defaultValue="Overview" className="w-full">
-          <TabsList className="w-full  flex items-center justify-between rounded-none">
-            <TabsTrigger value="Overview"> Overview</TabsTrigger>
-            <TabsTrigger value="Exercise">Exercise</TabsTrigger>
-            <TabsTrigger value="Resoures">Resoures</TabsTrigger>
-            <TabsTrigger value="Q&A"> Q&A</TabsTrigger>
-            <TabsTrigger value="Reviews">Reviews</TabsTrigger>
-          </TabsList>
-          <TabsContent className=" min-h-[400px]" value="Overview">
-            <div className=" p-4">
-              <Review value={chapter.description!}></Review>
-            </div>
-          </TabsContent>
-          <TabsContent value="Exercise" className=" min-h-[400px]">
-            <Exercise courseId={params.courseId}  chapterId={params.chapterId} questions={questionChapter}></Exercise>
-          </TabsContent>
-          <TabsContent value="Resoures" className=" min-h-[400px]">
-            <Resoures attachments={attachments}></Resoures>{" "}
-          </TabsContent>
-          <TabsContent className=" min-h-[400px]" value="Q&A">
-            <QandA chapterId={params.chapterId} courseId={params.courseId} userId={userId}></QandA>
-          </TabsContent>
-          <TabsContent className=" min-h-[400px]" value="Reviews">
-            Change your password here.
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
+  </div>
+    // <Review value={chapter.description!}></Review>
   );
 };
 
