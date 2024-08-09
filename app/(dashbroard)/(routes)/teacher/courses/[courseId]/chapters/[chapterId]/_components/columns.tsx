@@ -15,7 +15,11 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
-
+import Image from "next/image";
+import { useState } from "react";
+import ExpandableCell from "../../../../../../../../../components/data-table/expandable-cell";
+import ExpandableImage from "../../../../../../../../../components/data-table/expandable-image ";
+import { TestCaseType } from "@/lib/database/models/questions.model";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 
@@ -23,9 +27,18 @@ export type Question = {
   _id: string;
   title: string;
   description: string;
-  categoryId: string;
-  isPublished: boolean;
+  imageUrl: string;
+  answer: string;
+  questionTypeId: string;
+  template: string;
+  testCases: {
+    input: string;
+    output: string;
+    asexample: boolean;
+    position: number;
+  }[];
   exist: boolean;
+  level: string;
 };
 
 export const columns: ColumnDef<Question>[] = [
@@ -49,10 +62,10 @@ export const columns: ColumnDef<Question>[] = [
       );
     },
     cell: ({ row }) => {
-      const exist = row.getValue("exist") || false;
+      const exist: boolean = row.getValue("exist") || false;
       return (
         <Checkbox
-          disabled={exist as boolean}
+        disabled={exist}
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"
@@ -76,6 +89,10 @@ export const columns: ColumnDef<Question>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      const title: string = row.getValue("title");
+      return <ExpandableCell text={title} />;
+    },
   },
   {
     accessorKey: "description",
@@ -90,30 +107,39 @@ export const columns: ColumnDef<Question>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      const description: string = row.getValue("description");
+      return <ExpandableCell text={description} />;
+    },
   },
   {
-    accessorKey: "isPublished",
+    accessorKey: "imageUrl",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Published
+          Image
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
-      const isPublished = row.getValue("isPublished") || false;
+      const photo: string = row.getValue("imageUrl");
+
       return (
-        <Badge className={cn("bg-slate-500", isPublished && "bg-sky-700")}>
-          {isPublished ? "Published" : "Draft"}
-        </Badge>
+        <ExpandableImage src={photo} alt="Description of the image" />
+        //   <Image
+
+        //   src={photo}
+        //   width={50}
+        //   height={50}
+        //   alt="Picture of the author"
+        // />
       );
     },
   },
-
   {
     accessorKey: "exist",
     header: ({ column }) => {
@@ -122,7 +148,7 @@ export const columns: ColumnDef<Question>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Exist
+          Existed
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -131,32 +157,123 @@ export const columns: ColumnDef<Question>[] = [
       const exist = row.getValue("exist") || false;
       return (
         <Badge className={cn("bg-slate-500", exist && "bg-sky-700")}>
-          {exist ? "Exist" : "Draft"}
+          {exist ? "Existed" : "Draft"}
         </Badge>
       );
     },
   },
   {
-    id: "actions",
-    cell: ({ row }) => {
-      const { _id } = row.original;
+    accessorKey: "answer",
+    header: ({ column }) => {
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-4 w-4 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal></MoreHorizontal>{" "}
-            </Button>
-          </DropdownMenuTrigger>
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Answer
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const answer: string = row.getValue("answer");
+      return <ExpandableCell text={answer} />;
+    },
+  },
+  {
+    accessorKey: "questionTypeId",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          QuestionType
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
+  {
+    accessorKey: "template",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Template
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const template: string = row.getValue("template");
+      return <ExpandableCell text={template} />;
+    },
+  },
+  {
+    accessorKey: "testCases",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          TestCases
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const testCases: TestCaseType[] = row.getValue("testCases");
+      return (
+        <ExpandableCell>
+          <div>
+            {testCases?.map((testcase) => {
+              return (
+                <div className="flex flex-col mb-3 ">
+                  <div className="flex flex-col mb-3 gap-2">
+                    <span className="flex gap-x-2 items-center justify-between">
+                      Input:{" "}
+                      <div className="bg-white  dark:bg-customDark w-full p-2">
+                        {testcase.input}
+                      </div>
+                    </span>
+                    <span className="flex gap-x-2 items-center justify-between">
+                      Output:{" "}
+                      <div className="bg-white  dark:bg-customDark w-full p-2">
+                        {testcase.output}
+                      </div>
+                    </span>
+                  </div>
 
-          <DropdownMenuContent align="end">
-            <Link href={`/teacher/courses/${_id}`}>
-              <DropdownMenuItem>
-                <Pencil className="h-4 w-4 mr-2"></Pencil> Edit
-              </DropdownMenuItem>
-            </Link>
-          </DropdownMenuContent>
-        </DropdownMenu>
+                  <div className="flex  gap-x-1">
+                    <Checkbox disabled={true} checked={testcase?.asexample} />
+                    <div className="space-y-1 leading-none">
+                      <div>Use as example.</div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </ExpandableCell>
+      );
+    },
+  },
+
+  {
+    accessorKey: "level",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Level
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
       );
     },
   },

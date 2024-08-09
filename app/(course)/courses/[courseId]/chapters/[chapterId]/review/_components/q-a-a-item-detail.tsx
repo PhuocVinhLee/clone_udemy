@@ -12,12 +12,13 @@ import {
 } from "@/lib/database/models/qanda.model";
 import { cn } from "@/lib/utils";
 import TimeAgo from "@/components/time-ago";
-import { QandQForm } from "./qanda-form";
+
 import { useNotification } from "@/components/context/notificationContext";
+import { ReviewType } from "@/lib/database/models/review.model";
 interface TransformedQandAuserIduserIdReplayType
-  extends Omit<QandAType, "userId" | "userIdReplay"> {
+  extends Omit<ReviewType, "userId" > {
   userId: TransformedUserId;
-  userIdReplay: TransformedUserIdReplay;
+ 
 }
 interface QandAItemProps {
   chapterId: string;
@@ -90,36 +91,11 @@ function QandAItemDetail({
           </div>
         </div>
         <div>
-          {" "}
-          {message?.replayId != rootId && (
-            <span className=" font-bold">
-              @{message?.userIdReplay?.username}{" "}
-            </span>
-          )}{" "}
+        
           {message?.message}{" "}
         </div>
-        <div className="flex gap-x-4    items-center justify-between">
-          <div onClick={togleIsEditting} className=" ">
-            Replay
-          </div>
-        </div>
-        {isEditing && (
-          <div className="w-full ">
-            <QandQForm
-              type="replay"
-              isEditingProp={true}
-              togleReplay={(value) => {
-                setIsEditing(false);
-              }}
-              initialData={{ message: "" }}
-              userId={userId}
-              courseId={courseId}
-              chapterId={chapterId}
-              path={pathToReplay}
-              rootId={rootId}
-            ></QandQForm>
-          </div>
-        )}
+       
+       
       </div>
     </div>
   );

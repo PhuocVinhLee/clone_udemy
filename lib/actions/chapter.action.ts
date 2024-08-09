@@ -110,7 +110,7 @@ export async function ActionGetChapter({
     attachments = JSON.parse(JSON.stringify(attachments));
     return {
       chapter,
-      course,
+      course: JSON.parse(JSON.stringify(course)),
       muxData,
       attachments,
       nextChapter,
@@ -206,8 +206,11 @@ export async function getAllChapterByCourseId(courseId: string) {
 export async function getChapterById(_id: string) {
   try {
     await connectToDatabase();
+    console.log("chapter in action Id", _id)
+    const objectId = new mongoose.Types.ObjectId(_id);
 
-    const chapter = await Chapters.findById(_id);
+    const chapter = await Chapters.findById(objectId);
+    console.log("chapter in action", chapter)
 
     return JSON.parse(JSON.stringify(chapter));
   } catch (error) {

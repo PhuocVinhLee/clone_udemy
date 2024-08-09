@@ -21,26 +21,41 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { PlusCircle } from "lucide-react";
+import { ChevronDown, PlusCircle } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { handleExport } from "@/components/excell/export-to-excell";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { QuestionTypeType } from "@/lib/database/models/questionTypes.model";
+import { CategoryType } from "@/lib/database/models/categorys.model";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  setQuestionsFromRoot: any;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-}: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  setQuestionsFromRoot,
+}: // setQuestionsFromRoot
+DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  )
-
+  );
+  const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
     data,
@@ -51,31 +66,114 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       columnFilters,
-    }
+
+      rowSelection,
+    },
   });
+  const [filterValue, setFilterValue] = React.useState("");
+
+  {
+    console.log(table.getFilteredSelectedRowModel());
+  }
+  const selectedRows = table.getSelectedRowModel().rows;
+  useEffect(() => {
+    setQuestionsFromRoot(selectedRows);
+  }, [selectedRows]);
+
+
+
+
+
 
   return (
-    <div>
-       <div className="flex items-center py-4 justify-between">
-        <Input
-          placeholder="Filter question..."
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("title")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <Link href={`/teacher/create-question`}>
-        <Button>
-          <PlusCircle className="h-4 w-4 mr-2">
+    <div className="w-full">
+      <div className="flex-1 text-sm text-muted-foreground">
+        {table.getFilteredSelectedRowModel().rows.length} of{" "}
+        {table.getFilteredRowModel().rows.length} row(s) selected.
+      </div>
+      <div className="flex items-center py-4">
+        <div
+          className="
+        flex gap-x-3"
+        >
+          <Input
+            placeholder="Filter title..."
+            value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("title")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+          <Link href={`/teacher/create-question`}>
+            {" "}
+            <Button variant="outline">
+              {" "}
+              {/* <PlusCircle className="h-4 w-4 mr-2"> </PlusCircle> */}
+              New a question{" "}
+            </Button>{" "}
+          </Link>
+          <Link href={`/teacher/questions/import-excell`}>
+            {" "}
+            <Button variant="outline">
+              {" "}
+              {/* <PlusCircle className="h-4 w-4 mr-2"> </PlusCircle> */}
+              Import from excell
+            </Button>{" "}
+          </Link>
 
-          </PlusCircle>
-          New question
-        </Button>
-        </Link>
+          <Button
+            disabled={!data}
+            onClick={() => {
+              const questions = selectedRows.map((q: any) => {
+                return q?.original;
+              });
+              if (data.length) {
+                if (!questions.length) {
+                  toast.error("Please select a question!");
+                } else {
+                  return handleExport({
+                    data: questions,
+                    fileName: "rootquestions.xlsx",
+                  });
+                }
+              }
+            }}
+            variant="outline"
+          >
+            Export to excell
+          </Button>
+        </div>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
+              Columns <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {table
+              .getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => {
+                return (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
+                  >
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                );
+              })}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -127,7 +225,6 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"
@@ -137,6 +234,10 @@ export function DataTable<TData, TValue>({
         >
           Previous
         </Button>
+        <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+          Page {table.getState().pagination.pageIndex + 1} of{" "}
+          {table.getPageCount()}
+        </div>
         <Button
           variant="outline"
           size="sm"

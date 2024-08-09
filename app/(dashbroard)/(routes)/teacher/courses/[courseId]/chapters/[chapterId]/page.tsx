@@ -49,6 +49,7 @@ const ChapterIdPage = async ({
   );
   const questionCheckedExist = questionByCategoryId.map(
     (question: QuestionType) => {
+      
       const findQuestion = questions.find(
         (q: QuestionChapterType) => question._id === q._id
       );

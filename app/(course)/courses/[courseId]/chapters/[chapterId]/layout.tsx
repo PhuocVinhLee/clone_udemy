@@ -18,7 +18,7 @@ import { getAllMessagByChapterId } from "@/lib/actions/qanda.action";
 import SidebarRoutes from "./_components/navbar-routes";
 import NavBarRoutes from "./_components/navbar-routes";
 
-const ChpaterIdPage = async ({
+const ChapterIdLayout = async ({
   children,
   params,
 }: {
@@ -26,7 +26,7 @@ const ChpaterIdPage = async ({
   params: { courseId: string; chapterId: string };
 }) => {
   const { userId } = auth();
-  if (!userId) return redirect("/");
+  if (!userId) return null
 
   const {
     chapter,
@@ -69,7 +69,7 @@ const ChpaterIdPage = async ({
       <div className="p-4 ">
         <VideoPlayer
           chapterId={params.chapterId}
-          title={chapter.title}
+          title={chapter?.title}
           courseId={params.courseId}
           nextChapterId={nextChapter?._id ? nextChapter?._id : null}
           playbackId={muxData?.playbackId}
@@ -80,7 +80,7 @@ const ChpaterIdPage = async ({
 
       <div>
         <div className="p-4 flex flex-col md:flex-row items-center justify-between">
-          <h2 className="text-2xl font-semibold mb-2">{chapter.title}</h2>
+          <h2 className="text-2xl font-semibold mb-2">{chapter?.title}</h2>
           {purchase ? (
             <CourseProgressButton
               chapterId={params.chapterId}
@@ -91,7 +91,7 @@ const ChpaterIdPage = async ({
           ) : (
             <CourseEnrollButton
               courseId={params.courseId}
-              price={course.price}
+              price={course?.price}
             />
           )}
         </div>
@@ -106,4 +106,4 @@ const ChpaterIdPage = async ({
   );
 };
 
-export default ChpaterIdPage;
+export default ChapterIdLayout;

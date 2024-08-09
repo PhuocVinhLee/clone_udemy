@@ -12,9 +12,12 @@ import {
 
 import Courses from "@/lib/database/models/courses.model";
 import { connectToDatabase } from "@/lib/database/mongoose";
-import Chapters from "@/lib/database/models/chapters.model";
+
 import { getUserById } from "@/lib/actions/user.actions";
 import QandA from "@/lib/database/models/qanda.model";
+import Notification from "@/lib/database/models/notification .model";
+import Chapters from "@/lib/database/models/chapters.model";
+
 
 export async function GET(req: Request) {
   try {
@@ -31,14 +34,16 @@ export async function GET(req: Request) {
     if (!user) {
       return new NextResponse("User not found", { status: 401 });
     }
+    
 
-    const notifications = await QandA.find({ userIdReplay: user._id })
+    const notifications = await Notification.find({ userIdReceve: user._id })
       .populate("userId", "_id username photo role")
-      .populate("chapterId", "_id title videoUrl") // Specify the fields you want to include from the Chapters model
+      .populate({ path: 'chapterId', select: '_id title videoUrl', model: Chapters })
+     // .populate("chapterId", "_id title videoUrl") // Specify the fields you want to include from the Chapters model
       .sort({ createdAt: -1 })
       .exec();
 
-    console.log("notifications", notifications);
+   
     return NextResponse.json(notifications);
   } catch (error) {
     console.log("erorr in Notifications", error);

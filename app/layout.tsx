@@ -12,8 +12,7 @@ import { ToastProvider } from "@/components/providers/toaster-provider";
 import { ConfettiProvider } from "@/components/providers/confetti-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { NotificationProvider } from "@/components/context/notificationContext";
-import PermissionHandler from "@/components/permission-handler";
-import NotificationHandler from "@/components/notification-handler";
+
 
 const inter = Inter({ subsets: ["latin"] });
 

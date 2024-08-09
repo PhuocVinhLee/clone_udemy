@@ -1,4 +1,4 @@
-import { Schema, model,Document, models } from "mongoose";
+import { Schema, model, Document, models } from "mongoose";
 
 export interface ChapterType extends Document {
   _id: string;
@@ -14,7 +14,7 @@ export interface ChapterType extends Document {
 }
 
 const ChaptersSchema = new Schema({
-
+ 
   title: {
     type: String,
   },
@@ -35,9 +35,9 @@ const ChaptersSchema = new Schema({
     type: Boolean,
     default: false,
   },
-  courseId:{ type: Schema.Types.ObjectId, ref: 'Courses' },
+  courseId: { type: Schema.Types.ObjectId, ref: "Courses" },
   createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+  updatedAt: { type: Date, default: Date.now },
 });
 
 const Chapters = models?.Chapters || model("Chapters", ChaptersSchema);

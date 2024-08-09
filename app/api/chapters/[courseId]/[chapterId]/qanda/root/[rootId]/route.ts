@@ -41,8 +41,11 @@ export async function GET(
     const message = await QandA.findById(
       rootId
     ).populate("userId", "_id username photo role"); // Specify the fields you want to include from the Chapters model
-    const qandaWithRelay = message.toObject();
-    qandaWithRelay.length_of_relay = 0;
+   console.log("messagge",message);
+    const qandaWithRelay = message?.toObject();
+    if(qandaWithRelay){
+      qandaWithRelay.length_of_relay = 0;
+    }
     //console.log(".sort({ createdAt: 1 })",showMoreMessage )
     return NextResponse.json(qandaWithRelay);
   } catch (error) {

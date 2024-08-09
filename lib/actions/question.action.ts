@@ -16,6 +16,7 @@ import Chapters, { ChapterType } from "../database/models/chapters.model";
 import { CategoryType } from "../database/models/categorys.model";
 import Purchase from "../database/models/purchase.model";
 import Questions from "../database/models/questions.model";
+import QuestionTypes from "../database/models/questionTypes.model";
 
 // GET ONE
 export async function getQuestionById(questionId: string) {
@@ -37,7 +38,7 @@ export async function getQuestionById(questionId: string) {
   }
 }
 
-export async function ActionAllQuestionByUserId(userId:string) {
+export async function ActionAllQuestionByUserId(userId: string) {
   try {
     await connectToDatabase();
 
@@ -59,11 +60,12 @@ export async function ActionAllQuestionByUserId(userId:string) {
     );
     return [];
   }
-
 }
 
-
-export async function ActionAllQuestionByCategoryId(userId: string, categoryId:string) {
+export async function ActionAllQuestionByCategoryId(
+  userId: string,
+  categoryId: string
+) {
   try {
     await connectToDatabase();
 
@@ -72,11 +74,26 @@ export async function ActionAllQuestionByCategoryId(userId: string, categoryId:s
       throw new Error("User not found");
     }
 
-    const questions = await Questions.find({ userId: user._id, categoryId: categoryId }).sort({
-      createdAt: -1,
-    });
+    const questions = await Questions.find({
+      userId: user._id,
+      categoryId: categoryId,
+    })
+      .populate({
+        path: "questionTypeId", // Specify the path to populate
+        select: "name",
+        model: QuestionTypes, // Select the fields to include
+      })
+      .sort({
+        position: 1,
+      }) // Populate questionTypeId with specific fields from QuestionTypes
+      .exec();
+    const transformedQuestions = questions.map((question) => ({
+      ...question.toObject(),
+      questionTypeId: question?.questionTypeId?.name, // Replace the questionTypeId object with the name value
+    }));
 
-    return JSON.parse(JSON.stringify(questions));
+    console.log("transformedQuestions", transformedQuestions);
+    return JSON.parse(JSON.stringify(transformedQuestions));
   } catch (error) {
     //handleError(error)
     console.log(
@@ -85,5 +102,4 @@ export async function ActionAllQuestionByCategoryId(userId: string, categoryId:s
     );
     return [];
   }
-
 }

@@ -32,7 +32,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
 
         <Categories items={ArrCategories}></Categories>
 
-        <CoursesList items={courses}>
+        <CoursesList mode={true} items={courses}>
 
         </CoursesList> 
       </div>

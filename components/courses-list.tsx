@@ -13,13 +13,16 @@ type CoursesWithProgressWithCategory = {
   isPublished: boolean;
   category: CategoryType;
   progress: number | null;
+  averageStart?: number| null;
+  numberStudents?: number|null;
   chapters: { _id: string }[];
 };
 
 interface CoursesListProps {
   items: CoursesWithProgressWithCategory[];
+  mode?: boolean
 }
-function CoursesList({ items }: CoursesListProps) {
+function CoursesList({ items , mode}: CoursesListProps) {
   return (
     <div>
       <div className=" grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
@@ -34,6 +37,9 @@ function CoursesList({ items }: CoursesListProps) {
               price={item.price}
               progress={item.progress}
               category={item?.category?.name}
+              averageStart={item?.averageStart}
+              numberStudents ={item?.numberStudents}
+              mode={mode}
             ></CourseCard>
           );
         })}

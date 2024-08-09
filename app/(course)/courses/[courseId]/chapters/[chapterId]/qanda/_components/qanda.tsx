@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
-
 import {
   QandAType,
   TransformedUserId,
@@ -11,9 +10,9 @@ import {
 import { QandQForm } from "./qanda-form";
 import QandAItem from "./q-a-item";
 import { useNotification } from "@/components/context/notificationContext";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { from } from "svix/dist/openapi/rxjsStub";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface TransformedQandAType extends Omit<QandAType, "userId"> {
   userId: TransformedUserId;
@@ -36,6 +35,45 @@ const QandA = ({
 }: QandAProps) => {
   const pathToCreate = `/api/chapters/${courseId}/${chapterId}/qanda`;
   const { target, targetType } = useNotification();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentCommentId = searchParams.get("c");
+  const [messageLocal, setMessagesLocal] =
+    useState<(TransformedQandAType & { length_of_relay: number })[]>(messages);
+
+  useEffect(() => {
+    console.log("messages reference changed:", messages);
+    setMessagesLocal(() => messages);
+  }, [messages]);
+
+  const scrollToElementById = (id?: string | null) => {
+    if (id) {
+      const element = document.getElementById(`message-${id}`);
+
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  };
+
+  useEffect(() => {
+    const filterMessage = messageLocal?.find((messa) => {
+      return messa._id === currentCommentId;
+    });
+    const filterNotMessage = messageLocal?.filter((messa) => {
+      return messa._id != currentCommentId;
+    });
+
+    if (filterMessage) {
+      const newMessage = [filterMessage, ...filterNotMessage];
+      console.log(newMessage);
+      setMessagesLocal(() => newMessage);
+    }
+  }, [currentCommentId]);
+
+  useEffect(() => {
+    scrollToElementById(currentCommentId);
+  }, [messageLocal]);
 
   const [idMessageShowMore, setIdMessageShowMore] = useState<string | null>(
     null
@@ -43,16 +81,6 @@ const QandA = ({
   const [rootIdMessageShowMore, setRootIdMessageShowMore] = useState<
     string | null
   >(null);
-
-  
-  const [messageLocal, setMessagesLocal] =
-    useState<(TransformedQandAType & { length_of_relay: number })[]>(messages);
-
-  useEffect(() => {
-    setMessagesLocal(messages);
-    // setIdMessageShowMore(target.targetId)
-    // setRootIdMessageShowMore(target.rootId);
-  }, [messages]);
 
   const getNewOneMessage = async () => {
     const newMessage = await axios.get(
@@ -63,26 +91,11 @@ const QandA = ({
     });
   };
   useEffect(() => {
-    if (targetType === "new:comment" && target.targetId) {
+    if (targetType === "NEW:COMMENT:FORM" && target.targetId) {
+      console.log("NEW:QANDA:FORM");
       getNewOneMessage();
     }
   }, [targetType, target]);
-  useEffect(() => {
-    if (targetType === "show:comment" && target.targetId) {
-      console.log("do you chane")
-      const filterMessage = messageLocal?.filter((messa) => {
-              return messa._id === target.rootId;
-            });
-            const filterNotMessage = messageLocal?.filter((messa) => {
-              return messa._id != target.rootId;
-            });
-      
-            setMessagesLocal([...filterMessage, ...filterNotMessage]);
-            // setIdMessageShowMore(target.targetId);
-            // setRootIdMessageShowMore(target.rootId);
-    }
-  }, [targetType, target.rootId]);
-
 
   return (
     <div className="flex flex-col gap-4 border p-4">
@@ -101,16 +114,15 @@ const QandA = ({
 
       {messageLocal?.map((message) => {
         return (
-          <QandAItem
-            rootIdMessageShowMore={rootIdMessageShowMore}
-            idMessageShowMore={idMessageShowMore}
-            userIdOfCourse={userIdOfCourse}
-            key={message._id}
-            userId={userId}
-            chapterId={chapterId}
-            courseId={courseId}
-            message={message}
-          ></QandAItem>
+          <div key={message._id}>
+            <QandAItem
+              userIdOfCourse={userIdOfCourse}
+              userId={userId}
+              chapterId={chapterId}
+              courseId={courseId}
+              message={message}
+            ></QandAItem>
+          </div>
         );
       })}
     </div>

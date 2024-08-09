@@ -17,6 +17,7 @@ import { getUserById } from "@/lib/actions/user.actions";
 import QandA from "@/lib/database/models/qanda.model";
 import { pusherServer } from "@/lib/pusher";
 import User from "@/lib/database/models/user.model";
+import { createNotification } from "@/lib/actions/notification.action";
 
 export async function POST(
   req: Request,
@@ -68,22 +69,27 @@ export async function POST(
     const userReplay = await User.findById(message.userIdReplay).select(
       "username role photo _id"
     );
-    const userOwner = await User.findById(message.userId).select(
-      "username role photo _id"
-    );
-    const chapter = await  Chapters.findById(message.chapterId).select("_id title videoUrl")
-    const tranformMessage = {
-      ...message._doc,
-      userId: userOwner,
-      userReplayId: userReplay,
-      chapterId: chapter
-    };
-    console.log("tranformMessage",tranformMessage)
-    //const channelName = `private-${replayMessage.userId}`;
+    // const userOwner = await User.findById(message.userId).select(
+    //   "username role photo _id"
+    // );
+    //const chapter = await  Chapters.findById(message.chapterId).select("_id title videoUrl")
+   
+    const notification = await createNotification({
+      userId: user._id,
+      userIdReceve: replayMessage.userId,
+      chapterId: chapterId,
+      courseId: courseId,
+      id_message: message._id,
+      type: "REPLAY:QANDA",
+      title: "Replay a question",
+      message: payload?.message,
+      createdAt: new Date(),
+    });
+    
     await pusherServer.trigger(
       userReplay.username,
       "notification:new",
-      tranformMessage
+      notification
     );
 
     return NextResponse.json(message);

@@ -3,114 +3,87 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
-
 import {
   QandAType,
   TransformedUserId,
 } from "@/lib/database/models/qanda.model";
-import { QandQForm } from "./qanda-form";
-import QandAItem from "./q-a-item";
+import { ReviewForm } from "./review-form";
+import ReviewItem from "./review-item";
 import { useNotification } from "@/components/context/notificationContext";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { from } from "svix/dist/openapi/rxjsStub";
+import { ReviewType } from "@/lib/database/models/review.model";
+import { useUser } from "@clerk/nextjs";
+import { useSearchParams } from "next/navigation";
 
-interface TransformedReviewType extends Omit<QandAType, "userId"> {
+interface TransformedReviewType extends Omit<ReviewType, "userId"> {
   userId: TransformedUserId;
 }
 
 interface ReviewProps {
+  purchase: any;
   chapterId: string;
   userId: string;
   courseId: string;
-  messages: (TransformedReviewType & { length_of_relay: number })[];
+  messages?: (TransformedReviewType & {
+    replayMessages: TransformedReviewType[];
+  })[];
   userIdOfCourse: string;
 }
 
 const QandA = ({
+  purchase,
   userIdOfCourse,
   chapterId,
   userId,
   courseId,
   messages,
 }: ReviewProps) => {
-  const pathToCreate = `/api/chapters/${courseId}/${chapterId}/qanda`;
+  const searchParams = useSearchParams();
+  const currentCommentId = searchParams.get("c");
   const { target, targetType } = useNotification();
+  const { user } = useUser();
+  const scrollToElementById = (id?: string | null) => {
+    if (id) {
+      const element = document.getElementById(`message-${id}`);
 
-  const [idMessageShowMore, setIdMessageShowMore] = useState<string | null>(
-    null
-  );
-  const [rootIdMessageShowMore, setRootIdMessageShowMore] = useState<
-    string | null
-  >(null);
-
-  
-  const [messageLocal, setMessagesLocal] =
-    useState<(TransformedQandAType & { length_of_relay: number })[]>(messages);
-
-  useEffect(() => {
-    setMessagesLocal(messages);
-    // setIdMessageShowMore(target.targetId)
-    // setRootIdMessageShowMore(target.rootId);
-  }, [messages]);
-
-  const getNewOneMessage = async () => {
-    const newMessage = await axios.get(
-      `/api/chapters/${courseId}/${chapterId}/qanda/root/${target.targetId}`
-    );
-    setMessagesLocal((pre) => {
-      return [newMessage.data, ...pre];
-    });
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
   };
   useEffect(() => {
-    if (targetType === "new:comment" && target.targetId) {
-      getNewOneMessage();
-    }
-  }, [targetType, target]);
-  useEffect(() => {
-    if (targetType === "show:comment" && target.targetId) {
-      console.log("do you chane")
-      const filterMessage = messageLocal?.filter((messa) => {
-              return messa._id === target.rootId;
-            });
-            const filterNotMessage = messageLocal?.filter((messa) => {
-              return messa._id != target.rootId;
-            });
-      
-            setMessagesLocal([...filterMessage, ...filterNotMessage]);
-            // setIdMessageShowMore(target.targetId);
-            // setRootIdMessageShowMore(target.rootId);
-    }
-  }, [targetType, target.rootId]);
-
+    scrollToElementById(currentCommentId);
+  }, [messages]);
 
   return (
     <div className="flex flex-col gap-4 border p-4">
-      <QandQForm
-        type="new"
-        isEditingProp={false}
-        togleReplay={(value) => {
-          // SetReplay(value)
-        }}
-        path={pathToCreate}
-        initialData={{ message: "" }}
-        userId={userId}
-        courseId={courseId}
-        chapterId={chapterId}
-      ></QandQForm>
-
-      {messageLocal?.map((message) => {
+      {messages?.find(
+        (message) => message.userId._id === user?.publicMetadata?.userId
+      ) &&
+        purchase &&
+        user?.publicMetadata?.userId != userIdOfCourse && (
+          <ReviewForm
+            isEditingProp={false}
+            togleReplay={(value) => {
+              // SetReplay(value)
+            }}
+            initialData={{ message: "" }}
+            userId={userId}
+            courseId={courseId}
+            chapterId={chapterId}
+          ></ReviewForm>
+        )}
+      {messages?.map((message) => {
         return (
-          <QandAItem
-            rootIdMessageShowMore={rootIdMessageShowMore}
-            idMessageShowMore={idMessageShowMore}
+          <ReviewItem
             userIdOfCourse={userIdOfCourse}
-            key={message._id}
             userId={userId}
             chapterId={chapterId}
             courseId={courseId}
             message={message}
-          ></QandAItem>
+          ></ReviewItem>
         );
       })}
     </div>

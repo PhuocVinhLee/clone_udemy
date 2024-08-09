@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import TimeAgo from "@/components/time-ago";
 import { QandQForm } from "./qanda-form";
 import { useNotification } from "@/components/context/notificationContext";
+import { useSearchParams } from "next/navigation";
 interface TransformedQandAuserIduserIdReplayType
   extends Omit<QandAType, "userId" | "userIdReplay"> {
   userId: TransformedUserId;
@@ -35,6 +36,9 @@ function QandAItemDetail({
   rootId,
   userIdOfCourse,
 }: QandAItemProps) {
+  const searchParams = useSearchParams();
+  const currentCommentId = searchParams.get("c");
+  const subCommentId = searchParams.get("s");
   const { target, targetType } = useNotification();
   const messageRef = useRef<HTMLDivElement>(null); // Create a ref
   const [showMore, SetShowMore] = useState(false);
@@ -58,11 +62,41 @@ function QandAItemDetail({
 
   //     messageRef.current.scrollIntoView({ behavior: "smooth" });
   //     messageRef.current.className = "bg-red-300";
-  //   } 
+  //   }
   // }, [target.targetId]);
+  const scrollToElementById = (id?: string | null) => {
+    console.log("id", id);
+    if (id) {
+      const element = document.getElementById(`message-${id}`);
+    
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+
+        // const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+        // const offsetPosition = elementPosition - 50;
+    
+        // // Scroll to the calculated position
+        // window.scrollTo({
+        //   top: offsetPosition,
+        //   behavior: 'smooth', // Smooth scrolling
+        // });
+      }
+    
+    }
+  };
+  useEffect(() => {
+    if (currentCommentId === rootId && subCommentId===message._id) {
+      console.log("lasnancnca;c");
+      scrollToElementById(subCommentId);
+    }
+  }, [subCommentId]);
+
+
+
   return (
     <div
-      ref={messageRef} id={`message-${message._id}`}
+      ref={messageRef}
+      id={`message-${message._id}`}
       className="  w-full flex flex-row items-start justify-between gap-x-4"
     >
       <div className="w-17 ">
@@ -71,6 +105,7 @@ function QandAItemDetail({
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
       </div>
+    
 
       <div className=" w-full gap-y-3 flex flex-1 flex-col items-start justify-between ">
         <div className="flex  gap-x-2">

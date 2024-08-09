@@ -26,3 +26,29 @@ export async function POST(req: Request) {
     //return NextResponse.json({ message: "NOTOK", error: error });
   }
 }
+export async function GET(req: Request) {
+  try {
+    const { userId }: { userId: string | null } = auth();
+
+    
+    if (!userId) {
+      return new NextResponse("Anauthorrided Error", { status: 401 });
+    }
+    await connectToDatabase();
+    const user = await getUserById(userId);
+    if (!user) {
+      return new NextResponse("User not found", { status: 401 });
+    }
+   
+    const questions = await Questions.find({ userId: user._id }).sort({
+      createdAt: -1,
+    });
+
+    return NextResponse.json(questions);
+  } catch (error) {
+    console.log(error);
+    return new NextResponse("Internal Error", { status: 500 });
+    //return NextResponse.json({ message: "NOTOK", error: error });
+  }
+}
+

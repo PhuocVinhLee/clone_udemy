@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Loader2, Pencil, PlusCircle, Trash } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 
@@ -35,9 +35,9 @@ import { QuestionChapterType } from "@/lib/database/models/questionschapter.mode
 import { QuestionList } from "./question-list";
 import Link from "next/link";
 import ConfirmModal from "@/components/model/confirm-modal";
-import ImportQuestion from "./import-question";
+
 import { QuestionTable } from "./question-table";
-import { columns } from "./columns";
+
 import { DataTable } from "./data-table";
 //import { ChapterList } from "./chapter-list";
 import {
@@ -48,6 +48,11 @@ import {
 } from "@/components/ui/accordion";
 import Loading from "@/components/clipLoader";
 import BeatLoader from "react-spinners/BeatLoader";
+import ImportFromExcel from "./import-from-excell";
+
+import { handleExport } from "../../../../../../../../../components/excell/export-to-excell";
+import { columns } from "./columns";
+import { QuestionTypeType } from "@/lib/database/models/questionTypes.model";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -61,6 +66,31 @@ interface QuestionFormProps {
   courseId: string;
   questionByCategoryId: (QuestionType & { exist: boolean })[];
 }
+
+const exportTemplateExcell: unknown = {
+  _id: "example_id",
+  __v: 0,
+  position: 1,
+  chapterId: "example_chapter_id",
+  userId: "example_user_id",
+
+  isPublished: false,
+  title: "Example Title",
+  description: "Example Description",
+  imageUrl: "http://example.com/image.png",
+  answer: "Example Answer",
+  // questionTypeId: "1",
+  template: "Example Template",
+  testCases: JSON.stringify([
+    {
+      input: "Example Input",
+      output: "Example Output",
+      asexample: true,
+      position: 1,
+    },
+  ]),
+  level: "easy",
+};
 
 export const QuetionForm = ({
   initialData,
@@ -122,6 +152,15 @@ export const QuetionForm = ({
       `/teacher/courses/${courseId}/chapters/${chapterId}/questionchapter/${id}`
     );
   };
+  const [questionTypes, setQuestionTypes] = useState<QuestionTypeType[]>([]);
+
+  const fechQuestionType = async () => {
+    const questionType = await axios.get(`/api/questiontype`);
+    setQuestionTypes(questionType.data);
+  };
+  useEffect(() => {
+    fechQuestionType();
+  }, []);
 
   const [questionsFromRoot, setQuestionsFromRoot] = useState([]);
   const handelImportQuestion = async () => {
@@ -129,23 +168,27 @@ export const QuetionForm = ({
       console.log("questionsFromRoot", questionsFromRoot);
       setIsUpdating(true);
       const questions = questionsFromRoot.map((q: any) => {
-        return q?.original;
-       
+        const questionTypeId = questionTypes?.find(
+          (questionType) => questionType.name === q?.original?.questionTypeId
+        );
+        return { ...q?.original, questionTypeId: questionTypeId };
       });
-      
+
       const response = await axios.post(
         `/api/chapters/${courseId}/${chapterId}/arrayquestionschapter`,
         { arrayQuestion: questions }
       );
-      console.log("response",response)
-      if(response?.data?.errors.length ){
-        toast.success("Chapter updates, but a few question duplicate key error collection");
-      } else{
+      console.log("response", response);
+      if (response?.data?.errors.length) {
+        toast.success(
+          "Chapter updates, but a few question duplicate key error collection"
+        );
+      } else {
         toast.success(" Chapter updates.");
       }
-      
+
       setIsUpdating(false);
-      router.refresh()
+      router.refresh();
     } catch (error) {
       toast.error("Some thing went wrong");
     } finally {
@@ -184,22 +227,71 @@ export const QuetionForm = ({
                   disabled={isUpdating}
                   className="flex gap-x-0 hover:no-underline"
                 >
-                  Add
+                  Actions
                 </AccordionTrigger>
               </div>
+              <div className=" flex flex-wrap gap-x-2">
+                <AccordionContent>
+                  <Button onClick={toggleCrating} variant="outline">
+                    New a question
+                  </Button>
+                </AccordionContent>
+                <AccordionContent>
+                  <ConfirmModal
+                    content={
+                      <DataTable
+                        setQuestionsFromRoot={setQuestionsFromRoot}
+                        columns={columns}
+                        data={questionByCategoryId}
+                      ></DataTable>
+                    }
+                    onConfirm={handelImportQuestion}
+                  >
+                    <Button className="text-sm" variant="outline">
+                      Import from root question
+                    </Button>
+                  </ConfirmModal>
+                </AccordionContent>
+
+                <AccordionContent>
+                  <ConfirmModal
+                    content={
+                      <DataTable
+                        setQuestionsFromRoot={setQuestionsFromRoot}
+                        columns={columns}
+                        data={initialData.questions}
+                      ></DataTable>
+                    }
+                    onConfirm={() => {
+                      const questions = questionsFromRoot.map((q: any) => {
+                        return q?.original;
+                      });
+
+                      return handleExport({ data: questions });
+                    }}
+                  >
+                    <Button variant="outline">Export to excell</Button>
+                  </ConfirmModal>
+                </AccordionContent>
+                <AccordionContent>
+                  <Button
+                    onClick={() => {
+                      handleExport({
+                        data: [exportTemplateExcell as QuestionChapterType],
+                      });
+                    }}
+                    variant="outline"
+                  >
+                    Export template excell
+                  </Button>
+                </AccordionContent>
+              </div>
+
               <AccordionContent>
-                <Button onClick={toggleCrating} variant="outline">
-                  New a question
-                </Button>
-              </AccordionContent>
-              <AccordionContent>
-                <ImportQuestion onConfirm={handelImportQuestion}>
-                  <DataTable
-                    setQuestionsFromRoot={setQuestionsFromRoot}
-                    columns={columns}
-                    data={questionByCategoryId}
-                  ></DataTable>
-                </ImportQuestion>
+                <ImportFromExcel
+                  courseId={courseId}
+                  chapterId={chapterId}
+                ></ImportFromExcel>
               </AccordionContent>
             </AccordionItem>
           </Accordion>

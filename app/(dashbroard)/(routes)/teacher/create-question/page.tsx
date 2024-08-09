@@ -72,7 +72,7 @@ const QuestionCreatePage = () => {
               )}
             />
             <div className="flex items-center gap-x-2">
-              <Link href="/">
+              <Link href="/teacher/questions">
                 <Button type="button" variant="ghost">
                   Cancel
                 </Button>

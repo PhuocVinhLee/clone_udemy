@@ -15,6 +15,8 @@ import { connectToDatabase } from "@/lib/database/mongoose";
 import Chapters from "@/lib/database/models/chapters.model";
 import { getUserById } from "@/lib/actions/user.actions";
 import QandA from "@/lib/database/models/qanda.model";
+import Reviews from "@/lib/database/models/review.model";
+import Notification from "@/lib/database/models/notification .model";
 
 export async function PATCH(
   req: Request,
@@ -37,10 +39,10 @@ export async function PATCH(
     }
 
     const DataQandA = {
-      seen: true,
+      isSeen: true,
     };
 
-    const message = await QandA.findByIdAndUpdate(seenId, DataQandA, {
+    const message = await Notification.findByIdAndUpdate(seenId, DataQandA, {
       new: false,
     });
 

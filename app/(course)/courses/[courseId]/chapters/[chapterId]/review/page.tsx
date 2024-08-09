@@ -7,6 +7,7 @@ import { Review } from "@/components/review";
 
 import QandA from "./_components/review";
 import { getAllMessagByChapterId } from "@/lib/actions/qanda.action";
+import { getAllReviewByChapterId } from "@/lib/actions/review.action";
 
 const ChpaterIdPage = async ({
   params,
@@ -16,17 +17,18 @@ const ChpaterIdPage = async ({
   const { userId } = auth();
   if (!userId) return redirect("/");
 
-  const { course } = await ActionGetChapter({
+  const { course,purchase } = await ActionGetChapter({
     userId,
     courseId: params.courseId,
     chapterId: params.chapterId,
   });
-  const allMessage = await getAllMessagByChapterId(params.chapterId, userId);
-  console.log(" allMessage nel", allMessage)
+  const allReviews= await getAllReviewByChapterId(params.chapterId, userId)
+  
   return (
     <QandA
+    purchase={purchase}
       userIdOfCourse={course?.userId}
-      messages={allMessage}
+       messages={allReviews}
       chapterId={params.chapterId}
       courseId={params.courseId}
       userId={userId}

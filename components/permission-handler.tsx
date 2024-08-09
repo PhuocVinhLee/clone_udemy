@@ -1,15 +1,19 @@
 // components/PermissionHandler.tsx
-"use client"
-import { useEffect, useState } from 'react';
+"use client";
+import { useEffect, useState } from "react";
 
-const PermissionHandler: React.FC = () => {
-  const [permissionGranted, setPermissionGranted] = useState(Notification.permission === 'granted');
+const PermissionHandler = () => {
+  const [permissionGranted, setPermissionGranted] = useState<boolean | null>(null);
 
   useEffect(() => {
     const requestPermission = async () => {
-      if (Notification.permission === 'default') {
-        const permission = await Notification.requestPermission();
-        setPermissionGranted(permission === 'granted');
+      if (typeof window !== "undefined" && "Notification" in window) {
+        if (Notification.permission === "default") {
+          const permission = await Notification.requestPermission();
+          setPermissionGranted(permission === "granted");
+        } else {
+          setPermissionGranted(Notification.permission === "granted");
+        }
       }
     };
 

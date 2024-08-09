@@ -15,13 +15,13 @@ export interface TransformedUserId {
   role: string;
 }
 
-export interface QandAType extends Document {
+export interface ReviewType extends Document {
   _id: string;
   chapterId: string;
   courseId: string;
   message: string;
   userId: string;
-  start_number: number;
+  starRating: number;
   root: boolean;
   rootId: string;
   seen: boolean;
@@ -38,7 +38,7 @@ const ReviewSchema = new Schema({
 
   root: { type: Boolean },
   rootId: { type: String },
-  start_number: { type: Number },
+  starRating: { type: Number },
 
   seen: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },

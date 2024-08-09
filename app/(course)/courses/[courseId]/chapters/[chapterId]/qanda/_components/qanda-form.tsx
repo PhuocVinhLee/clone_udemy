@@ -69,21 +69,28 @@ export const QandQForm = ({
       const respone = await axios.post(`${path}`, values);
       if (respone) {
         if (type === "new") {
-          setTargetType("new:comment");
+          setTargetType("NEW:COMMENT:FORM");
+
+          // router.push(
+          //   `/courses/${courseId}/chapters/${chapterId}/qanda?c=${respone?.data._id}`
+          // );
         }
         if (type === "replay") {
-          setTargetType("replay:comment");
+          setTargetType("REPLAY:COMMENT:FORM");
+          // router.push(
+          //   `/courses/${courseId}/chapters/${chapterId}/qanda?c=${respone?.data.rootId}&s=${respone?.data?._id}`
+          // );
         }
-        console.log("data", respone);
+        
         setTarget({
-          rootId: respone?.data.rootId,
+          rootId: respone?.data?.rootId,
           targetId: respone?.data._id,
         });
       }
       toast.success("  Updated.");
       toggleEdit();
       form.reset();
-      // router.refresh(); // refresh state
+     // router.refresh(); // refresh state
     } catch (error) {
       console.log("error", error);
       toast.error("Something went wrong!");

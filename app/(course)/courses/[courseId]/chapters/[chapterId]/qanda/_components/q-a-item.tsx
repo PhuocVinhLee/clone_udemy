@@ -20,6 +20,7 @@ import { QandQForm } from "./qanda-form";
 import QandAItemDetail from "./q-a-a-item-detail";
 import toast from "react-hot-toast";
 import { useNotification } from "@/components/context/notificationContext";
+import { useSearchParams } from "next/navigation";
 
 interface TransformedQandAType extends Omit<QandAType, "userId"> {
   userId: TransformedUserId;
@@ -30,8 +31,8 @@ interface QandAItemProps {
   courseId: string;
   message: TransformedQandAType & { length_of_relay: number };
   userIdOfCourse: string;
-  idMessageShowMore: string | null;
-  rootIdMessageShowMore: string | null;
+  idMessageShowMore?: string | null;
+  rootIdMessageShowMore?: string | null;
 }
 interface TransformedQandAuserIduserIdReplayType
   extends Omit<QandAType, "userId" | "userIdReplay"> {
@@ -44,8 +45,6 @@ function QandAItem({
   userId,
   courseId,
   message,
-  idMessageShowMore,
-  rootIdMessageShowMore,
 }: QandAItemProps) {
   const [showMore, SetShowMore] = useState(false);
   const [isLoading, SetIsLoading] = useState(false);
@@ -53,7 +52,9 @@ function QandAItem({
   const [showMoreDataMessage, setShowMoreDataMessage] = useState<
     TransformedQandAuserIduserIdReplayType[]
   >([]);
-  const commentRefs = useRef({});
+  const searchParams = useSearchParams();
+  const currentCommentId = searchParams.get("c");
+  const subCommentId = searchParams.get("s");
   const getDataShowMore = async () => {
     try {
       SetIsLoading(true);
@@ -69,11 +70,15 @@ function QandAItem({
     }
   };
 
-  useEffect(() => {
-    if (target.targetId) {
-      scrollToElementById(`message-${target.targetId}`);
+  const scrollToElementById = (id?: string | null) => {
+    console.log("id", id);
+    if (id) {
+      const element = document.getElementById(`message-${id}`);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
     }
-  }, [target]);
+  };
   const togleShowMore = async () => {
     try {
       if (!showMore) {
@@ -84,29 +89,15 @@ function QandAItem({
       SetIsLoading(false);
     }
   };
-  // useEffect(() => {
-  //   console.log("handle set shoe morew 1",message.length_of_relay);
-  //   if (message.length_of_relay > 0) {
-  //     console.log("handle set shoe morew 1",message.length_of_relay);
-  //     SetShowMore(true);
-  //     getDataShowMore();
-  //   }
-  // }, [message.length_of_relay]);
-  // useEffect(() => {
-  //   if (rootIdMessageShowMore === message._id) {
-  //     console.log("handle set shoe morew 2");
-  //     SetShowMore(true);
-  //     getDataShowMore();
-  //   }
-  // }, [idMessageShowMore]);
-  const scrollToElementById = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
   useEffect(() => {
-    if (targetType == "show:comment" && target.rootId === message._id) {
+    if (currentCommentId === message._id) {
+      getDataShowMore();
+      SetShowMore(true);
+    }
+  }, [currentCommentId, subCommentId]);
+
+  useEffect(() => {
+    if (targetType == "NEW:COMMENT:FORM" && target.rootId === message._id) {
       getDataShowMore();
 
       SetShowMore(true);
@@ -119,7 +110,8 @@ function QandAItem({
   };
 
   useEffect(() => {
-    if (targetType == "replay:comment" && target.rootId === message._id) {
+    if (targetType == "REPLAY:COMMENT:FORM" && target.rootId === message._id) {
+      console.log("REPLAY:QANDA:FORM");
       getDataShowMore();
       SetShowMore(true);
     }
@@ -127,7 +119,7 @@ function QandAItem({
 
   const pathToReplay = `/api/chapters/${courseId}/${chapterId}/qanda/root/${message._id}/replay/${message._id}`;
   return (
-    <div>
+    <div id={`message-${message._id}`}>
       <div className="flex flex-row items-start justify-between gap-x-4">
         <div className="w-17 ">
           <Avatar className="">

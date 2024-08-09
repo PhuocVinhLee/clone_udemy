@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-import { ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, Star } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import {
@@ -16,49 +16,51 @@ import { getShowMoreMessage } from "@/lib/actions/qanda.action";
 import axios from "axios";
 import { cn } from "@/lib/utils";
 import TimeAgo from "@/components/time-ago";
-import { QandQForm } from "./qanda-form";
+
 import QandAItemDetail from "./q-a-a-item-detail";
 import toast from "react-hot-toast";
 import { useNotification } from "@/components/context/notificationContext";
+import { ReviewType } from "@/lib/database/models/review.model";
+import { ReplayForm } from "./replay-form";
+import { useUser } from "@clerk/nextjs";
+import { useSearchParams } from "next/navigation";
 
-interface TransformedQandAType extends Omit<QandAType, "userId"> {
+interface TransformedReviewType extends Omit<ReviewType, "userId"> {
   userId: TransformedUserId;
 }
 interface QandAItemProps {
   chapterId: string;
   userId: string;
   courseId: string;
-  message: TransformedQandAType & { length_of_relay: number };
+  message: TransformedReviewType & { replayMessages: TransformedReviewType[] };
   userIdOfCourse: string;
-  idMessageShowMore: string | null;
-  rootIdMessageShowMore: string | null;
 }
 interface TransformedQandAuserIduserIdReplayType
-  extends Omit<QandAType, "userId" | "userIdReplay"> {
+  extends Omit<QandAType, "userId"> {
   userId: TransformedUserId;
-  userIdReplay: TransformedUserIdReplay;
 }
-function QandAItem({
+function ReviewItem({
   userIdOfCourse,
   chapterId,
   userId,
   courseId,
   message,
-  idMessageShowMore,
-  rootIdMessageShowMore,
 }: QandAItemProps) {
+  const searchParams = useSearchParams();
+  const currentCommentId = searchParams.get("c");
+  const { user } = useUser();
   const [showMore, SetShowMore] = useState(false);
   const [isLoading, SetIsLoading] = useState(false);
   const { target, targetType } = useNotification();
   const [showMoreDataMessage, setShowMoreDataMessage] = useState<
     TransformedQandAuserIduserIdReplayType[]
   >([]);
-  const commentRefs = useRef({});
+
   const getDataShowMore = async () => {
     try {
       SetIsLoading(true);
       const showMoreMessage = await axios.get(
-        `/api/chapters/${courseId}/${chapterId}/qanda/root/${message._id}/showmore`
+        `/api/chapters/${courseId}/${chapterId}/review/root/${message._id}/showmore`
       );
       setShowMoreDataMessage(showMoreMessage?.data);
       // if(target.targetId){scrollToElementById(`message-${target.targetId}`)}
@@ -69,49 +71,26 @@ function QandAItem({
     }
   };
 
-  useEffect(() => {
-    if (target.targetId) {
-      scrollToElementById(`message-${target.targetId}`);
-    }
-  }, [target]);
-  const togleShowMore = async () => {
-    try {
-      if (!showMore) {
-        getDataShowMore();
+ 
+  const scrollToElementById = (id?: string | null) => {
+    console.log("id", id);
+    if (id) {
+      const element = document.getElementById(`message-${id}`);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
       }
-      SetShowMore(!showMore);
-    } catch (error) {
-      SetIsLoading(false);
     }
   };
   // useEffect(() => {
-  //   console.log("handle set shoe morew 1",message.length_of_relay);
-  //   if (message.length_of_relay > 0) {
-  //     console.log("handle set shoe morew 1",message.length_of_relay);
-  //     SetShowMore(true);
-  //     getDataShowMore();
+  //   if (targetType == "NEW:REVIEW:NOTIFICATION") {
+  //     scrollToElementById(target.targetId);
+  //     if(target.targetId === message._id){
+  //       SetReplay(true)
+  //     }else{
+  //       SetReplay(false)
+  //     }
   //   }
-  // }, [message.length_of_relay]);
-  // useEffect(() => {
-  //   if (rootIdMessageShowMore === message._id) {
-  //     console.log("handle set shoe morew 2");
-  //     SetShowMore(true);
-  //     getDataShowMore();
-  //   }
-  // }, [idMessageShowMore]);
-  const scrollToElementById = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-  useEffect(() => {
-    if (targetType == "show:comment" && target.rootId === message._id) {
-      getDataShowMore();
-
-      SetShowMore(true);
-    }
-  }, [targetType, target.rootId]);
+  // }, [targetType, target.targetId]);
 
   const [replay, SetReplay] = useState(false);
   const togleReplay = () => {
@@ -127,7 +106,7 @@ function QandAItem({
 
   const pathToReplay = `/api/chapters/${courseId}/${chapterId}/qanda/root/${message._id}/replay/${message._id}`;
   return (
-    <div>
+    <div id={`message-${message._id}`}>
       <div className="flex flex-row items-start justify-between gap-x-4">
         <div className="w-17 ">
           <Avatar className="">
@@ -156,22 +135,30 @@ function QandAItem({
           </div>
           <div>{message?.message}</div>
           <div className="flex gap-x-4     items-center justify-between">
-            {message.length_of_relay > 0 && (
-              <div onClick={togleShowMore} className="flex text-blue-300">
-                <div>More relpay {message?.length_of_relay}</div>
-                <span>
-                  {" "}
-                  {showMore ? (
-                    <ChevronDown></ChevronDown>
-                  ) : (
-                    <ChevronUp></ChevronUp>
-                  )}{" "}
-                </span>{" "}
-              </div>
+            <div className="flex">
+              {[...Array(5)].map((_, index) => {
+                const ratingValue = index + 1;
+                return (
+                  <button
+                    key={index}
+                    type="button"
+                    className="focus:outline-none"
+                  >
+                    <Star
+                      className="w-6 h-6"
+                      fill={
+                        ratingValue <= message?.starRating ? "#ffd700" : "#ccc"
+                      }
+                    />
+                  </button>
+                );
+              })}
+            </div>
+            {userIdOfCourse === user?.publicMetadata?.userId && (
+              <Button onClick={togleReplay} variant="ghost" className=" ">
+                Replay
+              </Button>
             )}
-            <Button onClick={togleReplay} variant="ghost" className=" ">
-              Replay
-            </Button>
           </div>
           <div>
             {isLoading && (
@@ -181,35 +168,33 @@ function QandAItem({
           <div className="w-full">
             {replay && (
               <div className="w-full">
-                <QandQForm
-                  type="replay"
-                  isEditingProp={true}
+                <ReplayForm
+                  rootId={message._id}
+                  isEditingProp={false}
                   togleReplay={(value) => {
-                    SetReplay(value);
+                    // SetReplay(value)
                   }}
                   initialData={{ message: "" }}
                   userId={userId}
                   courseId={courseId}
                   chapterId={chapterId}
-                  path={pathToReplay}
-                ></QandQForm>
+                ></ReplayForm>
               </div>
             )}
           </div>
           <div className="mt-2 w-full flex flex-col gap-y-8">
-            {showMore &&
-              showMoreDataMessage?.map((messageMore) => (
-                <div key={messageMore._id} className="">
-                  <QandAItemDetail
-                    userIdOfCourse={userIdOfCourse}
-                    rootId={message._id}
-                    userId={userId}
-                    chapterId={chapterId}
-                    courseId={courseId}
-                    message={messageMore}
-                  ></QandAItemDetail>
-                </div>
-              ))}
+            {message?.replayMessages?.map((messageMore) => (
+              <div  key={messageMore._id} className="">
+                <QandAItemDetail
+                  userIdOfCourse={userIdOfCourse}
+                  rootId={message._id}
+                  userId={userId}
+                  chapterId={chapterId}
+                  courseId={courseId}
+                  message={messageMore}
+                ></QandAItemDetail>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -217,4 +202,4 @@ function QandAItem({
   );
 }
 
-export default QandAItem;
+export default ReviewItem;

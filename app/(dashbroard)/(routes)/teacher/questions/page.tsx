@@ -1,35 +1,65 @@
-
-import React from "react";
+"use client";
 import { DataTable } from "./_components/data-table";
-import { columns } from "./_components/columns";
 
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
 import SearchInput from "@/components/search-input";
 import Categories from "../../search/_components/Categories";
-import { getAllCategory } from "@/lib/actions/categorys.action";
-import { ActionAllQuestionByUserId } from "@/lib/actions/question.action";
 
-const QuestionPage = async () => {
-  const { userId } = auth();
+import { columns } from "./_components/columns";
+import { useEffect, useState } from "react";
+import { QuestionType } from "@/lib/database/models/questions.model";
+import axios from "axios";
+import { QuestionTypeType } from "@/lib/database/models/questionTypes.model";
+import { CategoryType } from "@/lib/database/models/categorys.model";
 
-  if (!userId) {
-    redirect("/");
-    return null;
-  }
+const QuestionPage = () => {
+  const [questions, setQuestions] = useState<QuestionType[]>([]);
+  const [questionType, setQuestionType] = useState<QuestionTypeType[]>([]);
+  const [category, setCategory] = useState<CategoryType[]>([]);
+  const fechQuestionType = async () => {
+    const questionType = await axios.get(`/api/questiontype`);
+    setQuestionType(questionType.data);
+  };
+  const fechCategory = async () => {
+    const category = await axios.get(`/api/category`);
+    setCategory(category.data);
+  };
+  const FechAllQuestions = async () => {
+    const questionType = await axios.get(`/api/questiontype`);
+    const category = await axios.get(`/api/category`);
 
-  const AllQuestion = await ActionAllQuestionByUserId(userId);
+    const AllQuestion = await axios.get(`/api/questions`);
 
-console.log("All question",AllQuestion)
+    const questionTranform = AllQuestion?.data?.map(
+      (question: QuestionType) => {
+        const { categoryId, questionTypeId, ...rest } = question;
+        return {
+          ...rest,
+          category: category?.data?.find(
+            (category: CategoryType) => category._id === question.categoryId
+          )?.name,
 
+          questionType: questionType?.data?.find(
+            (questionType: QuestionTypeType) =>
+              questionType._id === question.questionTypeId
+          )?.name,
+        };
+      }
+    );
+    setQuestions(questionTranform);
+  };
+  useEffect(() => {
+    FechAllQuestions();
+  }, []);
+
+  const [questionsFromRoot, setQuestionsFromRoot] = useState([]);
 
   return (
     <div className="p-6">
-      {/* <div className=" md:hidden md:mb-0 block mb-6">
-        <SearchInput ></SearchInput>
-      </div>
-      <Categories items={ArrCategories}></Categories> */}
-      <DataTable columns={columns} data={AllQuestion} />
+      <DataTable
+        setQuestionsFromRoot={setQuestionsFromRoot}
+        columns={columns}
+        data={questions}
+      />
     </div>
   );
 };

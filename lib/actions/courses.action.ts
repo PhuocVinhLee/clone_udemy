@@ -17,25 +17,24 @@ import { CategoryType } from "../database/models/categorys.model";
 import Purchase from "../database/models/purchase.model";
 import { getAllChapterByCourseId } from "./chapter.action";
 import Questions from "../database/models/questions.model";
+import Reviews from "../database/models/review.model";
 
 const mux = new Mux({
   tokenId: process.env.MUX_TOKEN_ID!,
   tokenSecret: process.env.MUX_TOKEN_SECRET!,
 });
 
+export const ActionGetCategoryIdByCourseId = async (courseId: string) => {
+  try {
+    await connectToDatabase();
+    const course = await Courses.findById(courseId).select("categoryId");
 
-
-export const ActionGetCategoryIdByCourseId = async (courseId: string)=>{
- try {
-  await connectToDatabase();
-  const course = await Courses.findById(courseId).select('categoryId');
-  
-  return JSON.parse(JSON.stringify(course.categoryId));
-  // Respond with the categoryId
- } catch (error) {
-  console.log("An erorr in getDashboarhCourses", error);
- }
-}
+    return JSON.parse(JSON.stringify(course.categoryId));
+    // Respond with the categoryId
+  } catch (error) {
+    console.log("An erorr in getDashboarhCourses", error);
+  }
+};
 
 type CourseWithProgressWithCaregory = CourseType & {
   category: CategoryType;
@@ -62,57 +61,54 @@ export const getDashboarhCourses = async (
     }); // {_id, courseId, userId}
 
     let courses: CourseWithProgressWithCaregory[] = [];
-    
+
     for (let purchase of purchases) {
-     const course =  await Courses.aggregate([
-      { $match: {_id: purchase.courseId} },
-      {
-        $lookup: {
-          from: "chapters",
-          let: { courseId: "$_id" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ["$courseId", "$$courseId"] },
-                    { $eq: ["$isPublished", true] },
-                  ],
+      const course = await Courses.aggregate([
+        { $match: { _id: purchase.courseId } },
+        {
+          $lookup: {
+            from: "chapters",
+            let: { courseId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$courseId", "$$courseId"] },
+                      { $eq: ["$isPublished", true] },
+                    ],
+                  },
                 },
               },
-            },
-            { $project: { _id: 1 } }, // only _id
-          ],
-          as: "chapters",
+              { $project: { _id: 1 } }, // only _id
+            ],
+            as: "chapters",
+          },
         },
-      },
-      {
-        $lookup: {
-          from: "categorys",
-          localField: "categoryId",
-          foreignField: "_id",
-          as: "category",
+        {
+          $lookup: {
+            from: "categorys",
+            localField: "categoryId",
+            foreignField: "_id",
+            as: "category",
+          },
         },
-      },
-      { $unwind: "$category" },
-     
-      {
-        $sort: { createdAt: -1 },
-      },
-    ]);
+        { $unwind: "$category" },
 
+        {
+          $sort: { createdAt: -1 },
+        },
+      ]);
 
-   
-    if(course[0]){
-      const progress = await getProgress(course[0]._id, userId);
-console.log("progress",progress)
-      course[0]["progress"] = progress;
-  
-      courses.push(course[0]); 
+      if (course[0]) {
+        const progress = await getProgress(course[0]._id, userId);
+        console.log("progress", progress);
+        course[0]["progress"] = progress;
+
+        courses.push(course[0]);
+      }
     }
-  }
 
-   
     const completedCourses = courses.filter(
       (course) => course.progress === 100
     );
@@ -264,6 +260,8 @@ type ActionGetAllCoursesRefProgressRefCategoryParams = {
   isPublished: boolean;
   category: CategoryType;
   progress: number;
+  averageStart: number| null,
+  numberStudents: number| null,
   chapters: { _id: string }[];
 };
 type CoursesParams = {
@@ -347,7 +345,6 @@ export const ActionGetAllCoursesRefProgressRefCategory = async ({
             },
           ],
 
-        
           as: "purchases",
         },
       },
@@ -364,25 +361,44 @@ export const ActionGetAllCoursesRefProgressRefCategory = async ({
     console.log("coursesWithDetails", coursesWithDetails);
     const courseWithProgress: ActionGetAllCoursesRefProgressRefCategoryParams[] =
       await Promise.all(
-        coursesWithDetails.map(async (course) => {
+        coursesWithDetails.map(async (course: any) => {
+          const numberStudents = await Purchase.find({
+            courseId: course._id,
+          });
+          const starRatings = await Reviews.find({
+            courseId: course._id,
+            root: true,
+          }).select(["starRating"]);
+          console.log("starRating", starRatings);
+          let averageStart = 0;
+          if (starRatings) {
+            const sum = starRatings.reduce(
+              (acc, obj) => acc + obj.starRating,
+              0
+            );
+            averageStart = sum / starRatings.length;
+          }
+
           if (!course?.purchases) {
             return {
               ...course,
               progress: null,
+              averageStart: averageStart,
+              numberStudents: numberStudents?.length,
             };
           }
-          console.log("nexttttt");
+
           const progressPercentage = await getProgress(course._id, userId);
+
           return {
             ...course,
             progress: progressPercentage,
+            averageStart: averageStart,
+            numberStudents: numberStudents?.length,
           };
         })
       );
 
-    console.log("courseWithProgress", courseWithProgress);
-
-    //return courseWithProgress;
     return JSON.parse(JSON.stringify(courseWithProgress));
   } catch (error) {
     //handleError(error);
@@ -436,7 +452,7 @@ export async function deleteCourse(userId: string, courseId: string) {
             await mux.video.assets.delete(muxdataDeleted.assertId);
           }
         }
-      
+
         const chapterDeleted = await Chapters.findByIdAndDelete(chapter._id);
       }
     }

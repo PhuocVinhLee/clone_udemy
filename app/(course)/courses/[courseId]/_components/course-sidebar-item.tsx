@@ -50,7 +50,7 @@ function CourseSidebaItem({
 
   //  console.log("Is questionId", questionId);
   const onClick = () => {
-    router.push(`/courses/${courseId}/chapters/${id}`);
+    router.push(`/courses/${courseId}/chapters/${id}/review`);
   };
 
   return (

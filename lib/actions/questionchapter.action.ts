@@ -18,6 +18,7 @@ import Purchase from "../database/models/purchase.model";
 import Questions from "../database/models/questions.model";
 import QuestionsChapter from "../database/models/questionschapter.model";
 import QuestionStudents from "../database/models/questionstudents.model";
+import QuestionTypes from "../database/models/questionTypes.model";
 
 export async function getQuestionsWithStudentStatus(
   chapterId: string,
@@ -54,7 +55,7 @@ export async function getQuestionsWithStudentStatus(
               },
             },
           },
-          { $project: { isCorrect: 1 , flag: 1} },
+          { $project: { isCorrect: 1, flag: 1 } },
         ],
         as: "studentStatus",
       },
@@ -63,7 +64,7 @@ export async function getQuestionsWithStudentStatus(
       $addFields: {
         isCorrect: { $arrayElemAt: ["$studentStatus.isCorrect", 0] },
         id_questionstudents: { $arrayElemAt: ["$studentStatus._id", 0] },
-        flag: { $arrayElemAt: ["$studentStatus.flag", 0] }
+        flag: { $arrayElemAt: ["$studentStatus.flag", 0] },
       },
     },
     {
@@ -73,7 +74,6 @@ export async function getQuestionsWithStudentStatus(
     },
   ]);
   return JSON.parse(JSON.stringify(results));
- 
 }
 // GET ONE
 export async function getQuestionChapterById(questionId: string) {
@@ -111,11 +111,23 @@ export async function ActionAllQuestionByChapterId(
     const questions = await QuestionsChapter.find({
       userId: user._id,
       chapterId: chapterId,
-    }).sort({
-      position: 1,
-    });
+    })
+      .populate({
+        path: "questionTypeId", // Specify the path to populate
+        select: "name",
+        model: QuestionTypes, // Select the fields to include
+      })
+      .sort({
+        position: 1,
+      }) // Populate questionTypeId with specific fields from QuestionTypes
+      .exec();
+    const transformedQuestions = questions.map((question) => ({
+      ...question.toObject(),
+      questionTypeId: question?.questionTypeId?.name, // Replace the questionTypeId object with the name value
+    }));
 
-    return JSON.parse(JSON.stringify(questions));
+    console.log("transformedQuestions", transformedQuestions);
+    return JSON.parse(JSON.stringify(transformedQuestions));
   } catch (error) {
     //handleError(error)
     console.log(
