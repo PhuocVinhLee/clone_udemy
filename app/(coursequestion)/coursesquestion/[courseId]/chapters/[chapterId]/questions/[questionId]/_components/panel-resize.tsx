@@ -69,6 +69,26 @@ export default function PanelReSize({
   const [statusCodeRealtime, setStatusCodeRealtime] = useState("");
   const [handelErrorCompiled, setHandelErrorCompiled] = useState<any>(null);
   const router = useRouter();
+
+  const checkStatus = async () => {
+    let status = ""; // Initial status
+    let startTime = Date.now();
+    let timeout = 5000; // 5 seconds
+    while (true) {
+      // Check if 5 seconds have passed
+      if (Date.now() - startTime >= timeout) {
+        console.log("Timeout reached. Exiting loop.");
+        break;
+      }
+
+      // Check if status is "OKE"
+      if (status === "OKE") {
+        console.log("Status is OKE. Exiting loop.");
+        break;
+      }
+    }
+  };
+
   const handleRunCode = async () => {
     try {
       setIsLoading(true);
@@ -81,29 +101,40 @@ export default function PanelReSize({
         template: question?.template,
       });
       console.log("respone1", respone);
-      //toast.success(" Question updated.");
-      //  console.log("respone", respone);//"Compiling..."
-      //  router.refresh(); // refresh state
 
-      if (1) {
-        //respone?.data.he_id
+      if (respone?.data.he_id) {
         const he_id = respone.data.he_id;
-        //const he_id = "7c8cd661-fb51-49cc-b2d5-51a0c42e9a0b";
-        //const he_id = "009dd95b-93d7-4fbd-a843-2f7439cef762";
+
         const respone2 = await axios.get(`/api/hackerearth/${he_id}`);
         console.log("respone2", respone2);
-        setStatusCodeRealtime("Compiled");
-        const output = respone2?.data?.result?.run_status?.output;
-        // const output = "https://he-s3.s3.amazonaws.com/media/userdata/AnonymousUser/code/8c98722";
-        // const output =  "32#<ab@17943918#@>#35#<ab@17943918#@>#36"
+
+        let output = respone2?.data?.result?.run_status?.output;
+
         const compile_status = respone2?.data?.result?.compile_status;
         if (compile_status != "OK") {
           setHandelErrorCompiled(compile_status);
           setResultCompiled([]);
-          toast(" This answer will not save");
+          //toast(" This answer will not save");
+          return;
         }
 
+        let startTime = Date.now();
+        let timeout = 5000; // 5 seconds
+        while (output == null) {
+          if (Date.now() - startTime >= timeout) {
+            console.log("Timeout reached. Exiting loop.");
+            break;
+          }
+          const respone2 = await axios.get(`/api/hackerearth/${he_id}`);
+          console.log("respone2ww", respone2);
+          output = respone2?.data?.result?.run_status?.output;
+          console.log("Timeout reached. Exiting loop222.");
+        }
+
+        setStatusCodeRealtime("Compiled");
+
         let mapQuestionStudentGotAnwsers: any[] = [];
+
         if (output) {
           const respone3 = await axios.get(output);
           console.log("respone3", respone3);
@@ -131,6 +162,7 @@ export default function PanelReSize({
             answer: valueAnswerCode,
           }
         );
+
         if (compile_status == "OK" && responeQuestionStudent?.data?.isCorrect) {
           if (questionStudent?.isCorrect) {
             toast(" This answer will not save");
@@ -146,8 +178,15 @@ export default function PanelReSize({
       }
       setIsLoading(false);
       router.refresh();
-    } catch (error) {
-      toast.error("Something went wrong!");
+    } catch (error: any) {
+      console.log(error);
+      if (error?.response?.data?.success === false) {
+        toast.error(
+          "This is a test version and you can only run it up to 10 times. If you want to continue, please contact us via email lephuocvinh264@gmail.com"
+        );
+      } else {
+        toast.error("Something went wrong!");
+      }
     } finally {
       setIsLoading(false);
       setStatusCodeRealtime("");
@@ -166,23 +205,14 @@ export default function PanelReSize({
             <PanelGroup direction="vertical" ref={ref}>
               <Panel maxSize={95} minSize={5} defaultSize={95}>
                 <div className=" h-full overflow-auto">
-                  {/* <CodeMirror
-                    className=" overflow-auto"
-                    value={valueAnswerCode}
-                    // content="Your answer"
-                    height="full"
-                    // extensions={[javascript({ jsx: true }),]}
-                    extensions={[cpp(), autocompletion()]}
-                    //extensions={[cpp()]}
-                    onChange={(value) => {
+                  
+                  <CodeMirrorCpn
+                    extensionsProp={[cpp(), autocompletion()]}
+                    valueProp={valueAnswerCode}
+                    onChangeProp={(value) => {
                       setValueAnswerCode(value);
                     }}
-                  /> */}
-                  <CodeMirrorCpn  extensionsProp={[cpp(), autocompletion()]} valueProp={valueAnswerCode} onChangeProp={(value) => {
-                      setValueAnswerCode(value);
-                    }}>
-                    
-                  </CodeMirrorCpn>
+                  ></CodeMirrorCpn>
                 </div>
               </Panel>
               <PanelResizeHandle className=" p-[2px] h-[2px] hover:bg-slate-500 bg-slate-200 cursor-pointer" />
@@ -214,13 +244,13 @@ export default function PanelReSize({
                     {showConsole ? <FaChevronDown /> : <FaChevronUp />}{" "}
                   </div>
                   <div className="flex gap-x-2">
-                    <Button
-                      className="p-3 md:h-5 h-2  w-13"
+                    <Button  variant="outline"
+                      className="  dark:text-white dark:bg-[#1e1e1e] dark:hover:bg-[#151515]  bg-slate-300 hover:bg-slate-400   p-3 md:h-5 h-2  w-13"
                       onClick={handleRunCode}
                     >
                       {isLoading && (
                         <span className="flex items-center justify-between">
-                          <Loading loading={isLoading}></Loading>
+                          <Loading  loading={isLoading}></Loading>
                           {statusCodeRealtime}
                         </span>
                       )}

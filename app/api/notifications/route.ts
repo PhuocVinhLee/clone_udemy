@@ -39,7 +39,7 @@ export async function GET(req: Request) {
     const notifications = await Notification.find({ userIdReceve: user._id })
       .populate("userId", "_id username photo role")
       .populate({ path: 'chapterId', select: '_id title videoUrl', model: Chapters })
-     // .populate("chapterId", "_id title videoUrl") // Specify the fields you want to include from the Chapters model
+      .populate({ path: 'courseId', select: '_id title imageUrl', model: Courses })
       .sort({ createdAt: -1 })
       .exec();
 

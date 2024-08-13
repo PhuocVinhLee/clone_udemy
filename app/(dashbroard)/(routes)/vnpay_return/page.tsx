@@ -1,3 +1,4 @@
+"use client"
 import { useRouter } from "next/router";
 import crypto from "crypto";
 import querystring from "query-string";

@@ -11,8 +11,9 @@ const Loading = ({loading}: {loading: boolean}) => {
   let [color, setColor] = useState("#ffffff");
   return (
     <BeatLoader 
+    
      
-      color={color}
+     color={color}
       loading={loading}
       // cssOverride={override}
       size={5}

@@ -8,7 +8,11 @@ export interface TransformedChapterId {
   title: string;
   videoUrl: string;
 }
-
+export interface TransformedCourseId{
+  _id: string;
+  title: string;
+  imageUrl: string;
+}
 export interface TransformedUserId {
   _id: string;
   username: string;

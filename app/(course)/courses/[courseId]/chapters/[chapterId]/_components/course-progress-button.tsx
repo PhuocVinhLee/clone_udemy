@@ -36,7 +36,7 @@ const CourseProgressButton = ({
       }
 
       if (!isCompleted && nextChapterId) {
-        router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
+        router.push(`/courses/${courseId}/chapters/${nextChapterId}/review`);
       }
       toast.success("Progress updated");
       router.refresh();

@@ -163,6 +163,9 @@ export const getCourseWithChaptersAndQuestionAndUserProgres = async (
   courseId: string
 ) => {
   await connectToDatabase();
+  if (!mongoose.Types.ObjectId.isValid(courseId)) {
+    throw new Error("Invalid courseId");
+  }
 
   const user = await getUserById(userId);
   if (!user) {
@@ -260,8 +263,8 @@ type ActionGetAllCoursesRefProgressRefCategoryParams = {
   isPublished: boolean;
   category: CategoryType;
   progress: number;
-  averageStart: number| null,
-  numberStudents: number| null,
+  averageStart: number | null;
+  numberStudents: number | null;
   chapters: { _id: string }[];
 };
 type CoursesParams = {

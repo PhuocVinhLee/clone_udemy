@@ -8,7 +8,7 @@ const DashbroardLayout = ({ children }: { children: React.ReactNode }) => {
   const isTeacher = has({ role: "teacher" });
   console.log("isTeacher in page ", isTeacher)
   return (
-    <div className=" h-full ">
+    <div className=" h-full  ">
       <div className="h-[80px] md:pl-56 fixed inset-y-0 w-full z-50">
         <Nav></Nav>
       </div>
@@ -17,7 +17,7 @@ const DashbroardLayout = ({ children }: { children: React.ReactNode }) => {
         <Sidebar></Sidebar>
       </div>
 
-      <main className=" h-full md:pl-56 pt-[80px] border border-red-800 ">{children}</main>
+      <main className=" h-full md:pl-56 pt-[80px]">{children}</main>
     </div>
   );
 };

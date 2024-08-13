@@ -7,8 +7,9 @@ import { Review } from "@/components/review";
 import Image from "next/image";
 import Example from "./example";
 import { cn } from "@/lib/utils";
+import { QuestionChapterType } from "@/lib/database/models/questionschapter.model";
 interface QuestionInforProp {
-  question: QuestionType;
+  question: QuestionChapterType;
 }
 const QuestionInfor = ({ question }: QuestionInforProp) => {
   return (

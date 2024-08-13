@@ -49,13 +49,13 @@ const CourseEnrollButton = ({ courseId, price }: CourseEnrollButtonProps) => {
     <div className="flex flex-col p-5  items-center justify-between gap-y-4">
       <div>Choose 1 payment method</div>
       <div className=" flex gap-x-2">
-        <Button
+        {/* <Button
           onClick={() => {
             handleVNPayPayment();
           }}
         >
           VN Pay
-        </Button>
+        </Button> */}
         <Button onClick={onclick}>Stripe</Button>
         {/* <Button
           onClick={onclick}

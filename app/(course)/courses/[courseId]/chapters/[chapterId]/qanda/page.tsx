@@ -16,7 +16,7 @@ const ChpaterIdPage = async ({
   const { userId } = auth();
   if (!userId) return redirect("/");
 
-  const { course } = await ActionGetChapter({
+  const { course, purchase } = await ActionGetChapter({
     userId,
     courseId: params.courseId,
     chapterId: params.chapterId,
@@ -24,7 +24,8 @@ const ChpaterIdPage = async ({
   const allMessage = await getAllMessagByChapterId(params.chapterId, userId);
   console.log(" allMessage nel", allMessage)
   return (
-    <QandA
+    <QandA 
+    purchase={purchase}
       userIdOfCourse={course?.userId}
       messages={allMessage}
       chapterId={params.chapterId}

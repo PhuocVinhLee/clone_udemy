@@ -26,7 +26,7 @@ const TestCaseError = ({
 }: TestCaseErrorProps) => {
   return (
     <Tabs defaultValue="testcase" className="w-full ">
-      <TabsList>
+      <TabsList className=" dark:bg-black">
         <TabsTrigger value="testcase">Test case</TabsTrigger>
         <TabsTrigger
           className={cn(errorCompiled && " border border-red-500")}
@@ -38,7 +38,7 @@ const TestCaseError = ({
       <TabsContent className="px-2  text-sm" value="testcase">
         {testCases && (
           <Tabs defaultValue={testCases[0]?._id} className="w-full  ">
-            <TabsList className="   space-x-2">
+            <TabsList className=" dark:bg-black  space-x-2">
               {testCases?.map(
                 (
                   testcase: {
@@ -55,7 +55,7 @@ const TestCaseError = ({
                       key={index}
                       value={testcase._id}
                       className={cn(
-                        " ",
+                        "   bg-none",
                         !errorCompiled &&
                           result &&
                           (result[index] === testcase?.output

@@ -37,12 +37,35 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { QuestionTypeType } from "@/lib/database/models/questionTypes.model";
 import { CategoryType } from "@/lib/database/models/categorys.model";
+import { QuestionChapterType } from "@/lib/database/models/questionschapter.model";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   setQuestionsFromRoot: any;
 }
+const exportTemplateExcell: unknown = {
+  _id: "example_id",
+  __v: 0,
+  position: 1,
+
+  title: "Example Title",
+  description: "Example Description",
+  imageUrl: "http://example.com/image.png",
+  answer: "Example Answer",
+  questionType: "Function c",
+  template: "Example Template",
+  category: "Engineering",
+  testCases: JSON.stringify([
+    {
+      input: "Example Input",
+      output: "Example Output",
+      asexample: true,
+      position: 1,
+    },
+  ]),
+  level: "easy",
+};
 
 export function DataTable<TData, TValue>({
   columns,
@@ -83,11 +106,6 @@ DataTableProps<TData, TValue>) {
   useEffect(() => {
     setQuestionsFromRoot(selectedRows);
   }, [selectedRows]);
-
-
-
-
-
 
   return (
     <div className="w-full">
@@ -145,6 +163,17 @@ DataTableProps<TData, TValue>) {
             variant="outline"
           >
             Export to excell
+          </Button>
+
+          <Button
+            onClick={() => {
+              handleExport({
+                data: [exportTemplateExcell as QuestionChapterType],
+              });
+            }}
+            variant="outline"
+          >
+            Export template excell
           </Button>
         </div>
 

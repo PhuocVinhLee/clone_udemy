@@ -71,15 +71,12 @@ const exportTemplateExcell: unknown = {
   _id: "example_id",
   __v: 0,
   position: 1,
-  chapterId: "example_chapter_id",
-  userId: "example_user_id",
 
-  isPublished: false,
   title: "Example Title",
   description: "Example Description",
   imageUrl: "http://example.com/image.png",
   answer: "Example Answer",
-  // questionTypeId: "1",
+  questionType: "Function c",
   template: "Example Template",
   testCases: JSON.stringify([
     {

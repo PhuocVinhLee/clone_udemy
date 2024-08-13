@@ -12,17 +12,19 @@ import SidebarItem from "./navbar-item";
 import { usePathname } from "next/navigation";
 
 const Routes = [
-  ///courses/6694977676296b1029a61112/chapters/6694978d76296b1029a6112d/overview
-  {
-    icon: FileQuestionIcon,
-    label: "Review",
-    href: "/review",
-  },
   {
     icon: List,
     label: "Overview",
     href: "/overview",
   },
+  
+  
+  {
+    icon: FileQuestionIcon,
+    label: "Review",
+    href: "/review",
+  },
+ 
   {
     icon: List,
     label: "Exercise",
@@ -34,7 +36,7 @@ const Routes = [
     href: "/qanda",
   },
   {
-    icon: FileQuestionIcon,
+    icon: List,
     label: "Resourse",
     href: "/resourse",
   },

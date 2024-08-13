@@ -19,6 +19,7 @@ interface TransformedQandAType extends Omit<QandAType, "userId"> {
 }
 
 interface QandAProps {
+  purchase: any;
   chapterId: string;
   userId: string;
   courseId: string;
@@ -27,6 +28,7 @@ interface QandAProps {
 }
 
 const QandA = ({
+  purchase,
   userIdOfCourse,
   chapterId,
   userId,
@@ -99,7 +101,7 @@ const QandA = ({
 
   return (
     <div className="flex flex-col gap-4 border p-4">
-      <QandQForm
+     { purchase && <QandQForm
         type="new"
         isEditingProp={false}
         togleReplay={(value) => {
@@ -110,9 +112,9 @@ const QandA = ({
         userId={userId}
         courseId={courseId}
         chapterId={chapterId}
-      ></QandQForm>
+      ></QandQForm>}
 
-      {messageLocal?.map((message) => {
+      { messageLocal?.length ? ( messageLocal?.map((message) => {
         return (
           <div key={message._id}>
             <QandAItem
@@ -124,7 +126,7 @@ const QandA = ({
             ></QandAItem>
           </div>
         );
-      })}
+      }))  : "Message not found!"}
     </div>
   );
 };

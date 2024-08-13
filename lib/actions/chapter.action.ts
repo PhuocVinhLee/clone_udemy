@@ -84,7 +84,7 @@ export async function ActionGetChapter({
         chapterId: chapterId,
         isPublished: true,
       })
-        .select(["title", "position"])
+        .select(["title", "position", "level"])
         .sort({ position: 1 })
         .exec();
     }

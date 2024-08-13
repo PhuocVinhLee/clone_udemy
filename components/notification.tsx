@@ -22,12 +22,13 @@ import { useNotification } from "./context/notificationContext";
 import NotificationSound from "./notification-sound";
 import NotificationHandler from "./notification-handler";
 import PermissionHandler from "./permission-handler";
-import { NotificationType } from "@/lib/database/models/notification .model";
+import { NotificationType, TransformedCourseId } from "@/lib/database/models/notification .model";
 
-interface TransformedQandAUserIdAndChapterId
-  extends Omit<NotificationType, "userId" | "chapterId"> {
+interface TransformedQandAUserIdAndChapterIdAndCourseId
+  extends Omit<NotificationType, "userId" | "chapterId" | "courseId"> {
   userId: TransformedUserId;
   chapterId: TransformedChapterId;
+  courseId: TransformedCourseId
 }
 const Notification = () => {
   const { setTarget, setTargetType } = useNotification();
@@ -46,7 +47,7 @@ const Notification = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [notifications, setNotifications] = useState<
-    TransformedQandAUserIdAndChapterId[]
+    TransformedQandAUserIdAndChapterIdAndCourseId[]
   >([]);
 
   const getDataNotifications = async () => {
@@ -65,20 +66,11 @@ const Notification = () => {
 
   useEffect(() => {
     const notificationHandle = (
-      notification: TransformedQandAUserIdAndChapterId
+      notification: TransformedQandAUserIdAndChapterIdAndCourseId
     ) => {
       getDataNotifications();
       setPlaySound(notification._id);
 
-      // const checkMessage = notifications.find((notif) => {
-      //   return notif._id === notification._id;
-      // });
-      // if (!checkMessage) {
-      //   setNotifications((pre) => {
-      //     return [notification, ...pre];
-      //   });
-      // }
-      //triggerNotification()
     };
     //const channelName = `private-${userId}`;
     pusherClient.subscribe(userName ? userName : "");
@@ -91,7 +83,7 @@ const Notification = () => {
   }, [userName]);
 
   const handldeSeenAndRedirect = async (
-    notification: TransformedQandAUserIdAndChapterId
+    notification: TransformedQandAUserIdAndChapterIdAndCourseId
   ) => {
     try {
       if (!notification?.isSeen) {
@@ -101,52 +93,37 @@ const Notification = () => {
         );
       }
       if (notification?.type == "NEW:QANDA") {
-        // setTarget({ rootId: " ", targetId: notification.id_message }); // Or notification.reviewId
-        // setTargetType("NEW:QANDA:NOTIFICATION");
         Router.push(
-          `/courses/${notification.courseId}/chapters/${notification.chapterId._id}/qanda?c=${notification.id_message}`
+          `/courses/${notification.courseId._id}/chapters/${notification.chapterId._id}/qanda?c=${notification.id_message}`
         );
       } else if (notification?.type == "REPLAY:QANDA") {
         const message = await axios.get(
-          `/api/chapters/${notification.courseId}/${notification.chapterId}/qanda/root/${notification.id_message}`
+          `/api/chapters/${notification.courseId._id}/${notification.chapterId}/qanda/root/${notification.id_message}`
         );
-        console.log("data",message.data)
+        console.log("data", message.data);
         Router.push(
-          `/courses/${notification.courseId}/chapters/${notification.chapterId._id}/qanda?c=${message?.data.rootId}&s=${notification.id_message}`
+          `/courses/${notification.courseId._id}/chapters/${notification.chapterId._id}/qanda?c=${message?.data.rootId}&s=${notification.id_message}`
         );
-      
-        // setTargetType("REPLAY:QANDA:NOTIFICATION");
-
-        // if (pathName.includes("qanda")) {
-        //   Router.push(
-        //     `/courses/${notification.courseId}/chapters/${notification.chapterId._id}/qanda`
-        //   );
-        // }
       } else if (notification?.type == "NEW:REVIEW") {
-        // setTarget({ rootId: " ", targetId: notification.id_message });
-        // setTargetType("NEW:REVIEW:NOTIFICATION");
         Router.push(
-          `/courses/${notification.courseId}/chapters/${notification.chapterId._id}/review?c=${notification.id_message}`
+          `/courses/${notification.courseId._id}/chapters/${notification.chapterId._id}/review?c=${notification.id_message}`
         );
       }
       if (notification?.type == "REPLAY:REVIEW") {
-        console.log("lkascnlksanclkasn")
+        console.log("lkascnlksanclkasn");
 
-        // setTarget({ rootId: " ", targetId: notification._id }); // Or notification.reviewId
-        // setTargetType("NEW:QANDA");
         Router.push(
-          `/courses/${notification.courseId}/chapters/${notification.chapterId._id}/review?c=${notification.id_message}`
+          `/courses/${notification.courseId,_id}/chapters/${notification.chapterId._id}/review?c=${notification.id_message}`
         );
       }
 
-      // Router.refresh()
       getDataNotifications();
     } catch (error) {
       toast.error("Some thing went wrong");
     }
   };
   const renderNotification = (
-    notification: TransformedQandAUserIdAndChapterId
+    notification: TransformedQandAUserIdAndChapterIdAndCourseId
   ) => {
     return (
       <div
@@ -172,8 +149,7 @@ const Notification = () => {
             </div>
             <div>
               {notification.message}
-              {notification.message}
-              {notification?.type}
+              
             </div>
 
             <div className="  text-slate-300">
@@ -183,11 +159,11 @@ const Notification = () => {
             </div>
           </div>
         </div>
-        <div className="border border-red-500">
+        <div className="">
           <Image
             width={50}
             height={20}
-            src="https://utfs.io/f/2d7307a1-38f2-4e0b-9584-61c1d3269afe-igxrd7.png"
+            src={notification?.courseId?.imageUrl}
             alt="@shadcn"
           ></Image>
         </div>

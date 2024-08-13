@@ -6,6 +6,11 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
 import axios from "axios";
 import { renderedTemplate } from "@/lib/actions/renderedTemplate.action";
+import User from "@/lib/database/models/user.model";
+import { connectToDatabase } from "@/lib/database/mongoose";
+import { getUserById } from "@/lib/actions/user.actions";
+import { auth } from "@clerk/nextjs/server";
+import { use } from "react";
 
 // interface TestCase {
 //   testcode: string;
@@ -40,14 +45,32 @@ import { renderedTemplate } from "@/lib/actions/renderedTemplate.action";
 // `;
 export async function POST(req: Request, res: Response) {
   try {
+    const { userId } = auth();
+
+    if (!userId) {
+      return new NextResponse("UnAuthention", {
+        status: 401,
+      });
+    }
+    await connectToDatabase();
+    const user = await getUserById(userId);
+    if (!user) {
+      return new NextResponse("User not found", { status: 401 });
+    }
     const { testCases, lang, answer, template } = await req.json();
 
     const source = ejs.render(template, {
       ANSWER: answer,
       TESTCASE: testCases,
     });
+    if(user.creditBalance === 0 || user.creditBalance <= 0 ){
+      return NextResponse.json(
+        { error: 'Insufficient balance', success: false },
+        { status: 400 } // Set the HTTP status code to 400 (Bad Request)
+      );
+    }
 
-    //return NextResponse.json(source);
+    const updateCreditBalance = await User.findByIdAndUpdate(user._id, {creditBalance: user.creditBalance - 1  })
 
     const response = await axios.post(
       "https://api.hackerearth.com/v4/partner/code-evaluation/submissions/",

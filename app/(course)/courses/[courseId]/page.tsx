@@ -12,7 +12,7 @@ const CourseIdPage =  async({params}: {params:{courseId: string}}) => {
   console.log("asd",course);
 
  // if(!course) return redirect("/");
-  return  redirect(`/courses/${course._id}/chapters/${course.chapters[0]._id}/review`)
+  return  redirect(`/courses/${course._id}/chapters/${course.chapters[0]._id}/overview`)
 }
 
 export default CourseIdPage

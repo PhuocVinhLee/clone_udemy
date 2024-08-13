@@ -32,7 +32,7 @@ interface ReviewProps {
   userIdOfCourse: string;
 }
 
-const QandA = ({
+const Review = ({
   purchase,
   userIdOfCourse,
   chapterId,
@@ -75,19 +75,21 @@ const QandA = ({
             chapterId={chapterId}
           ></ReviewForm>
         )}
-      {messages?.map((message) => {
-        return (
-          <ReviewItem
-            userIdOfCourse={userIdOfCourse}
-            userId={userId}
-            chapterId={chapterId}
-            courseId={courseId}
-            message={message}
-          ></ReviewItem>
-        );
-      })}
+      { messages?.length ? (
+        messages?.map((message) => {
+          return (
+            <ReviewItem
+              userIdOfCourse={userIdOfCourse}
+              userId={userId}
+              chapterId={chapterId}
+              courseId={courseId}
+              message={message}
+            ></ReviewItem>
+          );
+        })
+      ): "Rivew not found!"}
     </div>
   );
 };
 
-export default QandA;
+export default Review;
