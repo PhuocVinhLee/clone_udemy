@@ -107,12 +107,12 @@ export async function GET(
     const { userId } = auth();
    
     if (!userId) {
-      return new NextResponse("UnAuthention in Update Chapter", {
+      return new NextResponse("UnAuthention", {
         status: 401,
       });
     }
     const current_User = await currentUser();
-    const { rootId, replayId } = params;
+    const { rootId, replayId } = params;;
 
     console.log(current_User);
     const isTeacher = current_User?.publicMetadata?.role === "teacher";
