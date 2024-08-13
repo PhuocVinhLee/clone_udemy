@@ -256,7 +256,7 @@ export const QuetionForm = ({
                       <DataTable
                         setQuestionsFromRoot={setQuestionsFromRoot}
                         columns={columns}
-                        data={initialData.questions}
+                        data={questionByCategoryId}
                       ></DataTable>
                     }
                     onConfirm={() => {

@@ -58,7 +58,7 @@ const QuestionPage = () => {
       <DataTable
         setQuestionsFromRoot={setQuestionsFromRoot}
         columns={columns}
-        data={questions}
+        data={questionsFromRoot}
       />
     </div>
   );

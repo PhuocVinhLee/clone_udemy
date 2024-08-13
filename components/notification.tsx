@@ -113,7 +113,7 @@ const Notification = () => {
         console.log("lkascnlksanclkasn");
 
         Router.push(
-          `/courses/${notification.courseId,_id}/chapters/${notification.chapterId._id}/review?c=${notification.id_message}`
+          `/courses/${notification.courseId._id}/chapters/${notification.chapterId._id}/review?c=${notification.id_message}`
         );
       }
 

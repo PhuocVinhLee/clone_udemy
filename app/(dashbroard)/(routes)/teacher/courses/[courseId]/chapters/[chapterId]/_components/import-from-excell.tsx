@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import CourseProgress from "@/components/course-progress";
+import { columns } from "./columns";
 
 interface ImportFromExcelProps {
   courseId: string;
@@ -162,7 +163,7 @@ const ImportFromExcel = ({ courseId, chapterId }: ImportFromExcelProps) => {
             )} */}
             <DataTable
               setQuestionsFromRoot={setQuestionsFromRoot}
-              columns={ImportColumns}
+              columns={columns}
               data={data}
             ></DataTable>
           </div>
