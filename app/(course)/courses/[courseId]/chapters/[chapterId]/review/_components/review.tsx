@@ -78,13 +78,15 @@ const Review = ({
       { messages?.length ? (
         messages?.map((message) => {
           return (
-            <ReviewItem
+            <div key={message._id}>
+              <ReviewItem
               userIdOfCourse={userIdOfCourse}
               userId={userId}
               chapterId={chapterId}
               courseId={courseId}
               message={message}
             ></ReviewItem>
+            </div>
           );
         })
       ): "Rivew not found!"}

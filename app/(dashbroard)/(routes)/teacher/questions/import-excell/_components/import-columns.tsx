@@ -223,9 +223,9 @@ export const ImportColumns: ColumnDef<Question>[] = [
       return (
         <ExpandableCell>
           <div>
-            {testCases?.map((testcase) => {
+            {testCases?.map((testcase, index) => {
               return (
-                <div className="flex flex-col mb-3 ">
+                <div key={index} className="flex flex-col mb-3 ">
                   <div className="flex flex-col mb-3 gap-2">
                     <span className="flex gap-x-2 items-center justify-between">
                       Input:{" "}

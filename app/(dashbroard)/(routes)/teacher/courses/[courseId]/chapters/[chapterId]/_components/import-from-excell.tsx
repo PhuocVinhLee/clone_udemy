@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button"; // Replace with your UI compone
 import { Input } from "@/components/ui/input"; // Replace with your UI components
 import ConfirmModal from "@/components/model/confirm-modal";
 import { DataTable } from "./data-table";
-import { columns } from "./columns";
+
 import FileUpload from "../../../../../../../../../components/excell/file-upload";
-import { ImportColumns } from "./columns";
+
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import axios from "axios";
