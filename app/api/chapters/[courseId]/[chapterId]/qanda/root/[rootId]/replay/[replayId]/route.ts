@@ -105,12 +105,13 @@ export async function GET(
 ) {
   try {
     const { userId } = auth();
-    const current_User = await currentUser();
+   
     if (!userId) {
       return new NextResponse("UnAuthention in Update Chapter", {
         status: 401,
       });
     }
+    const current_User = await currentUser();
     const { rootId, replayId } = params;
 
     console.log(current_User);
