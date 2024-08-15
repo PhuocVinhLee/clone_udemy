@@ -57,7 +57,7 @@ const ChapterIdPage = async ({
       return { ...question, exist: false };
     }
   );
-  console.log("qunkandad", questionCheckedExist);
+
 
   const requiredFlieds = [chapter.title, chapter.description, chapter.videoUrl];
   const totalFields = requiredFlieds.length;

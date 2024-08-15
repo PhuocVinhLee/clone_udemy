@@ -17,6 +17,7 @@ import FileUpload from "@/components/excell/file-upload";
 import { ImportColumns } from "./import-columns";
 import { CategoryType } from "@/lib/database/models/categorys.model";
 import { QuestionTypeType } from "@/lib/database/models/questionTypes.model";
+import { isBoolean } from "lodash";
 
 interface ImportFromExcelProps {
   categorys: CategoryType[];
@@ -116,6 +117,9 @@ const ImportFromExcel = ({
             questionTypeId,
           };
         });
+      if (!questions.length) {
+        return toast.error("You don't have any question!");
+      }
 
       const response = await axios.post(
         `/api/questions/arrayquestionschapter`,
@@ -172,6 +176,7 @@ const ImportFromExcel = ({
 
       <FileUpload onChange={handleFileUpload} />
       <ConfirmModal
+      disabled={!Boolean(questionsFromRoot.length)}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onConfirm={handleConfirm}

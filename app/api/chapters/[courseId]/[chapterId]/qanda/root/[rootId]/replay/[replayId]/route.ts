@@ -98,45 +98,45 @@ export async function POST(
   }
 }
 
-// export async function GET(
-//   req: Request,
-//   { params }: { params: { rootId: string; replayId: string } }
-// ) {
-//   try {
-//     const { userId } = auth();
+export async function GET(
+  req: Request,
+  { params }: { params: { rootId: string; replayId: string } }
+) {
+  try {
+    const { userId } = auth();
    
-//     if (!userId) {
-//       return new NextResponse("UnAuthention", {
-//         status: 401,
-//       });
-//     }
-//     const current_User = await currentUser();
-//     const { rootId, replayId } = params;;
+    if (!userId) {
+      return new NextResponse("UnAuthention", {
+        status: 401,
+      });
+    }
+    const current_User = await currentUser();
+    const { rootId, replayId } = params;;
 
-//     console.log(current_User);
-//     const isTeacher = current_User?.publicMetadata?.role === "teacher";
+    console.log(current_User);
+    const isTeacher = current_User?.publicMetadata?.role === "teacher";
 
-//     await connectToDatabase();
-//     const user = await getUserById(userId);
-//     if (!user) {
-//       return new NextResponse("User not found", { status: 401 });
-//     }
-//     const showMoreMessage = await QandA.find({
-//       root: false,
-//       rootId: rootId,
-//     })
-//       .sort({ createdAt: -1 })
-//       .populate("userId", "username photo role") // Specify the fields you want to include from the Chapters model
-//       .populate("userIdReplay", "username photo role")
-//       .exec();
-//     if (!showMoreMessage) {
-//       return new NextResponse("ShowMoreMessage not found", { status: 401 });
-//     }
+    await connectToDatabase();
+    const user = await getUserById(userId);
+    if (!user) {
+      return new NextResponse("User not found", { status: 401 });
+    }
+    const showMoreMessage = await QandA.find({
+      root: false,
+      rootId: rootId,
+    })
+      .sort({ createdAt: -1 })
+      .populate("userId", "username photo role") // Specify the fields you want to include from the Chapters model
+      .populate("userIdReplay", "username photo role")
+      .exec();
+    if (!showMoreMessage) {
+      return new NextResponse("ShowMoreMessage not found", { status: 401 });
+    }
 
-//     //console.log(".sort({ createdAt: 1 })",showMoreMessage )
-//     return NextResponse.json(showMoreMessage);
-//   } catch (error) {
-//     console.log("erorr in Update chapter", error);
-//     return new NextResponse("Inter Error", { status: 500 });
-//   }
-// }
+    //console.log(".sort({ createdAt: 1 })",showMoreMessage )
+    return NextResponse.json(showMoreMessage);
+  } catch (error) {
+    console.log("erorr in Update chapter", error);
+    return new NextResponse("Inter Error", { status: 500 });
+  }
+}

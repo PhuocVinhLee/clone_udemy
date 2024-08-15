@@ -1,7 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { boolean, z } from "zod";
 import axios from "axios";
 
 import { useRouter } from "next/navigation";
@@ -50,9 +50,10 @@ import Loading from "@/components/clipLoader";
 import BeatLoader from "react-spinners/BeatLoader";
 import ImportFromExcel from "./import-from-excell";
 
-import { handleExport } from "../../../../../../../../../components/excell/export-to-excell";
 import { columns } from "./columns";
 import { QuestionTypeType } from "@/lib/database/models/questionTypes.model";
+import { ExportColumns } from "./export-columns";
+import { handleExport } from "@/components/excell/export-to-excell";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -60,8 +61,13 @@ const formSchema = z.object({
   }),
 });
 
+interface TransformedQuestionChapterType
+  extends Omit<QuestionChapterType, "questionTypeId"> {
+  questionType: string;
+}
+
 interface QuestionFormProps {
-  initialData: { questions: QuestionChapterType[] }; // initialData has type is {chapters: any[]}
+  initialData: { questions: TransformedQuestionChapterType[] }; // initialData has type is {chapters: any[]}
   chapterId: string;
   courseId: string;
   questionByCategoryId: (QuestionType & { exist: boolean })[];
@@ -168,9 +174,12 @@ export const QuetionForm = ({
         const questionTypeId = questionTypes?.find(
           (questionType) => questionType.name === q?.original?.questionTypeId
         );
-        return { ...q?.original, questionTypeId: questionTypeId };
+        return { ...q?.original, questionTypeId: questionTypeId?._id };
       });
 
+      if(!questions.length){
+        return  toast.error("Don't have any question");
+      }
       const response = await axios.post(
         `/api/chapters/${courseId}/${chapterId}/arrayquestionschapter`,
         { arrayQuestion: questions }
@@ -252,11 +261,12 @@ export const QuetionForm = ({
 
                 <AccordionContent>
                   <ConfirmModal
+                    disabled={!Boolean(questionsFromRoot.length)}
                     content={
                       <DataTable
                         setQuestionsFromRoot={setQuestionsFromRoot}
-                        columns={columns}
-                        data={questionByCategoryId}
+                        columns={ExportColumns}
+                        data={initialData.questions}
                       ></DataTable>
                     }
                     onConfirm={() => {

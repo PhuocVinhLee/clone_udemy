@@ -29,7 +29,7 @@ export type Question = {
   description: string;
   imageUrl: string;
   answer: string;
-  questionTypeId: string;
+  questionType: string;
   template: string;
   testCases: {
     input: string;
@@ -37,21 +37,20 @@ export type Question = {
     asexample: boolean;
     position: number;
   }[];
-  exist: boolean;
+  
   level: string;
 };
 
-export const columns: ColumnDef<Question>[] = [
+export const ExportColumns: ColumnDef<Question>[] = [
   // type course
   {
     id: "select",
     header: ({ table }) => {
-      const rows = table.getRowModel().rows;
-      const someExist = rows.some((row) => row.original.exist);
-      const allExist = rows.every((row) => row.original.exist);
+     
+     
       return (
         <Checkbox
-          disabled={someExist || allExist}
+          
           checked={
             table.getIsAllPageRowsSelected() ||
             (table.getIsSomePageRowsSelected() && "indeterminate")
@@ -62,10 +61,10 @@ export const columns: ColumnDef<Question>[] = [
       );
     },
     cell: ({ row }) => {
-      const exist: boolean = row.getValue("exist") || false;
+     
       return (
         <Checkbox
-        // disabled={exist}
+       
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"
@@ -140,28 +139,7 @@ export const columns: ColumnDef<Question>[] = [
       );
     },
   },
-  {
-    accessorKey: "exist",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Existed
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const exist = row.getValue("exist") || false;
-      return (
-        <Badge className={cn("bg-slate-500", exist && "bg-sky-700")}>
-          {exist ? "Existed" : "Draft"}
-        </Badge>
-      );
-    },
-  },
+  
   {
     accessorKey: "answer",
     header: ({ column }) => {
@@ -181,7 +159,7 @@ export const columns: ColumnDef<Question>[] = [
     },
   },
   {
-    accessorKey: "questionTypeId",
+    accessorKey: "questionType",
     header: ({ column }) => {
       return (
         <Button

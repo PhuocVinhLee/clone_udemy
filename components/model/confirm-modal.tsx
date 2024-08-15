@@ -20,6 +20,7 @@ interface ConfirmModalProps {
   isOpen?: boolean;
   onOpen?: () => void;
   onClose?: () => void;
+  disabled?: boolean
 }
 
 const ConfirmModal = ({
@@ -29,6 +30,7 @@ const ConfirmModal = ({
   isOpen,
   onOpen,
   onClose,
+  disabled
 }: ConfirmModalProps) => {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
 
@@ -83,7 +85,7 @@ const ConfirmModal = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={closeModal}>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={confirmHandler}>
+          <AlertDialogAction disabled={disabled} onClick={confirmHandler}>
             Continue
           </AlertDialogAction>
         </AlertDialogFooter>

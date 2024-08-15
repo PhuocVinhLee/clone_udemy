@@ -12,17 +12,8 @@ import { QuestionTypeType } from "@/lib/database/models/questionTypes.model";
 import { CategoryType } from "@/lib/database/models/categorys.model";
 
 const QuestionPage = () => {
-  const [questions, setQuestions] = useState<QuestionType[]>([]);
-  const [questionType, setQuestionType] = useState<QuestionTypeType[]>([]);
-  const [category, setCategory] = useState<CategoryType[]>([]);
-  const fechQuestionType = async () => {
-    const questionType = await axios.get(`/api/questiontype`);
-    setQuestionType(questionType.data);
-  };
-  const fechCategory = async () => {
-    const category = await axios.get(`/api/category`);
-    setCategory(category.data);
-  };
+  const [questions, setQuestions] = useState<any[]>([]);
+
   const FechAllQuestions = async () => {
     const questionType = await axios.get(`/api/questiontype`);
     const category = await axios.get(`/api/category`);
@@ -30,7 +21,7 @@ const QuestionPage = () => {
     const AllQuestion = await axios.get(`/api/questions`);
 
     const questionTranform = AllQuestion?.data?.map(
-      (question: QuestionType) => {
+      (question: any) => {
         const { categoryId, questionTypeId, ...rest } = question;
         return {
           ...rest,
@@ -58,7 +49,7 @@ const QuestionPage = () => {
       <DataTable
         setQuestionsFromRoot={setQuestionsFromRoot}
         columns={columns}
-        data={questionsFromRoot}
+        data={questions}
       />
     </div>
   );
