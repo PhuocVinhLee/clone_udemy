@@ -130,7 +130,7 @@ const levels : {label: string; value: string}[] = [{label: "Hard", value: "hard"
             <LevelForm  path={pathToUpdate} options={levels} questionId={question._id}  initialData={question}>
 
             </LevelForm>
-            <CategoryForm
+            {/* <CategoryForm
               initialData={question}
               questionId={question._id}
               options={categorys?.map(
@@ -139,7 +139,7 @@ const levels : {label: string; value: string}[] = [{label: "Hard", value: "hard"
                   value: category._id,
                 })
               )}
-            ></CategoryForm>
+            ></CategoryForm> */}
           </div>
           <div className=" space-y-6">
             <div>

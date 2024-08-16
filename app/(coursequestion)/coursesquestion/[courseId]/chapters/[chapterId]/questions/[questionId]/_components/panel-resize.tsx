@@ -70,24 +70,7 @@ export default function PanelReSize({
   const [handelErrorCompiled, setHandelErrorCompiled] = useState<any>(null);
   const router = useRouter();
 
-  const checkStatus = async () => {
-    let status = ""; // Initial status
-    let startTime = Date.now();
-    let timeout = 5000; // 5 seconds
-    while (true) {
-      // Check if 5 seconds have passed
-      if (Date.now() - startTime >= timeout) {
-        console.log("Timeout reached. Exiting loop.");
-        break;
-      }
 
-      // Check if status is "OKE"
-      if (status === "OKE") {
-        console.log("Status is OKE. Exiting loop.");
-        break;
-      }
-    }
-  };
 
   const handleRunCode = async () => {
     try {

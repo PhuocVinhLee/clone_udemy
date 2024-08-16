@@ -57,7 +57,7 @@ const TestCaseError = ({
                       className={cn(
                         "   bg-none",
                         !errorCompiled &&
-                          result &&
+                          result.length &&
                           (result[index] === testcase?.output
                             ? "border border-green-400"
                             : "border border-red-400")
@@ -94,7 +94,7 @@ const TestCaseError = ({
                       <Input
                         className={cn(
                           "w-full border-2",
-                          result &&
+                          result.length &&
                             result[index] !== testcase?.output &&
                             "border border-red-400"
                         )}
@@ -109,7 +109,7 @@ const TestCaseError = ({
                       <Input
                         className={cn("w-full border-2")}
                         readOnly={true}
-                        value={!errorCompiled && result ? result[index] : ""}
+                        value={!errorCompiled && result.length ? result[index] : ""}
                         id={testcase._id + index + "got"}
                         type="text"
                       />

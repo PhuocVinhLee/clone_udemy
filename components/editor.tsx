@@ -16,7 +16,7 @@ export const Editor = ({onChange, value}: EditorProps) => {
     const { setTheme, theme } = useTheme();
   return (
     <div>
-      <ReactQuill  className={theme === 'dark' ? 'quill-dark' : ''}
+      <ReactQuill  className={(theme === 'dark' || theme === 'system') ? 'quill-dark' : ''}
       value={value}
       onChange={onChange}>
 

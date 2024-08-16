@@ -99,41 +99,49 @@ export default function PanelReSize({ question, pathToUpdateAndGet }: PanelReSiz
         template: question?.template,
       });
       console.log("respone1", respone);
-      //toast.success(" Question updated.");
-      //  console.log("respone", respone);//"Compiling..."
-      //  router.refresh(); // refresh state
 
-      if (1) {
-        //respone?.data.he_id
-        //const he_id = respone.data.he_id;
-        const he_id = "7c8cd661-fb51-49cc-b2d5-51a0c42e9a0b";
-        //const he_id = "009dd95b-93d7-4fbd-a843-2f7439cef762";
+
+      if (respone?.data.he_id) {
+       
+        const he_id = respone.data.he_id;
         const respone2 = await axios.get(`/api/hackerearth/${he_id}`);
-        console.log("respone2", respone2);
-        setStatusCodeRealtime("Compiled");
-        // const output = respone2?.data?.result?.run_status?.output;
-        const output =
-          "https://he-s3.s3.amazonaws.com/media/userdata/AnonymousUser/code/8c98722";
-        // const output =  "32#<ab@17943918#@>#35#<ab@17943918#@>#36"
+      
+       
+        let output = respone2?.data?.result?.run_status?.output;
+      
         const compile_status = respone2?.data?.result?.compile_status;
         if (compile_status != "OK") {
           setHandelErrorCompiled(compile_status);
           setResultCompiled([]);
+          //toast(" This answer will not save");
+          return;
         }
+        let startTime = Date.now();
+        let timeout = 5000; // 5 seconds
+        while (output == null) {
+          if (Date.now() - startTime >= timeout) {
+            console.log("Timeout reached. Exiting loop.");
+            break;
+          }
+          const respone2 = await axios.get(`/api/hackerearth/${he_id}`);
+          console.log("respone2ww", respone2);
+          output = respone2?.data?.result?.run_status?.output;
+          console.log("Timeout reached. Exiting loop222.");
+        }
+
+        setStatusCodeRealtime("Compiled");
+
+       
+
         if (output) {
           const respone3 = await axios.get(output);
           console.log("respone3", respone3);
           const resultFormated = formatResult(respone3?.data);
           setResultCompiled(resultFormated);
-          setHandelErrorCompiled(null);
-
-          //           "32
-          // #<ab@17943918#@>#
-          // 35
-          // #<ab@17943918#@>#
-          // 36
-          // "
+   
         }
+
+
       }
 
       setStatusCodeRealtime("");
@@ -287,7 +295,7 @@ export default function PanelReSize({ question, pathToUpdateAndGet }: PanelReSiz
                 <div className="  overflow-auto pb-[35px] h-full  bg-slate-100 dark:bg-black">
                   <TestCaseError
                     testCases={question?.testCases}
-                    result={resultCompiled}
+                    result={resultCompiled?.length ? resultCompiled : []}
                     errorCompiled={handelErrorCompiled}
                   ></TestCaseError>
                 </div>
@@ -305,7 +313,7 @@ export default function PanelReSize({ question, pathToUpdateAndGet }: PanelReSiz
                           {statusCodeRealtime}
                         </span>
                       )}
-                      {!isLoading && "Submit"}
+                      {!isLoading && "Submit1"}
                     </Button>
                   </div>
                 </div>
