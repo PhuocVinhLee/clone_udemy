@@ -306,14 +306,15 @@ export default function PanelReSize({ question, pathToUpdateAndGet }: PanelReSiz
                     {showConsole ? <FaChevronDown /> : <FaChevronUp />}{" "}
                   </div>
                   <div className="flex gap-x-2">
-                    <Button className=" p-3 md:h-5 h-2  w-13" onClick={handleRunCode}>
+                    <Button  className="  dark:text-white dark:bg-[#1e1e1e] dark:hover:bg-[#151515]  bg-slate-300 hover:bg-slate-400   p-3 md:h-5 h-2  w-13"
+                     onClick={handleRunCode}>
                       {isLoading && (
                         <span className="flex items-center justify-between">
                           <Loading loading={isLoading}></Loading>
                           {statusCodeRealtime}
                         </span>
                       )}
-                      {!isLoading && "Submit1"}
+                      {!isLoading && "Submit"}
                     </Button>
                   </div>
                 </div>

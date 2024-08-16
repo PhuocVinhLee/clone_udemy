@@ -39,7 +39,7 @@ export const QuestionActions = ({
           toast.success(" Question unpublished.");
         }
       } else {
-        /// should add more API for isPublished
+        // check question
         const respon = await axios.patch(path+"/publish" ,{
           isPublished: !isPublished,
         });

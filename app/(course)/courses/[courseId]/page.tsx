@@ -9,9 +9,9 @@ const CourseIdPage =  async({params}: {params:{courseId: string}}) => {
   // if(!userId) return redirect("/");
 
   const course = await getCourseWithChapters(params.courseId)
-  console.log("asd",course);
+  
 
- // if(!course) return redirect("/");
+  if(!course || !course.chapters[0]._id) return redirect("/");
   return  redirect(`/courses/${course._id}/chapters/${course.chapters[0]._id}/overview`)
 }
 

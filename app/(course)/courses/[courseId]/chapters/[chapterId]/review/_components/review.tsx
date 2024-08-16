@@ -59,7 +59,7 @@ const Review = ({
 
   return (
     <div className="flex flex-col gap-4 border p-4">
-      {messages?.find(
+      {!messages?.find(
         (message) => message.userId._id === user?.publicMetadata?.userId
       ) &&
         purchase &&

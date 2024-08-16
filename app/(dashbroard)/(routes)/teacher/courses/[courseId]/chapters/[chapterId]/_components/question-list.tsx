@@ -83,7 +83,7 @@ export const QuestionList = ({ items, onReOrder, onEdit }: QuestionListProps) =>
                     </div>
 
                     {chapter.title}
-                    {chapter.position}
+                   
 
                     <div className=" ml-auto pr-2 flex items-center gap-x-2">
                       {chapter.isFree && <Badge>Free</Badge>}

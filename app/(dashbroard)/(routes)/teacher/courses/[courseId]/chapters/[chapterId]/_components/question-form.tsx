@@ -305,7 +305,7 @@ export const QuetionForm = ({
         )}
         {isCreating && (
           <div className="flex items-center justify-between w-full">
-            <div>Chapter question</div>
+            <div>Chapter question </div>
             <Button
               variant="ghost"
               onClick={() => {

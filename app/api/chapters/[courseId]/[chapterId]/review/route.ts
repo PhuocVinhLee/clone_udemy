@@ -52,7 +52,7 @@ export async function POST(
       courseId: courseId,
     });
     const course =  await Courses.findById(courseId)
-    if (!checkMessageExist || !checkPurchase) {
+    if (checkMessageExist || !checkPurchase) {
       return new NextResponse("You should just have only review!", {
         status: 401,
       });

@@ -12,23 +12,23 @@ const UsersPage = async () => {
 
   if (!userId) {
     redirect("/");
-    return null;
   }
 
   const ArrayCourse = await ActionGetAllCoursesByUserId(userId);
   if (!ArrayCourse) {
     redirect("/");
-    return null;
   }
 
   return (
     <div className="p-6">
-      <DataTable   options={ArrayCourse?.map(
-                (course: { title: string; _id: string }) => ({
-                  label: course.title,
-                  value: course._id,
-                })
-              )} columns={columns} courses={ArrayCourse} />
+      <DataTable
+        options={ArrayCourse?.map((course: { title: string; _id: string }) => ({
+          label: course.title,
+          value: course._id,
+        }))}
+        columns={columns}
+        courses={ArrayCourse}
+      />
     </div>
   );
 };

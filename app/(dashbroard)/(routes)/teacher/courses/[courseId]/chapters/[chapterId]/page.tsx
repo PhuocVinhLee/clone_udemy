@@ -151,7 +151,7 @@ const ChapterIdPage = async ({
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={ListChecks}></IconBadge>
-                <h2 className="text-xl"> Question form</h2>
+                  <h2 className="text-xl"> { "Question form (optional)"}</h2>
               </div>
               <QuetionForm
                 questionByCategoryId={questionCheckedExist}

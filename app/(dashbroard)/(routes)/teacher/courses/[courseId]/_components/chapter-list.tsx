@@ -83,8 +83,7 @@ export const ChapterList = ({ items, onReOrder, onEdit }: ChapterListProps) => {
                     </div>
 
                     {chapter.title}
-                    {chapter.position}
-
+                   
                     <div className="  ml-auto pr-2 flex items-center gap-x-2">
                       {chapter.isFree && <Badge className=" bg-black dark:text-white dark:hover:text-black">Free</Badge>}
 

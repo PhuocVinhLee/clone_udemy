@@ -247,8 +247,10 @@ export const getCourseWithChaptersAndQuestionAndUserProgres = async (
     },
   ]);
 
-  console.log("course in actio nen", course[0].chapters);
-  return JSON.parse(JSON.stringify(course[0]));
+  if(course[0]){
+    return JSON.parse(JSON.stringify(course[0]));
+  }
+  return null;
 
   //return course[0];
 };

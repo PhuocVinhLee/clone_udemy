@@ -30,7 +30,7 @@ import axios from "axios";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   // initialData: TData[]; // Initial data to populate the table
-  options: Array<{ label: string; value: string }>; // Options for Combobox
+  options: Array<{ label: string; value: string }> | null; // Options for Combobox
   courses: {
     _id: string;
     title: string;
@@ -40,20 +40,19 @@ interface DataTableProps<TData, TValue> {
     categoryId: string;
     isPublished: boolean;
     createdAt: Date
-  }[];
+  }[] | null;
 }
 
 export function DataTable<TData, TValue>({
   columns,
-  // initialData,
   options,
   courses,
 }: DataTableProps<TData, TValue>) {
   const [data, setData] = useState<TData[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [selectedCourseId, setSelectedCourseId] = useState<string>(
-    options[0].value
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(
+    options?.length ? options[0]?.value : null
   );
 
   const [isLoading, setIsLoading] = useState(false);
@@ -69,7 +68,7 @@ export function DataTable<TData, TValue>({
     }
   };
   useEffect(() => {
-    getUsers(options[0].value);
+    getUsers(options?.length ? options[0]?.value : " ");
   }, []);
 
   const table = useReactTable({
@@ -111,8 +110,8 @@ export function DataTable<TData, TValue>({
         />
         <div>
           <Combobox
-            options={options}
-            value={selectedCourseId}
+            options={options?.length ? options: [] }
+            value={selectedCourseId ? selectedCourseId: ""}
             onChange={handleComboboxChange}
           />
         </div>

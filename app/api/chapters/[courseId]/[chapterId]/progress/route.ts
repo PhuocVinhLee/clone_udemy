@@ -35,7 +35,7 @@ export async function PUT(
 
     const courseToUpdate = await Courses.findById(courseId);
 
-    if (!courseToUpdate || courseToUpdate?.userId.toHexString() !== user._id) {
+    if (!courseToUpdate ) {
       throw new Error("Unauthorized or Course not found");
     }
 
