@@ -130,7 +130,7 @@ DataTableProps<TData, TValue>) {
             {" "}
             <Button variant="outline">
               {" "}
-              {/* <PlusCircle className="h-4 w-4 mr-2"> </PlusCircle> */}
+            
               New a question{" "}
             </Button>{" "}
           </Link>
@@ -138,7 +138,7 @@ DataTableProps<TData, TValue>) {
             {" "}
             <Button variant="outline">
               {" "}
-              {/* <PlusCircle className="h-4 w-4 mr-2"> </PlusCircle> */}
+             
               Import from excell
             </Button>{" "}
           </Link>

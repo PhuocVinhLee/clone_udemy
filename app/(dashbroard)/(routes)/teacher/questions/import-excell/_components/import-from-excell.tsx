@@ -104,10 +104,10 @@ const ImportFromExcel = ({
         })
         ?.map((data) => {
           const categoryId = categorys.find(
-            (category) => category.name === data.category
+            (category) => category.name === data.categoryId
           );
           const questionTypeId = questionTypes.find(
-            (questionType) => questionType.name === data.questionType
+            (questionType) => questionType.name === data.questionTypeId
           );
           const { questionType, category, ...rest } = data;
 

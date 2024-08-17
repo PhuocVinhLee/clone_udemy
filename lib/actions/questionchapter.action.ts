@@ -123,7 +123,7 @@ export async function ActionAllQuestionByChapterId(
       .exec();
     const transformedQuestions = questions.map((question) => ({
       ...question.toObject(),
-      questionType: question?.questionTypeId?.name, // Replace the questionTypeId object with the name value
+      questionTypeId: question?.questionTypeId?.name, // Replace the questionTypeId object with the name value
     }));
 
     console.log("transformedQuestions", transformedQuestions);

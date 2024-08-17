@@ -32,9 +32,10 @@ export type Question = {
   description: string;
   imageUrl: string;
   answer: string;
-  questionType: string;
+  questionTypeId: string;
   template: string;
-  category: string;
+  isPublished: boolean;
+  categoryId: string;
   testCases: {
     input: string;
     output: string;
@@ -245,7 +246,29 @@ export const columns: ColumnDef<Question>[] = [
     },
   },
   {
-    accessorKey: "questionType",
+    accessorKey: "isPublished",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Published
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const isPublished = row.getValue("isPublished") || false;
+      return (
+        <Badge className={cn("bg-slate-500", isPublished && "bg-sky-700")}>
+          {isPublished ? "Published" : "Draft"}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: "questionTypeId",
     header: ({ column }) => {
       return (
         <Button
@@ -258,13 +281,13 @@ export const columns: ColumnDef<Question>[] = [
       );
     },
     cell: ({ row }) => {
-      const questionType: string = row.getValue("questionType");
+      const questionType: string = row.getValue("questionTypeId");
       return <ExpandableCell text={   questionType} />;
     },
 
   },
   {
-    accessorKey: "category",
+    accessorKey: "categoryId",
     header: ({ column }) => {
       return (
         <Button
@@ -277,7 +300,7 @@ export const columns: ColumnDef<Question>[] = [
       );
     },
     cell: ({ row }) => {
-      const category: string = row.getValue("category");
+      const category: string = row.getValue("categoryId");
       return <ExpandableCell text={  category} />;
     },
   },

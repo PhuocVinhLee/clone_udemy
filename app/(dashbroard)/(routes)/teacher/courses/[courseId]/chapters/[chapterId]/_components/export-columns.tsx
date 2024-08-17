@@ -29,7 +29,7 @@ export type Question = {
   description: string;
   imageUrl: string;
   answer: string;
-  questionType: string;
+  questionTypeId: string;
   template: string;
   testCases: {
     input: string;
@@ -159,7 +159,7 @@ export const ExportColumns: ColumnDef<Question>[] = [
     },
   },
   {
-    accessorKey: "questionType",
+    accessorKey: "questionTypeId",
     header: ({ column }) => {
       return (
         <Button

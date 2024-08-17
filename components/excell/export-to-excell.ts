@@ -26,7 +26,7 @@ export const handleExport = ({ data, fileName }: ExportProps) => {
         position,
         chapterId,
         isPublished,
-        questionTypeId,
+       
         createdAt,
         updatedAt,
         ...rest

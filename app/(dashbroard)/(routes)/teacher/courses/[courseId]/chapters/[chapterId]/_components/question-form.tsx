@@ -54,6 +54,7 @@ import { columns } from "./columns";
 import { QuestionTypeType } from "@/lib/database/models/questionTypes.model";
 import { ExportColumns } from "./export-columns";
 import { handleExport } from "@/components/excell/export-to-excell";
+import { CategoryType } from "@/lib/database/models/categorys.model";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -67,7 +68,7 @@ interface TransformedQuestionChapterType
 }
 
 interface QuestionFormProps {
-  initialData: { questions: TransformedQuestionChapterType[] }; // initialData has type is {chapters: any[]}
+  initialData: { questions: QuestionChapterType[] }; // initialData has type is {chapters: any[]}
   chapterId: string;
   courseId: string;
   questionByCategoryId: (QuestionType & { exist: boolean })[];
@@ -82,7 +83,7 @@ const exportTemplateExcell: unknown = {
   description: "Example Description",
   imageUrl: "http://example.com/image.png",
   answer: "Example Answer",
-  questionType: "Function c",
+  questionTypeId: "Function c",
   template: "Example Template",
   testCases: JSON.stringify([
     {
@@ -104,6 +105,7 @@ export const QuetionForm = ({
   console.log("questionByCategoryId", questionByCategoryId);
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+
 
   const toggleCrating = () => setIsCreating((current) => !current);
   const router = useRouter();
@@ -295,7 +297,7 @@ export const QuetionForm = ({
               </div>
 
               <AccordionContent>
-                <ImportFromExcel
+                <ImportFromExcel questionTypes={questionTypes}
                   courseId={courseId}
                   chapterId={chapterId}
                 ></ImportFromExcel>

@@ -10,33 +10,26 @@ import { QuestionType } from "@/lib/database/models/questions.model";
 import axios from "axios";
 import { QuestionTypeType } from "@/lib/database/models/questionTypes.model";
 import { CategoryType } from "@/lib/database/models/categorys.model";
-
+interface TransformedQuestionType
+  extends Omit<QuestionType, "questionTypeId" | "categoryId"> {
+  questionTypeId: {
+    _id: string;
+    name: string;
+  };
+  categoryId: {
+    _id: string;
+    name: string;
+  };
+}
 const QuestionPage = () => {
   const [questions, setQuestions] = useState<any[]>([]);
 
   const FechAllQuestions = async () => {
-    const questionType = await axios.get(`/api/questiontype`);
-    const category = await axios.get(`/api/category`);
+    // const questionType = await axios.get(`/api/questiontype`);
+    // const category = await axios.get(`/api/category`);
 
     const AllQuestion = await axios.get(`/api/questions`);
-
-    const questionTranform = AllQuestion?.data?.map(
-      (question: any) => {
-        const { categoryId, questionTypeId, ...rest } = question;
-        return {
-          ...rest,
-          category: category?.data?.find(
-            (category: CategoryType) => category._id === question.categoryId
-          )?.name,
-
-          questionType: questionType?.data?.find(
-            (questionType: QuestionTypeType) =>
-              questionType._id === question.questionTypeId
-          )?.name,
-        };
-      }
-    );
-    setQuestions(questionTranform);
+    setQuestions(AllQuestion.data);
   };
   useEffect(() => {
     FechAllQuestions();

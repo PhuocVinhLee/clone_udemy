@@ -15,13 +15,19 @@ import axios from "axios";
 import { Loader2 } from "lucide-react";
 import CourseProgress from "@/components/course-progress";
 import { columns } from "./columns";
+import { QuestionTypeType } from "@/lib/database/models/questionTypes.model";
 
 interface ImportFromExcelProps {
   courseId: string;
   chapterId: string;
+  questionTypes: QuestionTypeType[];
 }
 
-const ImportFromExcel = ({ courseId, chapterId }: ImportFromExcelProps) => {
+const ImportFromExcel = ({
+  courseId,
+  chapterId,
+  questionTypes,
+}: ImportFromExcelProps) => {
   const router = useRouter();
   const [data, setData] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,13 +64,15 @@ const ImportFromExcel = ({ courseId, chapterId }: ImportFromExcelProps) => {
                 const newTestCaeses = JSON.parse(data.testCases);
                 return {
                   ...data,
+
                   testCases: newTestCaeses,
                 };
               }
               return data;
             });
+
             setData(cleanData);
-            console.log(transformedData);
+
             setIsModalOpen(true); // Open the modal after processing data
           }
         }
@@ -90,9 +98,12 @@ const ImportFromExcel = ({ courseId, chapterId }: ImportFromExcelProps) => {
     try {
       setProgress(0);
       setIsUpdating(true);
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+
       const questions = questionsFromRoot.map((q: any) => {
-        return q?.original;
+        const questionTypeId = questionTypes?.find(
+          (questionType) => questionType.name === q?.original?.questionTypeId
+        );
+        return { ...q?.original, questionTypeId: questionTypeId?._id };
       });
 
       const response = await axios.post(
@@ -135,18 +146,16 @@ const ImportFromExcel = ({ courseId, chapterId }: ImportFromExcelProps) => {
 
   return (
     <div className=" relative">
-   
       {isUpdating && (
-       <div className=" bg-white w-full h-full absolute  flex justify-center items-center">
-         <div className="w-full p-2">
-         <CourseProgress
-
+        <div className=" bg-white w-full h-full absolute  flex justify-center items-center">
+          <div className="w-full p-2">
+            <CourseProgress
               variant={progress == 100 ? "success" : "default"}
               size="default"
               value={progress}
             ></CourseProgress>
-         </div>
-       </div>
+          </div>
+        </div>
       )}
 
       <FileUpload onChange={handleFileUpload} />
