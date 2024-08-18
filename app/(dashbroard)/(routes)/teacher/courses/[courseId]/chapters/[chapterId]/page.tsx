@@ -51,7 +51,7 @@ const ChapterIdPage = async ({
     (question: QuestionType) => {
       
       const findQuestion = questions.find(
-        (q: QuestionChapterType) => question._id === q._id
+        (q: QuestionChapterType) => question._id === q.rootId
       );
       if (findQuestion) return { ...question, exist: true };
       return { ...question, exist: false };

@@ -225,7 +225,7 @@ export const TestCaseForm = ({
                 control={form.control}
                 name="asexample"
                 render={({ field }) => (
-                  <FormItem className="flex bg-slate-200 flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormItem className="flex dark:bg-customDark bg-slate-200 flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                     <FormControl>
                       <Checkbox 
                         checked={field.value}

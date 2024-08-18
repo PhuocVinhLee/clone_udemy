@@ -49,7 +49,7 @@ const SearchInput = () => {
       <Input
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className=" w-full md:w-[300px] pl-9 rounded-full bg-slate-100 focus-visible:ring-slate-200"
+        className=" w-full md:w-[300px] pl-9 dark:bg-custom-dark-bg rounded-full bg-slate-100 focus-visible:ring-slate-200"
         placeholder={pathname?.includes("search") ? "Search for courses..." :
            pathname?.includes("questions")? "Search for questions...": " Search..." }
       ></Input>

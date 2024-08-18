@@ -7,6 +7,7 @@ import { Schema, Document, model, models, InferSchemaType } from "mongoose";
 // }
 export interface QuestionChapterType extends Document {
   _id: string;
+  rootId: string;
   chapterId: string;
   userId: string;
   title: string;
@@ -25,7 +26,7 @@ export interface QuestionChapterType extends Document {
   isPublished: boolean;
   position: number;
   level: string;
- 
+
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -45,6 +46,7 @@ export interface TestCaseType extends Document {
 
 const QuestionsChapterSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: "User" },
+  rootId: {type: String},
   chapterId: {
     type: Schema.Types.ObjectId,
     ref: "Chapters",
@@ -74,7 +76,7 @@ const QuestionsChapterSchema = new Schema({
     default: false,
   },
   position: { type: Number },
-level: {type: String},
+  level: { type: String },
   categoryId: { type: Schema.Types.ObjectId, ref: "Categorys" },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },

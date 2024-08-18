@@ -33,11 +33,11 @@ export async function POST(
     for (const question of arrayQuestion) {
       try {
         const questionData = {
-          _id: question?._id,
+          rootId: question._id,
           title: question?.title,
           description: question?.description,
           imageUrl: question?.imageUrl,
-          
+
           answer: question?.answer,
           questionTypeId: question?.questionTypeId,
           template: question?.template,
@@ -47,6 +47,7 @@ export async function POST(
           userId: user._id,
           position: position++,
         };
+
         const newQuestion = await QuestionsChapter.create(questionData);
         createdQuestions.push(newQuestion);
       } catch (error: any) {

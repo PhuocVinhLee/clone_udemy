@@ -34,7 +34,8 @@ export async function PATCH(
       { questionId: questionId, userId: user._id },
       dataQuestionStudent,
       {
-        new: false,
+        new: true,
+        upsert: true,
       }
     );
     return NextResponse.json(QuestionUpdated);

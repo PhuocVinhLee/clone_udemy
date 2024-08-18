@@ -58,6 +58,7 @@ export async function PATCH(
         status: 400,
       });
     }
+    
 
     const DataChapter = {
       courseId: params.courseId,
@@ -72,6 +73,16 @@ export async function PATCH(
       }
     );
 
+    if (!isPublished) {
+      const chapterOfCourse = await Chapters.find({
+        courseId: courseId,
+        isPublished: true,
+      })
+      console.log("chapterOfCourse", chapterOfCourse)
+      if (!chapterOfCourse.length) {
+        await Courses.findByIdAndUpdate(courseId, { isPublished: false });
+      }
+    }
     return NextResponse.json(updatedChapter);
   } catch (error) {
     console.log("erorr in Update chapter", error);
