@@ -4,7 +4,7 @@ Browse: ![image](https://github.com/user-attachments/assets/4a02d831-a803-4fa6-9
 
 Set up course: ![image](https://github.com/user-attachments/assets/95dcf999-478d-4d01-a26a-0459f3995567)
 
-Chapter set up: ![image](https://github.com/user-attachments/assets/7815d4cf-f6ad-45ae-bfdc-79c9a657d702)
+Chapter set up: ![image](https://github.com/user-attachments/assets/d6901477-8ab3-4a03-be73-84d242dd1485)
 
 Question for student ![bg1](https://github.com/user-attachments/assets/4bd12ad7-916e-475a-8852-8e513aa098aa)
 
