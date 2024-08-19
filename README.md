@@ -10,6 +10,8 @@ Question set up 1: ![image](https://github.com/user-attachments/assets/fdd14e34-
 
 Question set up 2: ![image](https://github.com/user-attachments/assets/8c592cba-d16c-49b0-a03e-842309f6df6c)
 
+Question set up 3: ![image](https://github.com/user-attachments/assets/ad5892b1-df0a-4599-935a-b343a3a85e0e)
+
 Question for student ![bg1](https://github.com/user-attachments/assets/4bd12ad7-916e-475a-8852-8e513aa098aa)
 
 
