@@ -6,6 +6,8 @@ Set up course: ![image](https://github.com/user-attachments/assets/95dcf999-478d
 
 Chapter set up: ![image](https://github.com/user-attachments/assets/d6901477-8ab3-4a03-be73-84d242dd1485)
 
+Question set up: ![image](https://github.com/user-attachments/assets/fdd14e34-22fb-4aa4-be4e-218bd7077a10)
+
 Question for student ![bg1](https://github.com/user-attachments/assets/4bd12ad7-916e-475a-8852-8e513aa098aa)
 
 
