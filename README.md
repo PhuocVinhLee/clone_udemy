@@ -2,6 +2,7 @@ Link demo: https://clone-udemy-six.vercel.app/
 
 Image Demo\n
 Browse: ![image](https://github.com/user-attachments/assets/4a02d831-a803-4fa6-938f-41af441c8d79)
+Set up course: ![image](https://github.com/user-attachments/assets/95dcf999-478d-4d01-a26a-0459f3995567)
 Question for student ![bg1](https://github.com/user-attachments/assets/4bd12ad7-916e-475a-8852-8e513aa098aa)
 
 
